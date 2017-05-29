@@ -1,0 +1,9 @@
+package game;
+
+import java.util.Observable;
+
+class Map extends Observable{
+
+	public static int nMobs;
+
+}

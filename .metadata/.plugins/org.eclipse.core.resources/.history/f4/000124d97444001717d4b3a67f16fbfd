@@ -1,0 +1,5 @@
+package game;
+
+class Bomb extends Entity {
+
+}

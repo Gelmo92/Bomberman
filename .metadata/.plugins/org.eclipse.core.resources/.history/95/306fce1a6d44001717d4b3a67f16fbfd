@@ -1,0 +1,18 @@
+package game;
+
+import java.util.Observable;
+import java.util.Observer;
+
+class MapView extends JPanel implements Observer{
+
+	public MapView(Map myMap, Player myPlayer, Mob[] myMobs) {
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

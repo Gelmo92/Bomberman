@@ -1,0 +1,37 @@
+package game;
+
+import java.awt.Point;
+
+class Player extends Entity {
+	private Point position;
+
+	public Player(Point firstPlayerPos) {
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	Point getPos() {
+		// TODO Auto-generated method stub
+		return position;
+	}
+
+	@Override
+	void setPos(int x, int y) {
+		position.x = x;
+		position.y = y;
+		
+	}
+
+	@Override
+	void move() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	void destroy() {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

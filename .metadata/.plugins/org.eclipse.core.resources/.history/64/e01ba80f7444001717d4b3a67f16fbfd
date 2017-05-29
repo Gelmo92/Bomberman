@@ -1,0 +1,9 @@
+package game;
+
+class Player extends Entity {
+
+	public Player(Object playerPos) {
+		// TODO Auto-generated constructor stub
+	}
+
+}

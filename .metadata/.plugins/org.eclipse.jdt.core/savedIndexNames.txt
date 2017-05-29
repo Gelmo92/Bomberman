@@ -1,0 +1,16 @@
+INDEX VERSION 1.129+/home/20013172/Desktop/Programmazione_ad_Oggetti/Bomberman/.metadata/.plugins/org.eclipse.jdt.core
+420982247.index
+3820141274.index
+220853289.index
+2939707290.index
+139204989.index
+4054291461.index
+280480279.index
+2785790732.index
+1998086840.index
+2454125106.index
+2286706084.index
+557511224.index
+1090334987.index
+1338476872.index
+2566134075.index

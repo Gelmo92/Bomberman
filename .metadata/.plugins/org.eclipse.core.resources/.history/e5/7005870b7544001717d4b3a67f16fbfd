@@ -1,0 +1,15 @@
+package game;
+
+import java.util.Observable;
+
+class Map extends Observable{
+
+	public static int nMobs;
+	public Point firstPlayerPos;
+
+	public Object getPlayerPos() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

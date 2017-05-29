@@ -1,0 +1,32 @@
+package game;
+
+import java.awt.BorderLayout;
+import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.JPanel;
+
+class MapView extends JPanel implements Observer{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5792337655989052257L;
+
+	public MapView(Map myMap, Player myPlayer, ArrayList<Mob> myMobs) {
+		super(new BorderLayout());
+	}
+
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void paint(Graphics g) {
+		
+	}
+
+}

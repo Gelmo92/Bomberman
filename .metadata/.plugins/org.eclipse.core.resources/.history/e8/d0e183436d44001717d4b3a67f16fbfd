@@ -1,0 +1,41 @@
+package game;
+
+import java.awt.BorderLayout;
+import java.awt.Container;
+
+import javax.swing.JFrame;
+
+public class GameFrame extends JFrame{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8213639328882558634L;
+
+	public GameFrame(Map myMap, Player myPlayer, Mob[] myMobs) {
+		MapView myMapView = new MapView(myMap, myPlayer, myMobs);
+		myMap.addObserver(myMapView);
+		myPlayer.addObserver(myMapView);
+		for(int nMob = 0; nMob < Map.nMobs; nMob++) {
+			myMobs[nMob].addObserver(myMapView);
+		}
+		Container cp = getContentPane();
+		 cp.setLayout(new BorderLayout());	
+		 cp.add(myMapView, BorderLayout.CENTER);	
+		 setTitle("Bomberman");
+		 setSize(320, 220);;
+		 setVisible(true);	
+	}
+	
+	
+	public static void main(String[] args) {
+		Map myMap = new Map();
+		Player myPlayer = new Player(myMap.getPlayerPos());
+		Mob[] myMobs = null;
+		for(int nMob = 0; nMob < Map.nMobs; nMob++) {
+			myMobs[nMob] = new Mob(); //aggiungere posizione dei mob
+		}
+		GameFrame myGameFrame = new GameFrame(myMap, myPlayer, myMobs);
+	}
+
+}

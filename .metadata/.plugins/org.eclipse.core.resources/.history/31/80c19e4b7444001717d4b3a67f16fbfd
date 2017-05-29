@@ -1,0 +1,35 @@
+package game;
+
+class Player extends Entity {
+	private int x;
+	private int y;
+
+	public Player(Object playerPos) {
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	int getPos() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	void setPos() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	void move() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	void destroy() {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

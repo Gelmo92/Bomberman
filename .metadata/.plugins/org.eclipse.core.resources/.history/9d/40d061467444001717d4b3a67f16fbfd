@@ -1,0 +1,11 @@
+package game;
+
+import java.util.Observable;
+
+abstract class Entity extends Observable{
+	
+	abstract int getPos();
+	abstract void setPos();
+	abstract void move();
+	abstract void destroy();
+}

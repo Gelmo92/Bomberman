@@ -1,0 +1,27 @@
+package game;
+
+import javax.swing.JFrame;
+
+public class GameFrame extends JFrame{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8213639328882558634L;
+
+	public GameFrame(Map myMap, Player myPlayer, Mob[] myMobs) {
+		MapView myMapView = new MapView(myMap, myPlayer, myMobs);
+	}
+	
+	
+	public static void main(String[] args) {
+		Map myMap = new Map();
+		Player myPlayer = new Player(myMap.getPlayerPos());
+		Mob[] myMobs = null;
+		for(int nMob = 0; nMob < Map.nMobs; nMob++) {
+			myMobs[nMob] = new Mob(); //aggiungere posizione dei mob
+		}
+		GameFrame myGameFrame = new GameFrame(myMap, myPlayer, myMobs);
+	}
+
+}

@@ -1,0 +1,29 @@
+package game;
+
+import java.awt.Point;
+
+class Mob extends Entity {
+
+	public Mob(Point firstMobPos) {
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	Point getPos() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	void move(Point newPosition) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	void destroy() {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

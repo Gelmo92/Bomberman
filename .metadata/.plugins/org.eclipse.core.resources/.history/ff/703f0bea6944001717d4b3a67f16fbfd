@@ -1,0 +1,27 @@
+package game;
+
+import javax.swing.JFrame;
+
+public class GameFrame extends JFrame{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8213639328882558634L;
+
+	public GameFrame() {
+		
+	}
+	
+	
+	public static void main(String[] args) {
+		Map myMap = new Map();
+		Player myPlayer = new Player();
+		Mob[] myMobs;
+		for(int nMob = 0; nMob < Map.nMobs; nMob++) {
+			myMobs[nMob] = new Mob();
+		}
+
+	}
+
+}
