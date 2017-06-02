@@ -6,6 +6,6 @@ import java.util.Observable;
 abstract class Entity extends Observable{
 	
 	abstract Point getPos();
-	abstract void move(Point newPosition);
+	abstract void move(int movement, int direction);
 	abstract void destroy();
 }

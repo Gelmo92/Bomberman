@@ -4,9 +4,11 @@ import java.awt.Point;
 
 class Player extends Entity {
 	private Point position;
+	private Point nextPos;
 
 	public Player(Point firstPlayerPos) {
-		// TODO Auto-generated constructor stub
+		position = firstPlayerPos;
+		
 	}
 
 	@Override
@@ -16,16 +18,40 @@ class Player extends Entity {
 	}
 
 	@Override
-	void move(Point newPosition) {
-		position.x = newPosition.x;
-		position.y = newPosition.y;
-		
+	void move(int movement, int direction) {
+		nextPos = new Point(position);
+		switch(direction) {
+		case 1:
+			nextPos.x += movement;//*MapView.cell;
+			break;
+		case 2:
+			nextPos.y += movement;//*MapView.cell;
+			break;
+		case 3:
+			nextPos.x -= movement;//*MapView.cell;
+			break;
+		case 4:
+			nextPos.y -= movement;//*MapView.cell;
+			break;
+		}
+		if(Map.canMove(nextPos, 1)) {
+			position = nextPos;
+		}
 	}
+		
 
 	@Override
 	void destroy() {
-		// TODO Auto-generated method stub
-		
+		Map.playerAlive = false;
+		setChanged();
+		notifyObservers();
+		deleteObservers();
+		try {
+			finalize();
+		} catch (Throwable e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

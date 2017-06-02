@@ -3,6 +3,7 @@ package game;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Point;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -15,16 +16,15 @@ public class GameFrame extends JFrame{
 	 */
 	private static final long serialVersionUID = -8213639328882558634L;
 
-	public GameFrame(Map myMap, Player myPlayer, ArrayList<Mob> myMobs) {
-		MapView myMapView = new MapView(myMap, myPlayer, myMobs);
-		myMap.addObserver(myMapView);
-		myPlayer.addObserver(myMapView);
-		for(int nMob = 0; nMob < Map.nMobs; nMob++) {
-			myMobs.iterator().next().addObserver(myMapView);
-		}
+	public GameFrame(Map myMap) {
+		MapView myMapView = new MapView(myMap);
+		Controller myController = new Controller(myMap, myMapView);
+		addKeyListener(myController);
+		
 		Container cp = getContentPane();
 		 cp.setLayout(new BorderLayout());	
 		 cp.add(myMapView, BorderLayout.CENTER);	
+		 setDefaultCloseOperation(EXIT_ON_CLOSE);
 		 setTitle("Bomberman");
 		 setSize(1000, 1000);;
 		 setVisible(true);	
@@ -32,14 +32,14 @@ public class GameFrame extends JFrame{
 	
 	
 	public static void main(String[] args) {
-		Map myMap = new Map();
-		Player myPlayer = new Player(myMap.firstPlayerPos);
-		ArrayList<Mob> myMobs = null;
-		Iterator<Point> firstMobPos = myMap.firstMobsPos.iterator();
-		for(int nMob = 0; nMob < Map.nMobs; nMob++) {
-			myMobs.add(new Mob(firstMobPos.next()));
+		Map myMap = null;
+		try {
+			myMap = new Map();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		GameFrame myGameFrame = new GameFrame(myMap, myPlayer, myMobs);
+		GameFrame myGameFrame = new GameFrame(myMap);
 	}
 
 }

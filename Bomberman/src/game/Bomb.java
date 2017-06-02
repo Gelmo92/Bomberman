@@ -11,7 +11,7 @@ class Bomb extends Entity {
 	}
 
 	@Override
-	void move(Point newPosition) {
+	void move(int movement, int direction) {
 		// TODO Auto-generated method stub
 		
 	}
