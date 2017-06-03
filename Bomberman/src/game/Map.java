@@ -3,16 +3,21 @@ package game;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Scanner;
 
+import javax.swing.Timer;
+
 class Map extends Observable{
 
 	static ArrayList<Mob> myMobs;
 	static ArrayList<Wall> myWalls;
+	ArrayList<Bomb> myBombs;
 	static Player myPlayer;
 	static Dimension dimension = new Dimension(MapView.cell, MapView.cell);
 	static boolean playerAlive;
@@ -74,6 +79,27 @@ class Map extends Observable{
 		
 		return true;
 		
+	}
+
+	void dropBomb() {
+		if(myBombs == null) {
+			myBombs = new ArrayList<Bomb>();
+		}
+		myBombs.add(new Bomb(myPlayer.getPos()));
+		int delay = 3000; //milliseconds
+		  ActionListener taskPerformer = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				myBombs.remove(myBombs.size()-1);
+				setChanged();
+				notifyObservers();
+							}
+		  };
+		  Timer timer = new Timer(delay, taskPerformer);
+		  timer.setRepeats(false);
+		  timer.start();
+		setChanged();
+		notifyObservers();
 	}
 
 }

@@ -1,0 +1,30 @@
+package game;
+
+import java.awt.Point;
+
+class Bomb extends Entity {
+
+	private Point pos;
+	
+	public Bomb(Point newPos) {
+		pos = newPos;
+	}
+
+	@Override
+	Point getPos() {
+		return pos;
+	}
+
+	@Override
+	void move(int movement, int direction) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	void destroy() {
+		// TODO Auto-generated method stub
+		
+	}
+
+}
