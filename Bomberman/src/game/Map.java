@@ -90,6 +90,11 @@ class Map extends Observable implements Observer{
 			}
 			
 		}
+		else if(id == 2) {
+			if(nextPosition.intersects(new Rectangle(myPlayer.getPos(), dimension))) {
+				myPlayer.destroy();
+			}
+		}
 		
 		return true;
 		
