@@ -41,17 +41,12 @@ class Player extends Entity {
 		
 
 	@Override
-	void destroy() {
+	Point destroy() {
 		Map.playerAlive = false;
 		setChanged();
 		notifyObservers();
 		deleteObservers();
-		try {
-			finalize();
-		} catch (Throwable e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		return null;
 	}
 
 }

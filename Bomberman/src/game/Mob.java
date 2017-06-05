@@ -86,8 +86,8 @@ class Mob extends Entity {
 	}
 
 	@Override
-	void destroy() {
-		// TODO Auto-generated method stub
+	Point destroy() {
+		return null;
 		
 	}
 

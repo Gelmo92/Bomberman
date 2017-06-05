@@ -16,12 +16,12 @@ class Controller implements KeyListener{
 	public Controller(Map myMap, MapView myMapView) {
 		this.myMap = myMap;
 		this.myMapView = myMapView;
-		int delay = 125; //milliseconds
+		int delay = 500; //milliseconds
 		  ActionListener taskPerformer = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				for(Mob next : myMap.myMobs) {
-					next.move(5, 0);
+					next.move(MapView.cell, 0);
 				}
 				myMapView.update(myMap, e);
 				Controller.move = true;
@@ -42,16 +42,16 @@ class Controller implements KeyListener{
 		if(!move || !Map.playerAlive) return;
 		switch(e.getKeyCode()) {
 		case KeyEvent.VK_RIGHT: 
-			myMap.myPlayer.move(5, 1);
+			myMap.myPlayer.move(MapView.cell, 1);
 			break;
 		case KeyEvent.VK_DOWN: 
-			myMap.myPlayer.move(5, 2);
+			myMap.myPlayer.move(MapView.cell, 2);
 			break;
 		case KeyEvent.VK_LEFT: 
-			myMap.myPlayer.move(5, 3);
+			myMap.myPlayer.move(MapView.cell, 3);
 			break;
 		case KeyEvent.VK_UP: 
-			myMap.myPlayer.move(5, 4);
+			myMap.myPlayer.move(MapView.cell, 4);
 			break;
 		case KeyEvent.VK_SPACE:
 			myMap.dropBomb();

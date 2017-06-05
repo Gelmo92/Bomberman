@@ -9,9 +9,20 @@ import javax.swing.Timer;
 class Bomb extends Entity {
 
 	private Point pos;
+	private int delay = 3000;  //milliseconds
 	
 	public Bomb(Point newPos) {
 		pos = newPos;
+		ActionListener taskPerformer = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setChanged();
+				notifyObservers();
+							}
+		  };
+		  Timer timer = new Timer(delay, taskPerformer);
+		  timer.setRepeats(false);
+		  timer.start();
 		
 	}
 
@@ -27,16 +38,9 @@ class Bomb extends Entity {
 	}
 
 	@Override
-	void destroy() {
-		setChanged();
-		notifyObservers();
+	Point destroy() {
 		deleteObservers();
-		try {
-			finalize();
-		} catch (Throwable e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		return this.getPos();
 		
 	}
 

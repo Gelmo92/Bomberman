@@ -5,9 +5,11 @@ import java.awt.Point;
 class Wall extends Entity {
 	
 	private Point position;
+	boolean destroyable;
 
 	public Wall(Point firstPosition) {
 		position = firstPosition;
+		destroyable = true;
 	}
 
 	@Override
@@ -23,8 +25,9 @@ class Wall extends Entity {
 	}
 	
 	@Override
-	void destroy() {
-		// TODO Auto-generated method stub
+	Point destroy() {
+		deleteObservers();
+		return null;
 		
 	}
 

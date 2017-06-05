@@ -9,24 +9,30 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Observable;
+import java.util.Observer;
 import java.util.Scanner;
 
 import javax.swing.Timer;
 
-class Map extends Observable{
+class Map extends Observable implements Observer{
 
 	static ArrayList<Mob> myMobs;
 	static ArrayList<Wall> myWalls;
-	ArrayList<Bomb> myBombs;
+	static ArrayList<Bomb> myBombs;
 	static Player myPlayer;
+	static ArrayList<Explosion> myExplosion;
 	static Dimension dimension = new Dimension(MapView.cell, MapView.cell);
 	static boolean playerAlive;
+	private int explosionRate;
 	
 	public Map() throws FileNotFoundException {
 		Scanner mapScan = new Scanner(new File("map.txt"));
 		int y = 0;
+		explosionRate = 4;
 		myWalls = new ArrayList<Wall>();
 		myMobs = new ArrayList<Mob>();
+		myExplosion = new ArrayList<Explosion>();
+		myBombs = new ArrayList<Bomb>();
 		while(mapScan.hasNextLine()) {
 			String currentLine = mapScan.nextLine();
 			for(int x = 0; x < currentLine.length(); x++) {
@@ -66,6 +72,14 @@ class Map extends Observable{
 				return false;
 			}
 		}
+		if(myBombs != null) {
+			for(Bomb next : myBombs) {
+				Rectangle bomb = new Rectangle(next.getPos(), dimension);
+				if(nextPosition.intersects(bomb)) {
+					return false;
+				}
+			}
+		}
 		if(id == 1) {
 			for(Mob next : myMobs) {
 				Rectangle mob = new Rectangle(next.getPos(), dimension);
@@ -74,32 +88,47 @@ class Map extends Observable{
 					return false;
 				}
 			}
+			
 		}
-		
 		
 		return true;
 		
 	}
 
 	void dropBomb() {
-		if(myBombs == null) {
-			myBombs = new ArrayList<Bomb>();
-		}
-		myBombs.add(new Bomb(myPlayer.getPos()));
-		int delay = 3000; //milliseconds
-		  ActionListener taskPerformer = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				myBombs.remove(myBombs.size()-1);
-				setChanged();
-				notifyObservers();
-							}
-		  };
-		  Timer timer = new Timer(delay, taskPerformer);
-		  timer.setRepeats(false);
-		  timer.start();
+		Bomb newBomb = new Bomb(myPlayer.getPos());
+		myBombs.add(newBomb);
+		newBomb.addObserver(this);
 		setChanged();
 		notifyObservers();
+	}
+
+	@Override
+	public void update(Observable obj, Object arg) {
+		if(obj instanceof Bomb) {
+			Explosion newExplosion = new Explosion(((Bomb) obj).destroy(), explosionRate);
+			myExplosion.add(newExplosion);
+			newExplosion.addObserver(this);
+			myBombs.remove((Bomb) obj);
+		}
+		else {
+			myExplosion.remove((Explosion) obj);
+			((Explosion) obj).destroy();
+		}
+		
+	}
+
+	static boolean canDestroy(Point nextPos) {
+		for(Wall next : myWalls) {
+			if(next.getPos().equals(nextPos)) {
+				if(next.destroyable) {
+					myWalls.remove(next);
+					next.destroy();
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 }

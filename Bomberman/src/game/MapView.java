@@ -4,10 +4,12 @@ import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -58,7 +60,7 @@ class MapView extends JPanel implements Observer{
 		if(myMap.myBombs != null) {
 			g.setColor(Color.red);
 			for(Bomb next : myMap.myBombs) {
-				g.fillOval(next.getPos().x, next.getPos().y, cell, cell);
+				g.fillRect(next.getPos().x, next.getPos().y, cell, cell);
 			}
 		}
 		if(Map.playerAlive) {
@@ -79,6 +81,15 @@ class MapView extends JPanel implements Observer{
 		g.setColor(Color.gray);
 		for(Wall next : myMap.myWalls) {
 			g.fillRect(next.getPos().x, next.getPos().y, cell, cell);
+		}
+		if(myMap.myExplosion.size() != 0) {
+			g.setColor(Color.yellow);
+			for(Explosion next : myMap.myExplosion) {
+				for(Point nextPoint : next.propagation){
+					g.fillOval(nextPoint.x, nextPoint.y, cell, cell);
+				}
+				
+			}
 		}
 	}
 	
