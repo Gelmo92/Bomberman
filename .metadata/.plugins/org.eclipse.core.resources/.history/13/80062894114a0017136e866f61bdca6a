@@ -80,27 +80,17 @@ class Map extends Observable implements Observer{
 				}
 			}
 		}
-		if(id == 1 || id == 3) {
-			Mob toDestroy = null;
+		if(id == 1) {
 			for(Mob next : myMobs) {
 				Rectangle mob = new Rectangle(next.getPos(), dimension);
 				if(nextPosition.intersects(mob)) {
-					if(id == 1) {
-						myPlayer.destroy();
-						return false;
-					}
-					else {
-						toDestroy = next;
-					}
+					myPlayer.destroy();
+					return false;
 				}
 			}
-			if(toDestroy != null) {
-				toDestroy.destroy();
-				myMobs.remove(toDestroy);
-			}
-		}
-		if(id == 2 || id == 3) {
 			
+		}
+		else if(id == 2) {
 			if(nextPosition.intersects(new Rectangle(myPlayer.getPos(), dimension))) {
 				myPlayer.destroy();
 			}
