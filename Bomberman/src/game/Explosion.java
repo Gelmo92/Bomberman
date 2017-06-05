@@ -61,7 +61,7 @@ public class Explosion extends Entity {
 				nextPos.y -= MapView.cell;
 				break;
 			}
-			if(Map.canMove(nextPos, 1)) {
+			if(Map.canMove(nextPos, 3)) {
 				propagation.add(nextPos);
 				pos = nextPos;
 			}

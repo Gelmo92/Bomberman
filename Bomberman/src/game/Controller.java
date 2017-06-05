@@ -11,7 +11,7 @@ class Controller implements KeyListener{
 
 	private Map myMap;
 	private MapView myMapView;
-	private static boolean move = true;
+	//private static boolean move = true;
 	
 	public Controller(Map myMap, MapView myMapView) {
 		this.myMap = myMap;
@@ -24,7 +24,7 @@ class Controller implements KeyListener{
 					next.move(MapView.cell, 0);
 				}
 				myMapView.update(myMap, e);
-				Controller.move = true;
+				//Controller.move = true;
 				
 			}
 		  };
@@ -39,7 +39,7 @@ class Controller implements KeyListener{
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if(!move || !Map.playerAlive) return;
+		if(/*!move ||*/ !Map.playerAlive) return;
 		switch(e.getKeyCode()) {
 		case KeyEvent.VK_RIGHT: 
 			myMap.myPlayer.move(MapView.cell, 1);
@@ -58,7 +58,8 @@ class Controller implements KeyListener{
 			myMap.myBombs.get(myMap.myBombs.size()-1).addObserver(myMapView);
 			break;
 		}
-		move = false;
+		myMapView.update(myMap, e);
+		//move = false;
 	}
 
 	@Override
