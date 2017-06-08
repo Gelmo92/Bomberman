@@ -44,11 +44,15 @@ class Map extends Observable implements Observer{
 					System.out.println("Mob creato in posizione " + x +", " + y);
 					break;
 				case 'W':
-					myWalls.add(new Wall(new Point(x*MapView.cell, y*MapView.cell), false));
+					myWalls.add(new Wall(new Point(x*MapView.cell, y*MapView.cell), false, false));
 					System.out.println("Muro creato in posizione " + x +", " + y);
 					break;
 				case 'w':
-					myWalls.add(new Wall(new Point(x*MapView.cell, y*MapView.cell), true));
+					myWalls.add(new Wall(new Point(x*MapView.cell, y*MapView.cell), true, false));
+					System.out.println("Muro creato in posizione " + x +", " + y);
+					break;
+				case 'p':
+					myWalls.add(new Wall(new Point(x*MapView.cell, y*MapView.cell), false, true));
 					System.out.println("Muro creato in posizione " + x +", " + y);
 					break;
 				case '-':

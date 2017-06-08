@@ -80,8 +80,29 @@ class MapView extends JPanel implements Observer{
 		
 		g.setColor(Color.gray);
 		for(Wall next : myMap.myWalls) {
-			g.fillRect(next.getPos().x, next.getPos().y, cell, cell);
+			if(next.destroyable)
+				try {
+					g.drawImage(ImageIO.read(new File("muro_distruttibile.png")), next.getPos().x, next.getPos().y, cell, cell, null);
+				} catch (IOException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+			else if(next.perimetry)
+				try {
+					g.drawImage(ImageIO.read(new File("muro_perimetrale.png")), next.getPos().x, next.getPos().y, cell, cell, null);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			else
+				try {
+					g.drawImage(ImageIO.read(new File("muro_non_distruttibile.png")), next.getPos().x, next.getPos().y, cell, cell, null);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		}
+		
 		if(myMap.myExplosion.size() != 0) {
 			g.setColor(Color.yellow);
 			for(Explosion next : myMap.myExplosion) {
