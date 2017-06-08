@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 
 import javax.swing.Timer;
 
@@ -20,7 +21,8 @@ class Controller implements KeyListener{
 		  ActionListener taskPerformer = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				for(Mob next : myMap.myMobs) {
+				ArrayList<Mob> mobsList = new ArrayList<Mob>(Map.myMobs);
+				for(Mob next : mobsList) {
 					next.move(MapView.cell, 0);
 				}
 				myMapView.update(myMap, e);

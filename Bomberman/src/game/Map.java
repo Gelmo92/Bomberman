@@ -3,8 +3,6 @@ package game;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -12,7 +10,6 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Scanner;
 
-import javax.swing.Timer;
 
 class Map extends Observable implements Observer{
 
@@ -47,7 +44,11 @@ class Map extends Observable implements Observer{
 					System.out.println("Mob creato in posizione " + x +", " + y);
 					break;
 				case 'W':
-					myWalls.add(new Wall(new Point(x*MapView.cell, y*MapView.cell)));
+					myWalls.add(new Wall(new Point(x*MapView.cell, y*MapView.cell), false));
+					System.out.println("Muro creato in posizione " + x +", " + y);
+					break;
+				case 'w':
+					myWalls.add(new Wall(new Point(x*MapView.cell, y*MapView.cell), true));
 					System.out.println("Muro creato in posizione " + x +", " + y);
 					break;
 				case '-':
@@ -76,7 +77,36 @@ class Map extends Observable implements Observer{
 			for(Bomb next : myBombs) {
 				Rectangle bomb = new Rectangle(next.getPos(), dimension);
 				if(nextPosition.intersects(bomb)) {
-					return false;
+					if(id == 1 || id == 2) {
+						return false;
+					}
+					else {
+						next.dominoEffect();
+						return true;
+					}
+				}
+			}
+		}
+		if(id == 1 || id == 2) {
+			for(Explosion next : myExplosion) {
+				for(Point nextP : next.propagation) {
+					if(nextPosition.intersects(new Rectangle(nextP, dimension))) {
+						if(id == 1) {
+							myPlayer.destroy();
+						}
+						else {
+							Mob toDestroy = null;
+							for(Mob nextM : myMobs) {
+								if(nextM.nextPos.equals(nextPos)) {
+									System.out.println("Trovato " + nextPos);
+									toDestroy = nextM;
+								}
+							}
+							toDestroy.destroy();
+							myMobs.remove(toDestroy);
+						}
+						return false;
+					}
 				}
 			}
 		}
@@ -97,6 +127,7 @@ class Map extends Observable implements Observer{
 			if(toDestroy != null) {
 				toDestroy.destroy();
 				myMobs.remove(toDestroy);
+				return false;
 			}
 		}
 		if(id == 2 || id == 3) {

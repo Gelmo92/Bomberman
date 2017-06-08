@@ -6,10 +6,9 @@ class Wall extends Entity {
 	
 	private Point position;
 	boolean destroyable;
-
-	public Wall(Point firstPosition) {
+	public Wall(Point firstPosition, boolean destroyable) {
 		position = firstPosition;
-		destroyable = true;
+		this.destroyable = destroyable;
 	}
 
 	@Override

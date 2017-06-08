@@ -5,7 +5,7 @@ import java.awt.Point;
 class Mob extends Entity {
 	
 	private Point position;
-	private Point nextPos;
+	Point nextPos;
 	private int direction = 0;
 	
 	public Mob(Point firstMobPos) {
@@ -87,6 +87,7 @@ class Mob extends Entity {
 
 	@Override
 	Point destroy() {
+		deleteObservers();
 		return null;
 		
 	}

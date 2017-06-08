@@ -10,6 +10,7 @@ class Bomb extends Entity {
 
 	private Point pos;
 	private int delay = 3000;  //milliseconds
+	Timer t;
 	
 	public Bomb(Point newPos) {
 		pos = newPos;
@@ -20,9 +21,9 @@ class Bomb extends Entity {
 				notifyObservers();
 							}
 		  };
-		  Timer timer = new Timer(delay, taskPerformer);
-		  timer.setRepeats(false);
-		  timer.start();
+		  t = new Timer(delay, taskPerformer);
+		  t.setRepeats(false);
+		  t.start();
 		
 	}
 
@@ -41,6 +42,13 @@ class Bomb extends Entity {
 	Point destroy() {
 		deleteObservers();
 		return this.getPos();
+		
+	}
+
+	public void dominoEffect() {
+		t.stop();
+		t.setInitialDelay(10);
+		t.start();
 		
 	}
 
