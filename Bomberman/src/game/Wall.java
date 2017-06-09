@@ -29,7 +29,7 @@ class Wall extends Entity {
 	@Override
 	Point destroy() {
 		deleteObservers();
-		return null;
+		return position;
 		
 	}
 

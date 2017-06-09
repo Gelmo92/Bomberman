@@ -24,17 +24,22 @@ class MapView extends JPanel implements Observer{
 
 	private Map myMap = null;
 	private BufferedImage backgroundImg = null;
+	private BufferedImage playerImg = null;
+	private BufferedImage mobImg = null;
+	private BufferedImage destructibleWallImg = null;
+	private BufferedImage indestructibleWallImg = null;
+	private BufferedImage perimetralWallImg = null;
+	private BufferedImage chestImg = null;
+	private BufferedImage bombImg = null;
+	private BufferedImage explosionImg1 = null;
+	private BufferedImage explosionImg2 = null;
+	private boolean flame = true;
 	
 	public final static int cell = 40;
 	
 	public MapView(Map myMap) {
 		super(new BorderLayout());
-		try {
-			backgroundImg = ImageIO.read(new File("background.jpg"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		loadImages();
 		this.myMap = myMap;
 		myMap.addObserver(this);
 		myMap.myPlayer.addObserver(this);
@@ -42,6 +47,74 @@ class MapView extends JPanel implements Observer{
 			next.addObserver(this);
 		}
 		repaint();
+	}
+	
+	private void loadImages() {
+		try {
+			backgroundImg = ImageIO.read(new File("background.jpg"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			playerImg = ImageIO.read(new File("bomberman1.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		/*
+		try {
+			mobImg = ImageIO.read(new File(""));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		*/
+		try {
+			destructibleWallImg = ImageIO.read(new File("muro_distruttibile.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			indestructibleWallImg = ImageIO.read(new File("muro_non_distruttibile.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			perimetralWallImg = ImageIO.read(new File("muro_perimetrale.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		/*
+		try {
+			chestImg = ImageIO.read(new File(""));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		*/
+		try {
+			bombImg = ImageIO.read(new File("bomb.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			explosionImg1 = ImageIO.read(new File("flame_1.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			explosionImg2 = ImageIO.read(new File("flame_2.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	@Override
@@ -56,21 +129,26 @@ class MapView extends JPanel implements Observer{
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		g.drawImage(backgroundImg, 0, 0, getWidth(), getWidth(), null);
-		if(myMap.myBombs != null) {
-			g.setColor(Color.red);
-			for(Bomb next : myMap.myBombs) {
+		g.setColor(Color.green);
+		for(Terrain next : Map.myTerrain) {
+			g.fillRect(next.getPos().x, next.getPos().y, cell, cell);
+		}
+		if(myMap.myChests != null) {
+			g.setColor(Color.gray);
+			for(Chest next : myMap.myChests) {
 				g.fillRect(next.getPos().x, next.getPos().y, cell, cell);
+			}
+		}
+		//g.drawImage(backgroundImg, 0, 0, getWidth(), getWidth(), null);
+		if(myMap.myBombs.size() != 0) {
+			for(Bomb next : myMap.myBombs) {
+				g.drawImage(bombImg, next.getPos().x, next.getPos().y, cell, cell, null);
 			}
 		}
 		if(Map.playerAlive) {
 			//g.fillRect(myMap.myPlayer.getPos().x, myMap.myPlayer.getPos().y, cell, cell);
-			try {
-				g.drawImage(ImageIO.read(new File("bomberman1.png")), myMap.myPlayer.getPos().x, myMap.myPlayer.getPos().y, cell, cell, null);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			g.drawImage(playerImg, myMap.myPlayer.getPos().x, myMap.myPlayer.getPos().y, cell, cell, null);
+			
 		}
 		g.setColor(Color.magenta);
 		for(Mob next : myMap.myMobs) {
@@ -78,38 +156,38 @@ class MapView extends JPanel implements Observer{
 		}
 		
 		
-		g.setColor(Color.gray);
 		for(Wall next : myMap.myWalls) {
-			if(next.destroyable)
-				try {
-					g.drawImage(ImageIO.read(new File("muro_distruttibile.png")), next.getPos().x, next.getPos().y, cell, cell, null);
-				} catch (IOException e2) {
-					// TODO Auto-generated catch block
-					e2.printStackTrace();
-				}
-			else if(next.perimetry)
-				try {
-					g.drawImage(ImageIO.read(new File("muro_perimetrale.png")), next.getPos().x, next.getPos().y, cell, cell, null);
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			else
-				try {
-					g.drawImage(ImageIO.read(new File("muro_non_distruttibile.png")), next.getPos().x, next.getPos().y, cell, cell, null);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			if(next.destroyable) {
+				g.drawImage(destructibleWallImg, next.getPos().x, next.getPos().y, cell, cell, null);
+			}
+			else if(next.perimetry) {
+				g.drawImage(perimetralWallImg, next.getPos().x, next.getPos().y, cell, cell, null);
+			}
+			else {
+				g.drawImage(indestructibleWallImg, next.getPos().x, next.getPos().y, cell, cell, null);
+			}
 		}
 		
 		if(myMap.myExplosion.size() != 0) {
-			g.setColor(Color.yellow);
+			BufferedImage explosionToRender = null;
+			if(flame) {
+				explosionToRender = explosionImg1;
+				flame = false;
+			}
+			else {
+				explosionToRender = explosionImg2;
+				flame = true;
+			}
 			for(Explosion next : myMap.myExplosion) {
 				for(Point nextPoint : next.propagation){
-					g.fillOval(nextPoint.x, nextPoint.y, cell, cell);
+					g.drawImage(explosionToRender, nextPoint.x, nextPoint.y, cell, cell, null);
 				}
-				
+			}
+		}
+		if(myMap.myBonus.size() != 0) {
+			g.setColor(Color.blue);
+			for(Bonus next : myMap.myBonus) {
+				g.fillRect(next.getPos().x, next.getPos().y, cell, cell);
 			}
 		}
 	}

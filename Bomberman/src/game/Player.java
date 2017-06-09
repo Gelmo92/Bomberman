@@ -5,9 +5,11 @@ import java.awt.Point;
 class Player extends Entity {
 	private Point position;
 	private Point nextPos;
+	private Map mapRef;
 
-	public Player(Point firstPlayerPos) {
+	public Player(Point firstPlayerPos, Map mapRef) {
 		position = firstPlayerPos;
+		this.mapRef = mapRef;
 		
 	}
 
@@ -34,7 +36,7 @@ class Player extends Entity {
 			nextPos.y -= movement;//*MapView.cell;
 			break;
 		}
-		if(Map.canMove(nextPos, 1)) {
+		if(mapRef.canMove(nextPos, 1)) {
 			position = nextPos;
 		}
 	}
