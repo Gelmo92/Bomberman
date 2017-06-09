@@ -66,6 +66,12 @@ public class Explosion extends Entity {
 				nextPos.y -= MapView.cell;
 				break;
 			}
+			for(Terrain next : mapRef.myTerrain) {
+				if(nextPos.equals(next.getPos())) {
+					next.setBurnt();
+					break;
+				}
+			}
 			if(mapRef.canMove(nextPos, 3)) {
 				propagation.add(nextPos);
 				pos = nextPos;
@@ -82,7 +88,7 @@ public class Explosion extends Entity {
 
 	@Override
 	Point destroy() {
-		// TODO Auto-generated method stub
+		deleteObservers();
 		return null;
 	}
 

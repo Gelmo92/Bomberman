@@ -65,6 +65,9 @@ class Map extends Observable implements Observer{
 					break;
 				case 'C':
 					myChests.add(new Chest(new Point(x*MapView.cell, y*MapView.cell)));
+					System.out.println("c " + myChests.get(myChests.size()-1).getPos());
+					myTerrain.add(new Terrain(new Point(myChests.get(myChests.size()-1).getPos())));
+					System.out.println("t " + myTerrain.get(myTerrain.size()-1).getPos());
 				case '-':
 					myTerrain.add(new Terrain(new Point(x*MapView.cell, y*MapView.cell)));
 					break;
@@ -97,6 +100,7 @@ class Map extends Observable implements Observer{
 					}
 					else {
 						next.dominoEffect();
+						return false;
 					}
 				}
 			}
@@ -118,6 +122,23 @@ class Map extends Observable implements Observer{
 			dropBonus(chestToDestroy.destroy());
 			myChests.remove(chestToDestroy);
 			return false;
+		}
+		Bonus bonusToDestroy = null;
+		for(Bonus next : myBonus) {
+			Rectangle bonus = new Rectangle(next.getPos(), dimension);
+			if(nextPosition.intersects(bonus)) {
+				if(id == 2) {
+					return true;
+				}
+				else {
+					bonusToDestroy = next;
+				}
+			}
+		}
+		if(bonusToDestroy != null) {
+			myBonus.remove(bonusToDestroy);
+			System.out.println("n bonus " + myBonus.size());
+			return true;
 		}
 		if(id == 1 || id == 2) {
 			for(Explosion next : myExplosion) {
@@ -161,7 +182,7 @@ class Map extends Observable implements Observer{
 			if(toDestroy != null) {
 				toDestroy.destroy();
 				myMobs.remove(toDestroy);
-				return false;
+				//return false;
 			}
 		}
 		if(id == 2 || id == 3) {
@@ -211,6 +232,10 @@ class Map extends Observable implements Observer{
 			myExplosion.remove((Explosion) obj);
 			((Explosion) obj).destroy();
 		}
+		else if(obj instanceof Bonus) {
+			myBonus.remove((Bonus)obj);
+			((Bonus)obj).destroy();
+		}
 		
 	}
 
@@ -219,7 +244,7 @@ class Map extends Observable implements Observer{
 			if(next.getPos().equals(nextPos)) {
 				if(next.destroyable) {
 					myWalls.remove(next);
-					myTerrain.add(new Terrain(next.destroy()));
+					myTerrain.add(new Terrain(next.destroy(), true));
 					return true;
 				}
 			}

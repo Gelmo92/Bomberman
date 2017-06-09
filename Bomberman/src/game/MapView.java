@@ -33,6 +33,8 @@ class MapView extends JPanel implements Observer{
 	private BufferedImage bombImg = null;
 	private BufferedImage explosionImg1 = null;
 	private BufferedImage explosionImg2 = null;
+	private BufferedImage grassImg = null;
+	private BufferedImage burntImg = null;
 	private boolean flame = true;
 	
 	public final static int cell = 40;
@@ -51,12 +53,6 @@ class MapView extends JPanel implements Observer{
 	
 	private void loadImages() {
 		try {
-			backgroundImg = ImageIO.read(new File("background.jpg"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			playerImg = ImageIO.read(new File("bomberman1.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -71,19 +67,19 @@ class MapView extends JPanel implements Observer{
 		}
 		*/
 		try {
-			destructibleWallImg = ImageIO.read(new File("muro_distruttibile.png"));
+			destructibleWallImg = ImageIO.read(new File("muro_distruttibile_2.jpg"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		try {
-			indestructibleWallImg = ImageIO.read(new File("muro_non_distruttibile.png"));
+			indestructibleWallImg = ImageIO.read(new File("muro_non_distruttibile_2.jpg"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		try {
-			perimetralWallImg = ImageIO.read(new File("muro_perimetrale.png"));
+			perimetralWallImg = ImageIO.read(new File("muro_perimetrale_3.jpg"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -114,6 +110,18 @@ class MapView extends JPanel implements Observer{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		try {
+			grassImg = ImageIO.read(new File("grass_3.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			burntImg = ImageIO.read(new File("burnt_3.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 
@@ -129,9 +137,15 @@ class MapView extends JPanel implements Observer{
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		g.setColor(Color.green);
+		
 		for(Terrain next : Map.myTerrain) {
-			g.fillRect(next.getPos().x, next.getPos().y, cell, cell);
+			if(next.getBurnt()) {
+				g.drawImage(burntImg, next.getPos().x, next.getPos().y, cell, cell, null);
+			}
+			else {
+				g.drawImage(grassImg, next.getPos().x, next.getPos().y, cell, cell, null);
+			}
+			
 		}
 		if(myMap.myChests != null) {
 			g.setColor(Color.gray);
