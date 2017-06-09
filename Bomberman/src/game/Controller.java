@@ -57,7 +57,7 @@ class Controller implements KeyListener{
 			break;
 		case KeyEvent.VK_SPACE:
 			myMap.dropBomb();
-			myMap.myBombs.get(myMap.myBombs.size()-1).addObserver(myMapView);
+			//myMap.myBombs.get(myMap.myBombs.size()-1).addObserver(myMapView);
 			break;
 		}
 		myMapView.update(myMap, e);

@@ -16,6 +16,9 @@ class Map extends Observable implements Observer{
 	static ArrayList<Mob> myMobs;
 	static ArrayList<Wall> myWalls;
 	static ArrayList<Bomb> myBombs;
+	static ArrayList<Chest> myChests;
+	static ArrayList<Bonus> myBonus;
+	static ArrayList<Terrain> myTerrain;
 	static Player myPlayer;
 	static ArrayList<Explosion> myExplosion;
 	static Dimension dimension = new Dimension(MapView.cell, MapView.cell);
@@ -30,17 +33,22 @@ class Map extends Observable implements Observer{
 		myMobs = new ArrayList<Mob>();
 		myExplosion = new ArrayList<Explosion>();
 		myBombs = new ArrayList<Bomb>();
+		myChests = new ArrayList<Chest>();
+		myBonus = new ArrayList<Bonus>();
+		myTerrain = new ArrayList<Terrain>();
 		while(mapScan.hasNextLine()) {
 			String currentLine = mapScan.nextLine();
 			for(int x = 0; x < currentLine.length(); x++) {
 				switch (currentLine.charAt(x)) {
 				case 'P':
-					myPlayer = new Player(new Point(x*MapView.cell, y*MapView.cell));
+					myPlayer = new Player(new Point(x*MapView.cell, y*MapView.cell), this);
+					myTerrain.add(new Terrain(new Point(myPlayer.getPos())));
 					playerAlive = true;
 					System.out.println("Giocatore creato in posizione " + x +", " + y);
 					break;
 				case 'M':
-					myMobs.add(new Mob(new Point(x*MapView.cell, y*MapView.cell)));
+					myMobs.add(new Mob(new Point(x*MapView.cell, y*MapView.cell), this));
+					myTerrain.add(new Terrain(new Point(myMobs.get(myMobs.size()-1).getPos())));
 					System.out.println("Mob creato in posizione " + x +", " + y);
 					break;
 				case 'W':
@@ -55,7 +63,10 @@ class Map extends Observable implements Observer{
 					myWalls.add(new Wall(new Point(x*MapView.cell, y*MapView.cell), false, true));
 					System.out.println("Muro creato in posizione " + x +", " + y);
 					break;
+				case 'C':
+					myChests.add(new Chest(new Point(x*MapView.cell, y*MapView.cell)));
 				case '-':
+					myTerrain.add(new Terrain(new Point(x*MapView.cell, y*MapView.cell)));
 					break;
 				default:
 					System.out.print(currentLine.charAt(x));
@@ -69,7 +80,7 @@ class Map extends Observable implements Observer{
 		notifyObservers();
 	}
 	
-	static boolean canMove(Point nextPos, int id) {
+	boolean canMove(Point nextPos, int id) {
 		Rectangle nextPosition = new Rectangle(nextPos, dimension);
 		for(Wall next : myWalls) {
 			Rectangle wall = new Rectangle(next.getPos(), dimension);
@@ -86,10 +97,27 @@ class Map extends Observable implements Observer{
 					}
 					else {
 						next.dominoEffect();
-						return true;
 					}
 				}
 			}
+		}
+		
+		Chest chestToDestroy = null;
+		for(Chest next : myChests) {
+			Rectangle chest = new Rectangle(next.getPos(), dimension);
+			if(nextPosition.intersects(chest)) {
+				if(id == 1 || id == 2) {
+					return false;
+				}
+				else {
+					chestToDestroy = next;
+				}
+			}
+		}
+		if(chestToDestroy != null) {
+			dropBonus(chestToDestroy.destroy());
+			myChests.remove(chestToDestroy);
+			return false;
 		}
 		if(id == 1 || id == 2) {
 			for(Explosion next : myExplosion) {
@@ -102,12 +130,14 @@ class Map extends Observable implements Observer{
 							Mob toDestroy = null;
 							for(Mob nextM : myMobs) {
 								if(nextM.nextPos.equals(nextPos)) {
-									System.out.println("Trovato " + nextPos);
 									toDestroy = nextM;
 								}
 							}
-							toDestroy.destroy();
-							myMobs.remove(toDestroy);
+							if(toDestroy != null) {
+								toDestroy.destroy();
+								myMobs.remove(toDestroy);
+							}
+							
 						}
 						return false;
 					}
@@ -135,33 +165,49 @@ class Map extends Observable implements Observer{
 			}
 		}
 		if(id == 2 || id == 3) {
-			
 			if(nextPosition.intersects(new Rectangle(myPlayer.getPos(), dimension))) {
 				myPlayer.destroy();
 			}
+		}
+		if(id == 3) {
+			
 		}
 		
 		return true;
 		
 	}
-
+	private boolean canDropBomb(Point pos) {
+		for(Bomb nextBomb : myBombs) {
+			if(pos.equals(nextBomb.getPos())) {
+				return false;
+			}
+		}
+		return true;
+	}
 	void dropBomb() {
-		Bomb newBomb = new Bomb(myPlayer.getPos());
-		myBombs.add(newBomb);
-		newBomb.addObserver(this);
-		setChanged();
-		notifyObservers();
+		if(canDropBomb(myPlayer.getPos())) {
+			Bomb newBomb = new Bomb(myPlayer.getPos());
+			myBombs.add(newBomb);
+			newBomb.addObserver(this);
+			setChanged();
+			notifyObservers();
+		}
 	}
 
+	private void dropBonus(Point pos) {
+		Bonus newBonus = new Bonus(pos);
+		myBonus.add(newBonus);
+		newBonus.addObserver(this);
+	}
 	@Override
 	public void update(Observable obj, Object arg) {
 		if(obj instanceof Bomb) {
-			Explosion newExplosion = new Explosion(((Bomb) obj).destroy(), explosionRate);
+			Explosion newExplosion = new Explosion(((Bomb) obj).destroy(), explosionRate, this);
 			myExplosion.add(newExplosion);
 			newExplosion.addObserver(this);
 			myBombs.remove((Bomb) obj);
 		}
-		else {
+		else if(obj instanceof Explosion){
 			myExplosion.remove((Explosion) obj);
 			((Explosion) obj).destroy();
 		}
@@ -173,7 +219,7 @@ class Map extends Observable implements Observer{
 			if(next.getPos().equals(nextPos)) {
 				if(next.destroyable) {
 					myWalls.remove(next);
-					next.destroy();
+					myTerrain.add(new Terrain(next.destroy()));
 					return true;
 				}
 			}
