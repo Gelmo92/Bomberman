@@ -4,7 +4,7 @@ import java.awt.Point;
 /**
  * La classe Wall rappresenta il muro nella mappa.
  * Gli oggetti Wall possono essere o muri di perimetro che delimitano l'area di gioco
- * o posso essere muri interni se sono interni possono essere o distruttibili o non 
+ * o possono essere muri interni se sono interni possono essere o distruttibili o non 
  * distruttibili.
  * 
  * @author Yuri Gelmotto
@@ -28,7 +28,7 @@ class Wall extends Entity {
 		this.perimetry = perimetry;
 	}
 	/**
-	 * @return le cooridnate del muro
+	 * @return le coordinate del muro
 	 */
 	@Override
 	Point getPos() {
@@ -44,7 +44,7 @@ class Wall extends Entity {
 	/**
 	 * Il metodo va a rimuovere il muro dagli oggetti osservati
 	 * 
-	 * @return le coordiante del muro
+	 * @return le coordinate del muro
 	 */
 	@Override
 	Point destroy() {
