@@ -23,12 +23,13 @@ class Map extends Observable implements Observer{
 	static ArrayList<Explosion> myExplosion;
 	static Dimension dimension = new Dimension(MapView.cell, MapView.cell);
 	static boolean playerAlive;
-	private int explosionRate;
+	
+	
+	
 	
 	public Map() throws FileNotFoundException {
 		Scanner mapScan = new Scanner(new File("map.txt"));
 		int y = 0;
-		explosionRate = 4;
 		myWalls = new ArrayList<Wall>();
 		myMobs = new ArrayList<Mob>();
 		myExplosion = new ArrayList<Explosion>();
@@ -83,7 +84,7 @@ class Map extends Observable implements Observer{
 		notifyObservers();
 	}
 	
-	boolean canMove(Point nextPos, int id) {
+	boolean canMove(Point nextPos, Object obj) {
 		Rectangle nextPosition = new Rectangle(nextPos, dimension);
 		for(Wall next : myWalls) {
 			Rectangle wall = new Rectangle(next.getPos(), dimension);
@@ -91,11 +92,18 @@ class Map extends Observable implements Observer{
 				return false;
 			}
 		}
+		
+		if(obj instanceof Mob || obj instanceof Explosion) {
+			if(nextPosition.intersects(new Rectangle(myPlayer.getPos(), dimension))) {
+				myPlayer.harm();
+			}
+		}
+		
 		if(myBombs != null) {
 			for(Bomb next : myBombs) {
 				Rectangle bomb = new Rectangle(next.getPos(), dimension);
 				if(nextPosition.intersects(bomb)) {
-					if(id == 1 || id == 2) {
+					if(obj instanceof Player || obj instanceof Mob) {
 						return false;
 					}
 					else {
@@ -110,7 +118,7 @@ class Map extends Observable implements Observer{
 		for(Chest next : myChests) {
 			Rectangle chest = new Rectangle(next.getPos(), dimension);
 			if(nextPosition.intersects(chest)) {
-				if(id == 1 || id == 2) {
+				if(obj instanceof Player || obj instanceof Mob) {
 					return false;
 				}
 				else {
@@ -127,7 +135,7 @@ class Map extends Observable implements Observer{
 		for(Bonus next : myBonus) {
 			Rectangle bonus = new Rectangle(next.getPos(), dimension);
 			if(nextPosition.intersects(bonus)) {
-				if(id == 2) {
+				if(obj instanceof Mob || obj instanceof Bomb) {
 					return true;
 				}
 				else {
@@ -136,16 +144,23 @@ class Map extends Observable implements Observer{
 			}
 		}
 		if(bonusToDestroy != null) {
-			myBonus.remove(bonusToDestroy);
-			System.out.println("n bonus " + myBonus.size());
-			return true;
+			if (obj instanceof Explosion) {
+				myBonus.remove(bonusToDestroy);
+				return true;
+			}
+			else if (obj instanceof Player) {
+				bonusToDestroy.getBonus();
+				myBonus.remove(bonusToDestroy);
+				return true;
+			}
+			
 		}
-		if(id == 1 || id == 2) {
+		if(obj instanceof Player || obj instanceof Mob) {
 			for(Explosion next : myExplosion) {
 				for(Point nextP : next.propagation) {
 					if(nextPosition.intersects(new Rectangle(nextP, dimension))) {
-						if(id == 1) {
-							myPlayer.destroy();
+						if(obj instanceof Player) {
+							myPlayer.harm();
 						}
 						else {
 							Mob toDestroy = null;
@@ -165,13 +180,13 @@ class Map extends Observable implements Observer{
 				}
 			}
 		}
-		if(id == 1 || id == 3) {
+		if(obj instanceof Player || obj instanceof Explosion) {
 			Mob toDestroy = null;
 			for(Mob next : myMobs) {
 				Rectangle mob = new Rectangle(next.getPos(), dimension);
 				if(nextPosition.intersects(mob)) {
-					if(id == 1) {
-						myPlayer.destroy();
+					if(obj instanceof Player) {
+						myPlayer.harm();
 						return false;
 					}
 					else {
@@ -185,19 +200,15 @@ class Map extends Observable implements Observer{
 				//return false;
 			}
 		}
-		if(id == 2 || id == 3) {
-			if(nextPosition.intersects(new Rectangle(myPlayer.getPos(), dimension))) {
-				myPlayer.destroy();
-			}
-		}
-		if(id == 3) {
-			
-		}
+		
 		
 		return true;
 		
 	}
 	private boolean canDropBomb(Point pos) {
+		if (Bomb.getDroppedBombs() >= Bomb.getNumberBomb()) {
+			return false;
+		}
 		for(Bomb nextBomb : myBombs) {
 			if(pos.equals(nextBomb.getPos())) {
 				return false;
@@ -223,7 +234,7 @@ class Map extends Observable implements Observer{
 	@Override
 	public void update(Observable obj, Object arg) {
 		if(obj instanceof Bomb) {
-			Explosion newExplosion = new Explosion(((Bomb) obj).destroy(), explosionRate, this);
+			Explosion newExplosion = new Explosion(((Bomb) obj).destroy(), this);
 			myExplosion.add(newExplosion);
 			newExplosion.addObserver(this);
 			myBombs.remove((Bomb) obj);

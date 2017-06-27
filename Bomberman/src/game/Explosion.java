@@ -12,8 +12,9 @@ public class Explosion extends Entity {
 	ArrayList<Point> propagation;
 	private int delay = 3000;  //milliseconds
 	private Map mapRef;
+	private static int explosionRate = 1;
 	
-	public Explosion(Point firstPosition, int explosionRate, Map mapRef) {
+	public Explosion(Point firstPosition, Map mapRef) {
 		propagation = new ArrayList<Point>();
 		propagation.add(firstPosition);
 		this.mapRef = mapRef;
@@ -72,7 +73,7 @@ public class Explosion extends Entity {
 					break;
 				}
 			}
-			if(mapRef.canMove(nextPos, 3)) {
+			if(mapRef.canMove(nextPos, this)) {
 				propagation.add(nextPos);
 				pos = nextPos;
 			}
@@ -90,6 +91,10 @@ public class Explosion extends Entity {
 	Point destroy() {
 		deleteObservers();
 		return null;
+	}
+
+	public static void increaseRate() {
+		explosionRate++;
 	}
 
 }

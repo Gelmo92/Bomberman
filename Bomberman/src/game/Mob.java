@@ -38,7 +38,7 @@ class Mob extends Entity {
 					nextPos.y -= movement;//*MapView.cell;
 					break;
 				}
-			if(mapRef.canMove(nextPos, 2)) {
+			if(mapRef.canMove(nextPos, this)) {
 				position = nextPos;
 				break;
 			}

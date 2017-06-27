@@ -12,8 +12,18 @@ public class Bonus extends Entity {
 	private int delay = 20000;  //milliseconds
 	Timer t;
 	
+	enum BonusType {
+		LIFE,
+		MOVE_BOMB,
+		NUMBER_BOMB,
+		RATE;
+	}
+	
+	private BonusType type;
+	
 	public Bonus(Point pos) {
 		this.position = pos;
+		this.type = BonusType.LIFE;
 		ActionListener taskPerformer = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -41,6 +51,24 @@ public class Bonus extends Entity {
 	Point destroy() {
 		deleteObservers();
 		return null;
+	}
+
+	public void getBonus() {
+		switch (type) {
+			case RATE:
+				Explosion.increaseRate();
+				break;
+			case NUMBER_BOMB:
+				Bomb.increaseNumberBomb();
+				break;
+			case LIFE:
+				Map.myPlayer.regen();
+		}
+		
+	}
+	
+	public BonusType getType() {
+		return type;
 	}
 
 }

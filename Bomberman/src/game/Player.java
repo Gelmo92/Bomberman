@@ -6,9 +6,12 @@ class Player extends Entity {
 	private Point position;
 	private Point nextPos;
 	private Map mapRef;
+	private int life;
+	private final static int MAX_LIFE = 3;
 
 	public Player(Point firstPlayerPos, Map mapRef) {
 		position = firstPlayerPos;
+		this.life = MAX_LIFE;
 		this.mapRef = mapRef;
 		
 	}
@@ -36,11 +39,17 @@ class Player extends Entity {
 			nextPos.y -= movement;//*MapView.cell;
 			break;
 		}
-		if(mapRef.canMove(nextPos, 1)) {
+		if(mapRef.canMove(nextPos, this)) {
 			position = nextPos;
 		}
 	}
-		
+	
+	void harm() {
+		this.life--;
+		if (this.life == 0) {
+			this.destroy();
+		}
+	}
 
 	@Override
 	Point destroy() {
@@ -49,6 +58,13 @@ class Player extends Entity {
 		notifyObservers();
 		deleteObservers();
 		return null;
+	}
+
+	public void regen() {
+		if(this.life < MAX_LIFE) {
+			life++;
+		}
+		
 	}
 
 }

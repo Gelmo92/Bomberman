@@ -16,6 +16,8 @@ import java.util.Observer;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
+import game.Bonus.BonusType;
+
 
 class MapView extends JPanel implements Observer{
 
@@ -30,6 +32,10 @@ class MapView extends JPanel implements Observer{
 	private BufferedImage indestructibleWallImg = null;
 	private BufferedImage perimetralWallImg = null;
 	private BufferedImage chestImg = null;
+	private BufferedImage bonusMoveBombImg = null;
+	private BufferedImage bonusNumberBombImg = null;
+	private BufferedImage bonusLifeImg = null;
+	private BufferedImage bonusRateImg = null;
 	private BufferedImage bombImg = null;
 	private BufferedImage explosionImg1 = null;
 	private BufferedImage explosionImg2 = null;
@@ -84,14 +90,36 @@ class MapView extends JPanel implements Observer{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		/*
 		try {
-			chestImg = ImageIO.read(new File(""));
+			chestImg = ImageIO.read(new File("chest_4.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		*/
+		try {
+			bonusMoveBombImg = ImageIO.read(new File("bonus_move_bomb.jpg"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			bonusNumberBombImg = ImageIO.read(new File("bonus_number_bomb.jpg"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			bonusLifeImg = ImageIO.read(new File("bonus_life.jpg"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			bonusRateImg = ImageIO.read(new File("bonus_rate.jpg"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		try {
 			bombImg = ImageIO.read(new File("bomb.png"));
 		} catch (IOException e) {
@@ -198,10 +226,27 @@ class MapView extends JPanel implements Observer{
 				}
 			}
 		}
+		
+		if(myMap.myChests.size() != 0) {
+			for(Chest next : myMap.myChests) {
+				g.drawImage(chestImg, next.getPos().x, next.getPos().y, cell, cell, null);
+			}
+		}
+		
 		if(myMap.myBonus.size() != 0) {
-			g.setColor(Color.blue);
 			for(Bonus next : myMap.myBonus) {
-				g.fillRect(next.getPos().x, next.getPos().y, cell, cell);
+				if(next.getType() == BonusType.LIFE) {
+					g.drawImage(bonusLifeImg, next.getPos().x, next.getPos().y, cell, cell, null);
+				}
+				else if(next.getType() == BonusType.MOVE_BOMB) {
+					g.drawImage(bonusMoveBombImg, next.getPos().x, next.getPos().y, cell, cell, null);
+				}
+				else if(next.getType() == BonusType.NUMBER_BOMB) {
+					g.drawImage(bonusNumberBombImg, next.getPos().x, next.getPos().y, cell, cell, null);
+				}
+				else if(next.getType() == BonusType.RATE) {
+					g.drawImage(bonusRateImg, next.getPos().x, next.getPos().y, cell, cell, null);
+				}
 			}
 		}
 	}

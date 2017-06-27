@@ -9,11 +9,15 @@ import javax.swing.Timer;
 class Bomb extends Entity {
 
 	private Point pos;
+	private static boolean bonusMoveBomb = false;
+	private static int numberBomb = 1;
+	private static int droppedBombs = 0;
 	private int delay = 3000;  //milliseconds
 	Timer t;
 	
 	public Bomb(Point newPos) {
 		pos = newPos;
+		droppedBombs++;
 		ActionListener taskPerformer = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -40,6 +44,7 @@ class Bomb extends Entity {
 
 	@Override
 	Point destroy() {
+		droppedBombs--;
 		deleteObservers();
 		return this.getPos();
 		
@@ -52,4 +57,14 @@ class Bomb extends Entity {
 		
 	}
 
+	public static void increaseNumberBomb() {
+		numberBomb++;
+	}
+	public static int getDroppedBombs() {
+		return droppedBombs;
+	}
+
+	public static int getNumberBomb() {
+		return numberBomb;
+	}
 }
