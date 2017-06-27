@@ -11,7 +11,7 @@ class Player extends Entity {
 	private Point nextPos;
 	private Map mapRef;
 	private int life;
-	private final static int MAX_LIFE = 5;
+	private final static int MAX_LIFE = 3;
 	private static final int DELAY = 3100;  //milliseconds
 	Timer t;
 	private boolean invulnerable = false;
@@ -51,10 +51,8 @@ class Player extends Entity {
 		}
 		if(mapRef.canMove(nextPos, this)) {
 			position = nextPos;
-			if(this.direction != Direction.DEAD) {
-				this.direction = dir;
-				setFoot();
-			}
+			this.direction = dir;
+			setFoot();
 		}
 	}
 	
@@ -62,7 +60,6 @@ class Player extends Entity {
 		if(!this.invulnerable) {
 			this.life--;
 			if (this.life == 0) {
-				this.direction = Direction.DEAD;
 				this.destroy();
 			}
 			else {

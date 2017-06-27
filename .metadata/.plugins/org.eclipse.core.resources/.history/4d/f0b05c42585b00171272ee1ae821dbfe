@@ -258,18 +258,57 @@ class MapView extends JPanel implements Observer{
 				g.drawImage(bombImg, next.getPos().x, next.getPos().y, cell, cell, null);
 			}
 		}
-		
-			
-		g.setColor(Color.magenta);
-		if(myMap.myMobs.size() != 0) {
-			for(Mob next : myMap.myMobs) {
-				g.fillRect(next.getPos().x, next.getPos().y, cell, cell);
+		if(Map.playerAlive) {
+			BufferedImage playerImg = null;
+			Direction playerDir = Map.myPlayer.getDir();
+			switch(playerDir) {
+				case RIGHT:
+					if(Map.myPlayer.getFoot()) {
+						playerImg = playerRight2Img;
+					}
+					else {
+						playerImg = playerRight1Img;
+					}
+					break;
+				case DOWN:
+					if(Map.myPlayer.getFoot()) {
+						playerImg = playerFront2Img;
+					}
+					else {
+						playerImg = playerFront1Img;
+					}
+					break;
+				case LEFT:
+					if(Map.myPlayer.getFoot()) {
+						playerImg = playerLeft2Img;
+					}
+					else {
+						playerImg = playerLeft1Img;
+					}
+					break;
+				case UP:
+					if(Map.myPlayer.getFoot()) {
+						playerImg = playerBack2Img;
+					}
+					else {
+						playerImg = playerBack1Img;
+					}
+					break;
+				case NONE:
+					playerImg = playerFrontNoneImg;
+					break;
+				case DEAD:
+					playerImg = playerDeadImg;
+					Controller.gameOver();
+					break;
 			}
+			g.drawImage(playerImg, myMap.myPlayer.getPos().x, myMap.myPlayer.getPos().y, cell, cell, null);
+			
 		}
-		else {
-			Controller.gameOver();
+		g.setColor(Color.magenta);
+		for(Mob next : myMap.myMobs) {
+			g.fillRect(next.getPos().x, next.getPos().y, cell, cell);
 		}
-		
 		
 		
 		for(Wall next : myMap.myWalls) {
@@ -323,51 +362,6 @@ class MapView extends JPanel implements Observer{
 				}
 			}
 		}
-		BufferedImage playerImg = null;
-		Direction playerDir = Map.myPlayer.getDir();
-		switch(playerDir) {
-			case RIGHT:
-				if(Map.myPlayer.getFoot()) {
-					playerImg = playerRight2Img;
-				}
-				else {
-					playerImg = playerRight1Img;
-				}
-				break;
-			case DOWN:
-				if(Map.myPlayer.getFoot()) {
-					playerImg = playerFront2Img;
-				}
-				else {
-					playerImg = playerFront1Img;
-				}
-				break;
-			case LEFT:
-				if(Map.myPlayer.getFoot()) {
-					playerImg = playerLeft2Img;
-				}
-				else {
-					playerImg = playerLeft1Img;
-				}
-				break;
-			case UP:
-				if(Map.myPlayer.getFoot()) {
-					playerImg = playerBack2Img;
-				}
-				else {
-					playerImg = playerBack1Img;
-				}
-				break;
-			case NONE:
-				playerImg = playerFrontNoneImg;
-				break;
-			case DEAD:
-				playerImg = playerDeadImg;
-				Controller.gameOver();
-				break;
-		}
-		g.drawImage(playerImg, myMap.myPlayer.getPos().x, myMap.myPlayer.getPos().y, cell, cell, null);
-		System.out.println(myMap.myPlayer.getDir());
 		lifeLabel.setText("LIFE: " + myMap.myPlayer.getLife());
 		lifeLabel.setLocation(650, -350);
 		lifeLabel.setVisible(true);
