@@ -1,6 +1,7 @@
 package game;
 
 import java.awt.Point;
+import java.util.Random;
 
 class Mob extends Entity {
 	
@@ -8,6 +9,8 @@ class Mob extends Entity {
 	Point nextPos;
 	private int direction = 0;
 	private Map mapRef;
+	private Direction[]directions=Direction.values();
+	private Random random = null;
 	
 	public Mob(Point firstMobPos, Map mapRef) {
 		position = firstMobPos;
@@ -20,21 +23,24 @@ class Mob extends Entity {
 	}
 
 	@Override
-	void move(int movement, int direction) {
+	void move(int movement, Direction direction) {
 		nextPos = new Point(position);
-		int newDirection =(int)(Math.random()*4+1);
+		random = new Random();
+		Direction newDirection = randomDirection();
+		
+		
 		for(int counter = 0; counter < 4; counter++) {
 			switch(newDirection) {
-				case 1:
+				case RIGHT:
 					nextPos.x += movement;//*MapView.cell;
 					break;
-				case 2:
+				case DOWN:
 					nextPos.y += movement;//*MapView.cell;
 					break;
-				case 3:
+				case LEFT:
 					nextPos.x -= movement;//*MapView.cell;
 					break;
-				case 4:
+				case UP:
 					nextPos.y -= movement;//*MapView.cell;
 					break;
 				}
@@ -44,11 +50,19 @@ class Mob extends Entity {
 			}
 			else {
 				nextPos.setLocation(position);
-				if(newDirection < 4) {
-					newDirection++;
-				}
-				else {
-					newDirection = 1;
+				switch(newDirection) {
+					case RIGHT:
+						newDirection = Direction.DOWN;
+						break;
+					case DOWN:
+						newDirection = Direction.LEFT;
+						break;
+					case LEFT:
+						newDirection = Direction.UP;
+						break;
+					case UP:
+						newDirection = Direction.RIGHT;
+						break;
 				}
 			}
 		}
@@ -120,6 +134,10 @@ class Mob extends Entity {
 		}*/
 	}
 
+	private Direction randomDirection(){
+	     return directions[random.nextInt(directions.length)];
+	}
+	
 	@Override
 	Point destroy() {
 		deleteObservers();

@@ -32,11 +32,11 @@ public class Explosion extends Entity {
 	}
 
 	private void burn(Point firstPosition, int explosionRate) {
-		move(explosionRate,0);
-		move(explosionRate,1);
-		move(explosionRate,2);
-		move(explosionRate,3);
-		move(explosionRate,4);
+		move(explosionRate,Direction.NONE);
+		move(explosionRate,Direction.UP);
+		move(explosionRate,Direction.DOWN);
+		move(explosionRate,Direction.LEFT);
+		move(explosionRate,Direction.RIGHT);
 		
 	}
 
@@ -47,23 +47,23 @@ public class Explosion extends Entity {
 	}
 
 	@Override
-	void move(int movement, int direction) {
+	void move(int movement, Direction direction) {
 		Point pos = new Point(propagation.get(0));
 		for(int i = 0; movement > i; i++) {
 			Point nextPos = new Point(pos);
 			switch(direction) {
-			case 0:
+			case NONE:
 				break;
-			case 1:
+			case RIGHT:
 				nextPos.x += MapView.cell;
 				break;
-			case 2:
+			case DOWN:
 				nextPos.y += MapView.cell;
 				break;
-			case 3:
+			case LEFT:
 				nextPos.x -= MapView.cell;
 				break;
-			case 4:
+			case UP:
 				nextPos.y -= MapView.cell;
 				break;
 			}

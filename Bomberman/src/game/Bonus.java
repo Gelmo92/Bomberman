@@ -42,7 +42,7 @@ public class Bonus extends Entity {
 	}
 
 	@Override
-	void move(int movement, int direction) {
+	void move(int movement, Direction direction) {
 		// TODO Auto-generated method stub
 
 	}

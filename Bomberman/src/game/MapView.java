@@ -20,6 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import game.Bonus.BonusType;
+import game.Entity.Direction;
 
 
 class MapView extends JPanel implements Observer{
@@ -29,7 +30,16 @@ class MapView extends JPanel implements Observer{
 
 	private Map myMap = null;
 	private BufferedImage backgroundImg = null;
-	private BufferedImage playerImg = null;
+	private BufferedImage playerFrontNoneImg = null;
+	private BufferedImage playerFront1Img = null;
+	private BufferedImage playerFront2Img = null;
+	private BufferedImage playerBack1Img = null;
+	private BufferedImage playerBack2Img = null;
+	private BufferedImage playerDeadImg = null;
+	private BufferedImage playerLeft1Img = null;
+	private BufferedImage playerLeft2Img = null;
+	private BufferedImage playerRight1Img = null;
+	private BufferedImage playerRight2Img = null;
 	private BufferedImage mobImg = null;
 	private BufferedImage destructibleWallImg = null;
 	private BufferedImage indestructibleWallImg = null;
@@ -66,7 +76,61 @@ class MapView extends JPanel implements Observer{
 	
 	private void loadImages() {
 		try {
-			playerImg = ImageIO.read(new File("bomberman1.png"));
+			playerFrontNoneImg = ImageIO.read(new File("pg_front_start.JPG"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			playerFront1Img = ImageIO.read(new File("pg_front_1.JPG"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			playerFront2Img = ImageIO.read(new File("pg_front_2.JPG"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			playerBack1Img = ImageIO.read(new File("pg_back_1.JPG"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			playerBack2Img = ImageIO.read(new File("pg_back_2.JPG"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			playerDeadImg = ImageIO.read(new File("pg_dead.JPG"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			playerLeft1Img = ImageIO.read(new File("pg_left_1.JPG"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			playerLeft2Img = ImageIO.read(new File("pg_left_2.JPG"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			playerRight1Img = ImageIO.read(new File("pg_right_1.JPG"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			playerRight2Img = ImageIO.read(new File("pg_right_2.JPG"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -195,7 +259,48 @@ class MapView extends JPanel implements Observer{
 			}
 		}
 		if(Map.playerAlive) {
-			//g.fillRect(myMap.myPlayer.getPos().x, myMap.myPlayer.getPos().y, cell, cell);
+			BufferedImage playerImg = null;
+			Direction playerDir = Map.myPlayer.getDir();
+			switch(playerDir) {
+				case RIGHT:
+					if(Map.myPlayer.getFoot()) {
+						playerImg = playerRight2Img;
+					}
+					else {
+						playerImg = playerRight1Img;
+					}
+					break;
+				case DOWN:
+					if(Map.myPlayer.getFoot()) {
+						playerImg = playerFront2Img;
+					}
+					else {
+						playerImg = playerFront1Img;
+					}
+					break;
+				case LEFT:
+					if(Map.myPlayer.getFoot()) {
+						playerImg = playerLeft2Img;
+					}
+					else {
+						playerImg = playerLeft1Img;
+					}
+					break;
+				case UP:
+					if(Map.myPlayer.getFoot()) {
+						playerImg = playerBack2Img;
+					}
+					else {
+						playerImg = playerBack1Img;
+					}
+					break;
+				case NONE:
+					playerImg = playerFrontNoneImg;
+					break;
+				case DEAD:
+					playerImg = playerDeadImg;
+					break;
+			}
 			g.drawImage(playerImg, myMap.myPlayer.getPos().x, myMap.myPlayer.getPos().y, cell, cell, null);
 			
 		}

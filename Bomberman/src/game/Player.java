@@ -15,7 +15,10 @@ class Player extends Entity {
 	private static final int DELAY = 3000;  //milliseconds
 	Timer t;
 	private boolean invulnerable = false;
-
+	private boolean leftFoot = true;
+	
+	private Direction direction = Direction.NONE;
+	
 	public Player(Point firstPlayerPos, Map mapRef) {
 		position = firstPlayerPos;
 		this.life = MAX_LIFE;
@@ -30,24 +33,26 @@ class Player extends Entity {
 	}
 
 	@Override
-	void move(int movement, int direction) {
+	void move(int movement, Direction dir) {
 		nextPos = new Point(position);
-		switch(direction) {
-		case 1:
+		switch(dir) {
+		case RIGHT:
 			nextPos.x += movement;//*MapView.cell;
 			break;
-		case 2:
+		case DOWN:
 			nextPos.y += movement;//*MapView.cell;
 			break;
-		case 3:
+		case LEFT:
 			nextPos.x -= movement;//*MapView.cell;
 			break;
-		case 4:
+		case UP:
 			nextPos.y -= movement;//*MapView.cell;
 			break;
 		}
 		if(mapRef.canMove(nextPos, this)) {
 			position = nextPos;
+			this.direction = dir;
+			setFoot();
 		}
 	}
 	
@@ -63,6 +68,7 @@ class Player extends Entity {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						setInvulnerable();
+						mapRef.canMove(position, mapRef.myPlayer);
 									}
 				  };
 				  t = new Timer(DELAY, taskPerformer);
@@ -98,6 +104,22 @@ class Player extends Entity {
 		}
 		else {
 			invulnerable = true;
+		}
+	}
+
+	public Direction getDir() {
+		return this.direction;
+	}
+	
+	public boolean getFoot() {
+		return this.leftFoot;
+	}
+	private void setFoot() {
+		if(leftFoot) {
+			leftFoot = false;
+		}
+		else {
+			leftFoot = true;
 		}
 	}
 }
