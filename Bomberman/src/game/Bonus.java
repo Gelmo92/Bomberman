@@ -9,7 +9,7 @@ import javax.swing.Timer;
 public class Bonus extends Entity {
 
 	private Point position;
-	private int delay = 20000;  //milliseconds
+	private static final int DELAY = 20000;  //milliseconds
 	Timer t;
 	
 	enum BonusType {
@@ -31,7 +31,7 @@ public class Bonus extends Entity {
 				notifyObservers();
 							}
 		  };
-		  t = new Timer(delay, taskPerformer);
+		  t = new Timer(DELAY, taskPerformer);
 		  t.setRepeats(false);
 		  t.start();
 	}
@@ -49,6 +49,7 @@ public class Bonus extends Entity {
 
 	@Override
 	Point destroy() {
+		t.stop();
 		deleteObservers();
 		return null;
 	}
@@ -63,6 +64,8 @@ public class Bonus extends Entity {
 				break;
 			case LIFE:
 				Map.myPlayer.regen();
+			case MOVE_BOMB:
+				
 		}
 		
 	}

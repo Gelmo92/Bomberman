@@ -10,7 +10,7 @@ import javax.swing.Timer;
 public class Explosion extends Entity {
 
 	ArrayList<Point> propagation;
-	private int delay = 3000;  //milliseconds
+	private static final int DELAY = 3000;  //milliseconds
 	private Map mapRef;
 	private static int explosionRate = 1;
 	
@@ -26,7 +26,7 @@ public class Explosion extends Entity {
 				notifyObservers();
 							}
 		  };
-		  Timer timer = new Timer(delay, taskPerformer);
+		  Timer timer = new Timer(DELAY, taskPerformer);
 		  timer.setRepeats(false);
 		  timer.start();
 	}

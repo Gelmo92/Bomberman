@@ -3,6 +3,7 @@ package game;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -14,7 +15,9 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.imageio.ImageIO;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import game.Bonus.BonusType;
 
@@ -42,6 +45,7 @@ class MapView extends JPanel implements Observer{
 	private BufferedImage grassImg = null;
 	private BufferedImage burntImg = null;
 	private boolean flame = true;
+	private JLabel lifeLabel;
 	
 	public final static int cell = 40;
 	
@@ -54,6 +58,9 @@ class MapView extends JPanel implements Observer{
 		for(Mob next : myMap.myMobs) {
 			next.addObserver(this);
 		}
+		lifeLabel = new JLabel();
+		this.add(lifeLabel);
+		lifeLabel.setFont(new Font("Verdana",1,20));
 		repaint();
 	}
 	
@@ -249,6 +256,10 @@ class MapView extends JPanel implements Observer{
 				}
 			}
 		}
+		lifeLabel.setText("LIFE: " + myMap.myPlayer.getLife());
+		lifeLabel.setLocation(650, -350);
+		lifeLabel.setVisible(true);
+		lifeLabel.validate();
 	}
 	
 	/*@Override

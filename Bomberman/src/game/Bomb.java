@@ -12,7 +12,7 @@ class Bomb extends Entity {
 	private static boolean bonusMoveBomb = false;
 	private static int numberBomb = 1;
 	private static int droppedBombs = 0;
-	private int delay = 3000;  //milliseconds
+	private static final int DELAY = 3000;  //milliseconds
 	Timer t;
 	
 	public Bomb(Point newPos) {
@@ -25,7 +25,7 @@ class Bomb extends Entity {
 				notifyObservers();
 							}
 		  };
-		  t = new Timer(delay, taskPerformer);
+		  t = new Timer(DELAY, taskPerformer);
 		  t.setRepeats(false);
 		  t.start();
 		

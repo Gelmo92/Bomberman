@@ -67,8 +67,9 @@ class Map extends Observable implements Observer{
 				case 'C':
 					myChests.add(new Chest(new Point(x*MapView.cell, y*MapView.cell)));
 					System.out.println("c " + myChests.get(myChests.size()-1).getPos());
-					myTerrain.add(new Terrain(new Point(myChests.get(myChests.size()-1).getPos())));
+					myTerrain.add(new Terrain(new Point(myChests.get(myChests.size()-1).getPos()),true));
 					System.out.println("t " + myTerrain.get(myTerrain.size()-1).getPos());
+					break;
 				case '-':
 					myTerrain.add(new Terrain(new Point(x*MapView.cell, y*MapView.cell)));
 					break;
@@ -129,7 +130,7 @@ class Map extends Observable implements Observer{
 		if(chestToDestroy != null) {
 			dropBonus(chestToDestroy.destroy());
 			myChests.remove(chestToDestroy);
-			return false;
+			return true;
 		}
 		Bonus bonusToDestroy = null;
 		for(Bonus next : myBonus) {
@@ -161,6 +162,7 @@ class Map extends Observable implements Observer{
 					if(nextPosition.intersects(new Rectangle(nextP, dimension))) {
 						if(obj instanceof Player) {
 							myPlayer.harm();
+							return true;
 						}
 						else {
 							Mob toDestroy = null;

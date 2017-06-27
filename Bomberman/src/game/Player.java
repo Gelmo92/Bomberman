@@ -1,6 +1,10 @@
 package game;
 
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.Timer;
 
 class Player extends Entity {
 	private Point position;
@@ -8,6 +12,9 @@ class Player extends Entity {
 	private Map mapRef;
 	private int life;
 	private final static int MAX_LIFE = 3;
+	private static final int DELAY = 3000;  //milliseconds
+	Timer t;
+	private boolean invulnerable = false;
 
 	public Player(Point firstPlayerPos, Map mapRef) {
 		position = firstPlayerPos;
@@ -45,10 +52,25 @@ class Player extends Entity {
 	}
 	
 	void harm() {
-		this.life--;
-		if (this.life == 0) {
-			this.destroy();
+		if(!this.invulnerable) {
+			this.life--;
+			if (this.life == 0) {
+				this.destroy();
+			}
+			else {
+				setInvulnerable();
+				ActionListener taskPerformer = new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						setInvulnerable();
+									}
+				  };
+				  t = new Timer(DELAY, taskPerformer);
+				  t.setRepeats(false);
+				  t.start();
+			}
 		}
+		
 	}
 
 	@Override
@@ -67,4 +89,15 @@ class Player extends Entity {
 		
 	}
 
+	public int getLife() {
+		return this.life;
+	}
+	private void setInvulnerable() {
+		if(invulnerable) {
+			invulnerable = false;
+		}
+		else {
+			invulnerable = true;
+		}
+	}
 }
