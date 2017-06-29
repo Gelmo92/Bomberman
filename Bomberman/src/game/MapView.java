@@ -84,7 +84,7 @@ class MapView extends JPanel implements Observer{
 	
 	private void loadImages() {
 		try {
-			playerFrontNoneImg = ImageIO.read(new File("pg_front_start.JPG"));
+			playerFrontNoneImg = ImageIO.read(new File("pg_front_start.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
