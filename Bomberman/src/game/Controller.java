@@ -14,6 +14,7 @@ class Controller implements KeyListener{
 
 	private Map myMap;
 	private MapView myMapView;
+	private final static int DELAY = 500;
 	public static Timer t;
 	static ActionListener taskPerformer;
 	//private static boolean move = true;
@@ -21,20 +22,20 @@ class Controller implements KeyListener{
 	public Controller(Map myMap, MapView myMapView) {
 		this.myMap = myMap;
 		this.myMapView = myMapView;
-		int delay = 500; //milliseconds
 		 	taskPerformer = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ArrayList<Mob> mobsList = new ArrayList<Mob>(Map.myMobs);
+				/*ArrayList<Mob> mobsList = new ArrayList<Mob>(Map.myMobs);
 				for(Mob next : mobsList) {
 					next.move(MapView.cell, Direction.NONE);
-				}
+				}*/
 				myMapView.update(myMap, e);
 				//Controller.move = true;
 				
 			}
 		  };
-		  t = new Timer(delay, taskPerformer);
+		  t = new Timer(DELAY, taskPerformer);
+		  myMap.synchMobs();
 		  t.start();
 	}
 

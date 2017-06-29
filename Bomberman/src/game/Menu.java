@@ -16,12 +16,14 @@ public class Menu implements ActionListener
 	private JFrame menu;
 	private GameFrame gameFrame;
 	private Map myMap = null;
+	public static final int WIDTH = 640;
+	public static final int HEIGHT = 480;
 	
 	public Menu() 
 	{
 		menu = new JFrame("Bomberman Menu");
 		menu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		menu.setSize(GameFrame.WIDTH, GameFrame.HEIGHT);
+		menu.setSize(WIDTH, HEIGHT);
 		menu.setResizable(false);
 		menu.setLocationRelativeTo(null);
 		menu = setUpMenu(menu);
@@ -34,16 +36,16 @@ public class Menu implements ActionListener
 	{
 		JPanel panel = new JPanel();
 		panel.setLayout(null);
-		panel.setBounds(0, 0, GameFrame.WIDTH, GameFrame.HEIGHT);
+		panel.setBounds(0, 0, WIDTH, HEIGHT);
 		JButton startGame = new JButton("START");
 		startGame.setFont(new Font("Tahoma", Font.BOLD, 16));
 		JLabel Author = new JLabel("Bomberman by Gelmotto-Pidello");
 		Author.setFont(new Font("Tahoma", Font.BOLD, 14));
 		startGame.addActionListener(this);
 		panel.add(startGame);
-		startGame.setBounds(GameFrame.WIDTH/2 - 130/2 , GameFrame.HEIGHT/2 - 60/2 , 130, 60);
+		startGame.setBounds(WIDTH/2 - 130/2 , HEIGHT/2 - 60/2 , 130, 60);
 		panel.add(Author);
-		Author.setBounds(GameFrame.WIDTH/2 - 500/5 ,GameFrame.HEIGHT - 60*2 , 500, 60);
+		Author.setBounds(WIDTH/2 - 500/5 ,HEIGHT - 60*2 , 500, 60);
 		menu.add(panel);
 		return menu;
 	}
@@ -62,14 +64,6 @@ public class Menu implements ActionListener
 				e2.printStackTrace();
 			}
 			gameFrame = new GameFrame(myMap, this);
-			/*Thread thread = new Thread() 
-		    {
-		        public void run() 
-		        {
-		        	Game.mainMethod();;
-		        }
-		    };
-		    thread.start();*/
 		}
 		
 	}

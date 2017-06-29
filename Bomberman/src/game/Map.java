@@ -6,6 +6,7 @@ import java.awt.Rectangle;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Scanner;
@@ -45,36 +46,29 @@ class Map extends Observable implements Observer{
 					myPlayer = new Player(new Point(x*MapView.cell, y*MapView.cell), this);
 					myTerrain.add(new Terrain(new Point(myPlayer.getPos())));
 					playerAlive = true;
-					System.out.println("Giocatore creato in posizione " + x +", " + y);
 					break;
 				case 'M':
 					myMobs.add(new Mob(new Point(x*MapView.cell, y*MapView.cell), this));
 					myTerrain.add(new Terrain(new Point(myMobs.get(myMobs.size()-1).getPos())));
-					System.out.println("Mob creato in posizione " + x +", " + y);
 					break;
 				case 'W':
 					myWalls.add(new Wall(new Point(x*MapView.cell, y*MapView.cell), false, false));
-					System.out.println("Muro creato in posizione " + x +", " + y);
 					break;
 				case 'w':
 					myWalls.add(new Wall(new Point(x*MapView.cell, y*MapView.cell), true, false));
-					System.out.println("Muro creato in posizione " + x +", " + y);
 					break;
 				case 'p':
 					myWalls.add(new Wall(new Point(x*MapView.cell, y*MapView.cell), false, true));
-					System.out.println("Muro creato in posizione " + x +", " + y);
 					break;
 				case 'C':
 					myChests.add(new Chest(new Point(x*MapView.cell, y*MapView.cell)));
-					System.out.println("c " + myChests.get(myChests.size()-1).getPos());
 					myTerrain.add(new Terrain(new Point(myChests.get(myChests.size()-1).getPos()),true));
-					System.out.println("t " + myTerrain.get(myTerrain.size()-1).getPos());
 					break;
 				case '-':
 					myTerrain.add(new Terrain(new Point(x*MapView.cell, y*MapView.cell)));
 					break;
 				default:
-					System.out.print(currentLine.charAt(x));
+					System.out.print(currentLine.charAt(x));//IMPLEMENTARE ERRORE
 					break;
 				}
 			}
@@ -85,7 +79,7 @@ class Map extends Observable implements Observer{
 		notifyObservers();
 	}
 	
-	boolean canMove(Point nextPos, Object obj) {
+	synchronized boolean canMove(Point nextPos, Object obj) {
 		Rectangle nextPosition = new Rectangle(nextPos, dimension);
 		for(Wall next : myWalls) {
 			Rectangle wall = new Rectangle(next.getPos(), dimension);
@@ -198,27 +192,55 @@ class Map extends Observable implements Observer{
 				}
 			}
 		}
-		if(obj instanceof Player || obj instanceof Explosion) {
+		
 			Mob toDestroy = null;
-			for(Mob next : myMobs) {
+			Iterator<Mob> mobIter = myMobs.iterator();
+			while (mobIter.hasNext()) {
+				toDestroy = mobIter.next();
+				Rectangle mob = new Rectangle(toDestroy.getPos(), dimension);
+				if(nextPosition.intersects(mob)) {
+					if(obj instanceof Player) {
+						myPlayer.harm();
+						return false;
+					}
+					else if(obj instanceof Bomb) {
+						return false;
+					}
+					else if(obj instanceof Mob) {
+						return false;
+					}
+					else if(obj instanceof Explosion){
+						myPlayer.addScore(toDestroy);
+						toDestroy.destroy();
+						mobIter.remove();
+					}
+				}
+			}
+			/*for(Mob next : myMobs) {
 				Rectangle mob = new Rectangle(next.getPos(), dimension);
 				if(nextPosition.intersects(mob)) {
 					if(obj instanceof Player) {
 						myPlayer.harm();
 						return false;
 					}
-					else {
+					else if(obj instanceof Bomb) {
+						return false;
+					}
+					else if(obj instanceof Mob) {
+						return false;
+					}
+					else if(obj instanceof Explosion){
 						toDestroy = next;
 					}
 				}
-			}
+			
 			if(toDestroy != null) {
 				myPlayer.addScore(toDestroy);
 				toDestroy.destroy();
 				myMobs.remove(toDestroy);
 				//return false;
 			}
-		}
+		}*/
 		
 		
 		return true;
@@ -281,6 +303,13 @@ class Map extends Observable implements Observer{
 			}
 		}
 		return false;
+	}
+
+	public void synchMobs() {
+		for(Mob next : myMobs) {
+			Controller.t.addActionListener(next);
+		}
+		
 	}
 
 }

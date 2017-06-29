@@ -1,23 +1,19 @@
 package game;
 
 import java.awt.BorderLayout;
-import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.imageio.ImageIO;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 
 import game.Bonus.BonusType;
 import game.Entity.Direction;
@@ -29,7 +25,6 @@ class MapView extends JPanel implements Observer{
 	private static final long serialVersionUID = -5792337655989052257L;
 
 	private Map myMap = null;
-	private BufferedImage backgroundImg = null;
 	private BufferedImage playerFrontNoneImg = null;
 	private BufferedImage playerFront1Img = null;
 	private BufferedImage playerFront2Img = null;
@@ -79,202 +74,47 @@ class MapView extends JPanel implements Observer{
 		lifeAndScoreLabel = new JLabel();
 		this.add(lifeAndScoreLabel);
 		lifeAndScoreLabel.setFont(new Font("Verdana",1,25));
+		this.setBackground(Color.black);
 		repaint();
 	}
 	
 	private void loadImages() {
 		try {
 			playerFrontNoneImg = ImageIO.read(new File("pg_front_start.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			playerFront1Img = ImageIO.read(new File("pg_front_1.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			playerFront2Img = ImageIO.read(new File("pg_front_2.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			playerBack1Img = ImageIO.read(new File("pg_back_1.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			playerBack2Img = ImageIO.read(new File("pg_back_2.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			playerDeadImg = ImageIO.read(new File("pg_dead.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			playerLeft1Img = ImageIO.read(new File("pg_left_1.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			playerLeft2Img = ImageIO.read(new File("pg_left_2.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			playerRight1Img = ImageIO.read(new File("pg_right_1.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			playerRight2Img = ImageIO.read(new File("pg_right_2.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
-		
-		try {
 			mobFront1Img = ImageIO.read(new File("Mob_front_1.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			mobFront2Img = ImageIO.read(new File("Mob_front_2.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			mobBack1Img = ImageIO.read(new File("Mob_back_1.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			mobBack2Img = ImageIO.read(new File("Mob_back_2.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			mobLeft1Img = ImageIO.read(new File("Mob_left_1.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			mobLeft2Img = ImageIO.read(new File("Mob_left_2.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			mobRight1Img = ImageIO.read(new File("Mob_right_1.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			mobRight2Img = ImageIO.read(new File("Mob_right_2.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
-		try {
 			destructibleWallImg = ImageIO.read(new File("muro_distruttibile_2.jpg"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			indestructibleWallImg = ImageIO.read(new File("muro_non_distruttibile_2.jpg"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			perimetralWallImg = ImageIO.read(new File("muro_perimetrale_3.jpg"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			chestImg = ImageIO.read(new File("chest_4.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			bonusMoveBombImg = ImageIO.read(new File("bonus_move_bomb.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			bonusNumberBombImg = ImageIO.read(new File("bonus_number_bomb.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			bonusLifeImg = ImageIO.read(new File("bonus_life.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			bonusRateImg = ImageIO.read(new File("bonus_rate.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			bombImg = ImageIO.read(new File("bomb.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			explosionImg1 = ImageIO.read(new File("flame_1.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			explosionImg2 = ImageIO.read(new File("flame_2.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			grassImg = ImageIO.read(new File("grass_3.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
 			burntImg = ImageIO.read(new File("burnt_3.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
 
 	@Override
@@ -465,7 +305,7 @@ class MapView extends JPanel implements Observer{
 		else {
 			g.drawImage(playerImg, myMap.myPlayer.getPos().x, myMap.myPlayer.getPos().y, cell, cell, null);
 		}
-		lifeAndScoreLabel.setText("<html><font color='red'>LIFE: " + myMap.myPlayer.getLife() + "</font><br><br>SCORE: " + myMap.myPlayer.getScore() + "</html>");
+		lifeAndScoreLabel.setText("<html><font color='red'>LIFE: " + myMap.myPlayer.getLife() + "</font><br><br><font color='white'>SCORE: " + myMap.myPlayer.getScore() + "</font></html>");
 		lifeAndScoreLabel.setLocation(650, -300);
 		lifeAndScoreLabel.setVisible(true);
 		lifeAndScoreLabel.validate();

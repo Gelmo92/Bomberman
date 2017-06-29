@@ -31,7 +31,7 @@ class Bomb extends Entity implements ActionListener{
 			public void actionPerformed(ActionEvent e) {
 				setChanged();
 				notifyObservers();
-							}
+			}
 		  };
 		  t = new Timer(DELAY, taskPerformer);
 		  t.setRepeats(false);
