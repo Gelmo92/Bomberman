@@ -3,6 +3,8 @@ package game;
 import java.awt.Point;
 import java.util.Observable;
 
+import game.Bonus.BonusType;
+
 abstract class Entity extends Observable{
 	
 	enum Direction {
@@ -12,6 +14,9 @@ abstract class Entity extends Observable{
 		RIGHT,
 		NONE,
 		DEAD;
+		public static Direction getRandom() {
+	        return values()[(int) (Math.random() * (values().length -2))];
+	    }
 	}
 	
 	abstract Point getPos();

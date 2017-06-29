@@ -40,7 +40,14 @@ class MapView extends JPanel implements Observer{
 	private BufferedImage playerLeft2Img = null;
 	private BufferedImage playerRight1Img = null;
 	private BufferedImage playerRight2Img = null;
-	private BufferedImage mobImg = null;
+	private BufferedImage mobFront1Img = null;
+	private BufferedImage mobFront2Img = null;
+	private BufferedImage mobBack1Img = null;
+	private BufferedImage mobBack2Img = null;
+	private BufferedImage mobLeft1Img = null;
+	private BufferedImage mobLeft2Img = null;
+	private BufferedImage mobRight1Img = null;
+	private BufferedImage mobRight2Img = null;
 	private BufferedImage destructibleWallImg = null;
 	private BufferedImage indestructibleWallImg = null;
 	private BufferedImage perimetralWallImg = null;
@@ -136,14 +143,59 @@ class MapView extends JPanel implements Observer{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		/*
+		
+		
+		
 		try {
-			mobImg = ImageIO.read(new File(""));
+			mobFront1Img = ImageIO.read(new File("Mob_front_1.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		*/
+		try {
+			mobFront2Img = ImageIO.read(new File("Mob_front_2.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			mobBack1Img = ImageIO.read(new File("Mob_back_1.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			mobBack2Img = ImageIO.read(new File("Mob_back_2.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			mobLeft1Img = ImageIO.read(new File("Mob_left_1.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			mobLeft2Img = ImageIO.read(new File("Mob_left_2.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			mobRight1Img = ImageIO.read(new File("Mob_right_1.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			mobRight2Img = ImageIO.read(new File("Mob_right_2.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 		try {
 			destructibleWallImg = ImageIO.read(new File("muro_distruttibile_2.jpg"));
 		} catch (IOException e) {
@@ -253,18 +305,52 @@ class MapView extends JPanel implements Observer{
 				g.fillRect(next.getPos().x, next.getPos().y, cell, cell);
 			}
 		}
-		//g.drawImage(backgroundImg, 0, 0, getWidth(), getWidth(), null);
+		
 		if(myMap.myBombs.size() != 0) {
 			for(Bomb next : myMap.myBombs) {
 				g.drawImage(bombImg, next.getPos().x, next.getPos().y, cell, cell, null);
 			}
 		}
 		
-			
-		g.setColor(Color.magenta);
 		if(myMap.myMobs.size() != 0) {
 			for(Mob next : myMap.myMobs) {
-				g.fillRect(next.getPos().x, next.getPos().y, cell, cell);
+				BufferedImage mobImg = null;
+				Direction mobDir = next.getDir();
+				switch(mobDir) {
+					case RIGHT:
+						if(next.getFoot()) {
+							mobImg = mobRight2Img;
+						}
+						else {
+							mobImg = mobRight1Img;
+						}
+						break;
+					case DOWN:
+						if(next.getFoot()) {
+							mobImg = mobFront2Img;
+						}
+						else {
+							mobImg = mobFront1Img;
+						}
+						break;
+					case LEFT:
+						if(next.getFoot()) {
+							mobImg = mobLeft2Img;
+						}
+						else {
+							mobImg = mobLeft1Img;
+						}
+						break;
+					case UP:
+						if(next.getFoot()) {
+							mobImg = mobBack2Img;
+						}
+						else {
+							mobImg = mobBack1Img;
+						}
+						break;
+				}
+				g.drawImage(mobImg, next.getPos().x, next.getPos().y, cell, cell, null);
 			}
 		}
 		else {

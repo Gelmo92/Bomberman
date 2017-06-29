@@ -3,11 +3,14 @@ package game;
 import java.awt.Point;
 import java.util.Random;
 
+import game.Entity.Direction;
+
 class Mob extends Entity {
 	
 	private Point position;
 	Point nextPos;
-	private int direction = 0;
+	private Direction direction = Direction.UP;
+	private boolean leftFoot = true;
 	private static Map mapRef = null;
 	private Direction[]directions=Direction.values();
 	private Random random = null;
@@ -27,10 +30,8 @@ class Mob extends Entity {
 	@Override
 	void move(int movement, Direction direction) {
 		nextPos = new Point(position);
-		random = new Random();
-		Direction newDirection = randomDirection();
-		
-		
+		Direction newDirection = Direction.getRandom();
+				
 		for(int counter = 0; counter < 4; counter++) {
 			switch(newDirection) {
 				case RIGHT:
@@ -46,11 +47,18 @@ class Mob extends Entity {
 					nextPos.y -= movement;//*MapView.cell;
 					break;
 				}
+			this.direction = newDirection;
+			setFoot();
 			if(mapRef.canMove(nextPos, this)) {
+				
 				position = nextPos;
+				
 				break;
 			}
 			else {
+				nextPos.setLocation(position);
+			}
+			/*else {
 				nextPos.setLocation(position);
 				switch(newDirection) {
 					case RIGHT:
@@ -66,78 +74,25 @@ class Mob extends Entity {
 						newDirection = Direction.RIGHT;
 						break;
 				}
-			}
-		}
-		
-		/*if(this.direction == 0) {
-			while(this.direction == 0) {
-				direction++;
-				switch(direction) {
-				case 1:
-					nextPos.x += movement;//*MapView.cell;
-					break;
-				case 2:
-					nextPos.y += movement;//*MapView.cell;
-					break;
-				case 3:
-					nextPos.x -= movement;//*MapView.cell;
-					break;
-				case 4:
-					nextPos.y -= movement;//*MapView.cell;
-					break;
-				}
-				if(Map.canMove(nextPos, 2)) {
-					position = nextPos;
-					this.direction = direction;
-				}
-				else {
-					nextPos = position;
-				}
-			}
-		}
-		else{
-			switch(this.direction) {
-			case 1:
-				nextPos.x += movement;//*MapView.cell;
-				break;
-			case 2:
-				nextPos.y += movement;//*MapView.cell;
-				break;
-			case 3:
-				nextPos.x -= movement;//*MapView.cell;
-				break;
-			case 4:
-				nextPos.y -= movement;//*MapView.cell;
-				break;
-			}
-			if(Map.canMove(nextPos, 2)) {
-				position = nextPos;
-			}
-			else{
-				nextPos = position;
-				int newDirection =(int)(Math.random()*4+1);
-				System.out.println(newDirection);
-				switch(newDirection) {
-				case 1:
-					this.direction = 3;
-					break;
-				case 2:
-					this.direction = 4;
-					break;
-				case 3:
-					this.direction = 1;
-					break;
-				case 4:
-					this.direction = 2;
-					break;
+			}*/
 			
-				}
-			}
-		}*/
+		}
 	}
-
-	private Direction randomDirection(){
-	     return directions[random.nextInt(directions.length)];
+	
+	public Direction getDir() {
+		return this.direction;
+	}
+	
+	public boolean getFoot() {
+		return this.leftFoot;
+	}
+	private void setFoot() {
+		if(leftFoot) {
+			leftFoot = false;
+		}
+		else {
+			leftFoot = true;
+		}
 	}
 	
 	@Override
