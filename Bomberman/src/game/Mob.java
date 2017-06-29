@@ -46,6 +46,8 @@ class Mob extends Entity {
 				case UP:
 					nextPos.y -= movement;//*MapView.cell;
 					break;
+			default:
+				break;
 				}
 			this.direction = newDirection;
 			setFoot();

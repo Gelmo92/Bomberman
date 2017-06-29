@@ -3,6 +3,8 @@ package game;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Point;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -15,8 +17,12 @@ public class GameFrame extends JFrame{
 	 * 
 	 */
 	private static final long serialVersionUID = -8213639328882558634L;
+	public static final int WIDTH = 640;
+	public static final int HEIGHT = 480;
+	private Menu myMenu;
 
-	public GameFrame(Map myMap) {
+	public GameFrame(Map myMap, Menu menu) {
+		myMenu = menu;
 		MapView myMapView = new MapView(myMap);
 		Controller myController = new Controller(myMap, myMapView);
 		addKeyListener(myController);
@@ -24,22 +30,17 @@ public class GameFrame extends JFrame{
 		Container cp = getContentPane();
 		 cp.setLayout(new BorderLayout());	
 		 cp.add(myMapView, BorderLayout.CENTER);	
-		 setDefaultCloseOperation(EXIT_ON_CLOSE);
+		 this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		 setTitle("Bomberman");
 		 setSize(1000, 1000);;
 		 setVisible(true);	
+		 addWindowListener(new WindowAdapter()
+	        {
+	            @Override
+	            public void windowClosing(WindowEvent e)
+	            {
+	                myMenu.reset();
+	            }
+	        });
 	}
-	
-	
-	public static void main(String[] args) {
-		Map myMap = null;
-		try {
-			myMap = new Map();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		GameFrame myGameFrame = new GameFrame(myMap);
-	}
-
 }
