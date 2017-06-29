@@ -14,7 +14,7 @@ class Controller implements KeyListener{
 
 	private Map myMap;
 	private MapView myMapView;
-	private static Timer t;
+	public static Timer t;
 	static ActionListener taskPerformer;
 	//private static boolean move = true;
 	

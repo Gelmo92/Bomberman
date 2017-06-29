@@ -11,13 +11,15 @@ public class Explosion extends Entity {
 
 	ArrayList<Point> propagation;
 	private static final int DELAY = 3000;  //milliseconds
-	private Map mapRef;
+	private static Map mapRef = null;
 	private static int explosionRate = 1;
 	
-	public Explosion(Point firstPosition, Map mapRef) {
+	public Explosion(Point firstPosition, Map map) {
 		propagation = new ArrayList<Point>();
 		propagation.add(firstPosition);
-		this.mapRef = mapRef;
+		if(mapRef == null) {
+			mapRef = map;
+		}
 		burn(firstPosition, explosionRate);
 		ActionListener taskPerformer = new ActionListener() {
 			@Override

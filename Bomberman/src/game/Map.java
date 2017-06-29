@@ -104,11 +104,20 @@ class Map extends Observable implements Observer{
 			for(Bomb next : myBombs) {
 				Rectangle bomb = new Rectangle(next.getPos(), dimension);
 				if(nextPosition.intersects(bomb)) {
-					if(obj instanceof Player || obj instanceof Mob) {
+					if(obj instanceof Player) {
+						if(Bomb.getCanMove()) {
+							next.move(MapView.cell, ((Player) obj).getDir());
+						}
 						return false;
 					}
-					else {
+					else if(obj instanceof Mob) {
+						return false;
+					}
+					else if(obj instanceof Explosion){
 						next.dominoEffect();
+						return false;
+					}
+					else if(obj instanceof Bomb) {
 						return false;
 					}
 				}
@@ -119,7 +128,7 @@ class Map extends Observable implements Observer{
 		for(Chest next : myChests) {
 			Rectangle chest = new Rectangle(next.getPos(), dimension);
 			if(nextPosition.intersects(chest)) {
-				if(obj instanceof Player || obj instanceof Mob) {
+				if(obj instanceof Player || obj instanceof Mob || obj instanceof Bomb) {
 					return false;
 				}
 				else {
@@ -128,6 +137,7 @@ class Map extends Observable implements Observer{
 			}
 		}
 		if(chestToDestroy != null) {
+			myPlayer.addScore(chestToDestroy);
 			dropBonus(chestToDestroy.destroy());
 			myChests.remove(chestToDestroy);
 			return true;
@@ -151,12 +161,13 @@ class Map extends Observable implements Observer{
 			}
 			else if (obj instanceof Player) {
 				bonusToDestroy.getBonus();
+				myPlayer.addScore(bonusToDestroy);
 				myBonus.remove(bonusToDestroy);
 				return true;
 			}
 			
 		}
-		if(obj instanceof Player || obj instanceof Mob) {
+		if(obj instanceof Player || obj instanceof Mob || obj instanceof Bomb) {
 			for(Explosion next : myExplosion) {
 				for(Point nextP : next.propagation) {
 					if(nextPosition.intersects(new Rectangle(nextP, dimension))) {
@@ -164,7 +175,11 @@ class Map extends Observable implements Observer{
 							myPlayer.harm();
 							return true;
 						}
-						else {
+						else if(obj instanceof Bomb) {
+							((Bomb) obj).dominoEffect();
+							return true;
+						}
+						else if(obj instanceof Mob){
 							Mob toDestroy = null;
 							for(Mob nextM : myMobs) {
 								if(nextM.nextPos.equals(nextPos)) {
@@ -172,6 +187,7 @@ class Map extends Observable implements Observer{
 								}
 							}
 							if(toDestroy != null) {
+								myPlayer.addScore(toDestroy);
 								toDestroy.destroy();
 								myMobs.remove(toDestroy);
 							}
@@ -197,6 +213,7 @@ class Map extends Observable implements Observer{
 				}
 			}
 			if(toDestroy != null) {
+				myPlayer.addScore(toDestroy);
 				toDestroy.destroy();
 				myMobs.remove(toDestroy);
 				//return false;
@@ -220,7 +237,7 @@ class Map extends Observable implements Observer{
 	}
 	void dropBomb() {
 		if(canDropBomb(myPlayer.getPos())) {
-			Bomb newBomb = new Bomb(myPlayer.getPos());
+			Bomb newBomb = new Bomb(myPlayer.getPos(),this);
 			myBombs.add(newBomb);
 			newBomb.addObserver(this);
 			setChanged();
@@ -229,7 +246,7 @@ class Map extends Observable implements Observer{
 	}
 
 	private void dropBonus(Point pos) {
-		Bonus newBonus = new Bonus(pos);
+		Bonus newBonus = new Bonus(pos, this);
 		myBonus.add(newBonus);
 		newBonus.addObserver(this);
 	}
@@ -256,6 +273,7 @@ class Map extends Observable implements Observer{
 		for(Wall next : myWalls) {
 			if(next.getPos().equals(nextPos)) {
 				if(next.destroyable) {
+					myPlayer.addScore(next);
 					myWalls.remove(next);
 					myTerrain.add(new Terrain(next.destroy(), true));
 					return true;

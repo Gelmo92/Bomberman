@@ -8,13 +8,15 @@ class Mob extends Entity {
 	private Point position;
 	Point nextPos;
 	private int direction = 0;
-	private Map mapRef;
+	private static Map mapRef = null;
 	private Direction[]directions=Direction.values();
 	private Random random = null;
 	
-	public Mob(Point firstMobPos, Map mapRef) {
+	public Mob(Point firstMobPos, Map map) {
 		position = firstMobPos;
-		this.mapRef = mapRef;
+		if(mapRef == null) {
+			mapRef = map;
+		}
 	}
 
 	@Override

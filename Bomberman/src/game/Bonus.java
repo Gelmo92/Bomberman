@@ -9,6 +9,7 @@ import javax.swing.Timer;
 public class Bonus extends Entity {
 
 	private Point position;
+	private static Map mapRef = null;
 	private static final int DELAY = 20000;  //milliseconds
 	Timer t;
 	
@@ -17,13 +18,19 @@ public class Bonus extends Entity {
 		MOVE_BOMB,
 		NUMBER_BOMB,
 		RATE;
+		public static BonusType getRandom() {
+	        return values()[(int) (Math.random() * (values().length -1)+1)];
+	    }
 	}
 	
 	private BonusType type;
 	
-	public Bonus(Point pos) {
+	public Bonus(Point pos, Map map) {
 		this.position = pos;
-		this.type = BonusType.LIFE;
+		if(mapRef == null) {
+			mapRef = map;
+		}
+		this.type = generateRandomBonus();
 		ActionListener taskPerformer = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -36,6 +43,22 @@ public class Bonus extends Entity {
 		  t.start();
 	}
 	
+	private static BonusType generateRandomBonus() {
+		BonusType bonus = null;
+		if(mapRef.myPlayer.getLife() < mapRef.myPlayer.MAX_LIFE) {
+			bonus = BonusType.LIFE;
+		}
+		else {
+			while (bonus == null) {
+				bonus = BonusType.getRandom();
+				if(bonus == BonusType.MOVE_BOMB && Bomb.getCanMove()) {
+					bonus = null;
+				}
+			}
+		}
+		return bonus;
+	}
+
 	@Override
 	Point getPos() {
 		return position;
@@ -64,7 +87,10 @@ public class Bonus extends Entity {
 				break;
 			case LIFE:
 				Map.myPlayer.regen();
+				break;
 			case MOVE_BOMB:
+				Bomb.setCanMove();
+				break;
 				
 		}
 		

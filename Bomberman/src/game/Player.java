@@ -9,9 +9,10 @@ import javax.swing.Timer;
 class Player extends Entity {
 	private Point position;
 	private Point nextPos;
-	private Map mapRef;
+	private static Map mapRef = null;
 	private int life;
-	private final static int MAX_LIFE = 5;
+	private int score;
+	public final static int MAX_LIFE = 3;
 	private static final int DELAY = 3100;  //milliseconds
 	Timer t;
 	private boolean invulnerable = false;
@@ -19,11 +20,13 @@ class Player extends Entity {
 	
 	private Direction direction = Direction.NONE;
 	
-	public Player(Point firstPlayerPos, Map mapRef) {
+	public Player(Point firstPlayerPos, Map map) {
 		position = firstPlayerPos;
 		this.life = MAX_LIFE;
-		this.mapRef = mapRef;
-		
+		this.score = 0;
+		if(mapRef == null) {
+			mapRef = map;
+		}
 	}
 
 	@Override
@@ -49,12 +52,12 @@ class Player extends Entity {
 			nextPos.y -= movement;//*MapView.cell;
 			break;
 		}
+		if(this.direction != Direction.DEAD) {
+			this.direction = dir;
+			setFoot();
+		}
 		if(mapRef.canMove(nextPos, this)) {
 			position = nextPos;
-			if(this.direction != Direction.DEAD) {
-				this.direction = dir;
-				setFoot();
-			}
 		}
 	}
 	
@@ -101,6 +104,11 @@ class Player extends Entity {
 	public int getLife() {
 		return this.life;
 	}
+	
+	public boolean getInvulnerable() {
+		return invulnerable;
+	}
+	
 	private void setInvulnerable() {
 		if(invulnerable) {
 			invulnerable = false;
@@ -125,4 +133,24 @@ class Player extends Entity {
 			leftFoot = true;
 		}
 	}
+
+	public int getScore() {
+		return this.score;
+	}
+	
+	public void addScore(Entity obj) {
+		if(obj instanceof Wall) {
+			this.score += 50;
+		}
+		else if(obj instanceof Mob) {
+			this.score += 200;
+		}
+		else if(obj instanceof Bonus) {
+			this.score += 100;
+		}
+		else if(obj instanceof Chest) {
+			this.score += 50;
+		}
+	}
+	
 }

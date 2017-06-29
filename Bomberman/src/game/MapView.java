@@ -54,8 +54,9 @@ class MapView extends JPanel implements Observer{
 	private BufferedImage explosionImg2 = null;
 	private BufferedImage grassImg = null;
 	private BufferedImage burntImg = null;
+	private boolean invulnerableRender = true;
 	private boolean flame = true;
-	private JLabel lifeLabel;
+	private JLabel lifeAndScoreLabel;
 	
 	public final static int cell = 40;
 	
@@ -68,9 +69,9 @@ class MapView extends JPanel implements Observer{
 		for(Mob next : myMap.myMobs) {
 			next.addObserver(this);
 		}
-		lifeLabel = new JLabel();
-		this.add(lifeLabel);
-		lifeLabel.setFont(new Font("Verdana",1,20));
+		lifeAndScoreLabel = new JLabel();
+		this.add(lifeAndScoreLabel);
+		lifeAndScoreLabel.setFont(new Font("Verdana",1,25));
 		repaint();
 	}
 	
@@ -366,12 +367,22 @@ class MapView extends JPanel implements Observer{
 				Controller.gameOver();
 				break;
 		}
-		g.drawImage(playerImg, myMap.myPlayer.getPos().x, myMap.myPlayer.getPos().y, cell, cell, null);
-		System.out.println(myMap.myPlayer.getDir());
-		lifeLabel.setText("LIFE: " + myMap.myPlayer.getLife());
-		lifeLabel.setLocation(650, -350);
-		lifeLabel.setVisible(true);
-		lifeLabel.validate();
+		if(myMap.myPlayer.getInvulnerable()) {
+			if(!invulnerableRender) {
+				invulnerableRender = true;
+			}
+			else {
+				g.drawImage(playerImg, myMap.myPlayer.getPos().x, myMap.myPlayer.getPos().y, cell, cell, null);
+				invulnerableRender = false;
+			}
+		}
+		else {
+			g.drawImage(playerImg, myMap.myPlayer.getPos().x, myMap.myPlayer.getPos().y, cell, cell, null);
+		}
+		lifeAndScoreLabel.setText("<html><font color='red'>LIFE: " + myMap.myPlayer.getLife() + "</font><br><br>SCORE: " + myMap.myPlayer.getScore() + "</html>");
+		lifeAndScoreLabel.setLocation(650, -300);
+		lifeAndScoreLabel.setVisible(true);
+		lifeAndScoreLabel.validate();
 	}
 	
 	/*@Override
