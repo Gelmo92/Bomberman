@@ -3,19 +3,14 @@ package game;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Random;
-
-import game.Entity.Direction;
 
 class Mob extends Entity implements ActionListener {
 	
 	private Point position;
 	Point nextPos;
-	private Direction direction = Direction.UP;
+	private Direction direction = Direction.NONE;
 	private boolean leftFoot = true;
-	private static Map mapRef = null;
-	private Direction[]directions=Direction.values();
-	private Random random = null;
+	private Map mapRef = null;
 	
 	public Mob(Point firstMobPos, Map map) {
 		position = firstMobPos;
@@ -35,16 +30,16 @@ class Mob extends Entity implements ActionListener {
 		Direction newDirection = Direction.getRandom();
 		switch(newDirection) {
 		case RIGHT:
-			nextPos.x += movement;//*MapView.cell;
+			nextPos.x += movement;
 			break;
 		case DOWN:
-			nextPos.y += movement;//*MapView.cell;
+			nextPos.y += movement;
 			break;
 		case LEFT:
-			nextPos.x -= movement;//*MapView.cell;
+			nextPos.x -= movement;
 			break;
 		case UP:
-			nextPos.y -= movement;//*MapView.cell;
+			nextPos.y -= movement;
 			break;
 		default:
 			break;
@@ -64,25 +59,26 @@ class Mob extends Entity implements ActionListener {
 		return this.leftFoot;
 	}
 	private void setFoot() {
-		if(leftFoot) {
-			leftFoot = false;
-		}
-		else {
-			leftFoot = true;
-		}
+		leftFoot = !leftFoot;
 	}
 	
 	@Override
-	Point destroy() {
+	void destroy() {
+		mapRef.controllerRef.getT().removeActionListener(this);
+		this.direction = Direction.DEAD;
+		setChanged();
+		notifyObservers();
 		deleteObservers();
-		return null;
-		
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		this.move(MapView.cell, this.direction);
+		this.move(MapView.CELL, this.direction);
 		
 	}
-
+	
+	@Override
+	public String toString() {
+		return "MOB";
+	}
 }

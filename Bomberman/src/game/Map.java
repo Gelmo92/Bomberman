@@ -2,7 +2,6 @@ package game;
 
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -10,26 +9,27 @@ import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Scanner;
+import javax.swing.Timer;
 
 
 class Map extends Observable implements Observer{
-
-	static ArrayList<Mob> myMobs;
-	static ArrayList<Wall> myWalls;
-	static ArrayList<Bomb> myBombs;
-	static ArrayList<Chest> myChests;
-	static ArrayList<Bonus> myBonus;
-	static ArrayList<Terrain> myTerrain;
-	static Player myPlayer;
-	static ArrayList<Explosion> myExplosion;
-	static Dimension dimension = new Dimension(MapView.cell, MapView.cell);
-	static boolean playerAlive;
 	
-	
-	
+	ArrayList<Mob> myMobs;
+	ArrayList<Wall> myWalls;
+	ArrayList<Bomb> myBombs;
+	ArrayList<Chest> myChests;
+	ArrayList<Bonus> myBonus;
+	ArrayList<Terrain> myTerrains;
+	Player myPlayer;
+	ArrayList<Explosion> myExplosion;
+	static final Dimension dimension = new Dimension(MapView.CELL, MapView.CELL);
+	private boolean playerAlive;
+	Controller controllerRef;
+	ArrayList<Timer> timers;
+	private static final String MAP_NAME = "map.txt";
 	
 	public Map() throws FileNotFoundException {
-		Scanner mapScan = new Scanner(new File("map.txt"));
+		Scanner mapScan = new Scanner(new File(MAP_NAME));
 		int y = 0;
 		myWalls = new ArrayList<Wall>();
 		myMobs = new ArrayList<Mob>();
@@ -37,215 +37,209 @@ class Map extends Observable implements Observer{
 		myBombs = new ArrayList<Bomb>();
 		myChests = new ArrayList<Chest>();
 		myBonus = new ArrayList<Bonus>();
-		myTerrain = new ArrayList<Terrain>();
+		myTerrains = new ArrayList<Terrain>();
+		timers = new ArrayList<Timer>();
 		while(mapScan.hasNextLine()) {
 			String currentLine = mapScan.nextLine();
 			for(int x = 0; x < currentLine.length(); x++) {
 				switch (currentLine.charAt(x)) {
 				case 'P':
-					myPlayer = new Player(new Point(x*MapView.cell, y*MapView.cell), this);
-					myTerrain.add(new Terrain(new Point(myPlayer.getPos())));
+					myPlayer = new Player(new Point(x*MapView.CELL, y*MapView.CELL), this);
+					myPlayer.addObserver(this);
 					playerAlive = true;
 					break;
 				case 'M':
-					myMobs.add(new Mob(new Point(x*MapView.cell, y*MapView.cell), this));
-					myTerrain.add(new Terrain(new Point(myMobs.get(myMobs.size()-1).getPos())));
+					Mob newMob = new Mob(new Point(x*MapView.CELL, y*MapView.CELL), this);
+					myMobs.add(newMob);
+					newMob.addObserver(this);
 					break;
 				case 'W':
-					myWalls.add(new Wall(new Point(x*MapView.cell, y*MapView.cell), false, false));
+					myWalls.add(new Wall(new Point(x*MapView.CELL, y*MapView.CELL), false, false));
 					break;
 				case 'w':
-					myWalls.add(new Wall(new Point(x*MapView.cell, y*MapView.cell), true, false));
+					myWalls.add(new Wall(new Point(x*MapView.CELL, y*MapView.CELL), true, false));
 					break;
 				case 'p':
-					myWalls.add(new Wall(new Point(x*MapView.cell, y*MapView.cell), false, true));
+					myWalls.add(new Wall(new Point(x*MapView.CELL, y*MapView.CELL), false, true));
 					break;
 				case 'C':
-					myChests.add(new Chest(new Point(x*MapView.cell, y*MapView.cell)));
-					myTerrain.add(new Terrain(new Point(myChests.get(myChests.size()-1).getPos()),true));
-					break;
+					myChests.add(new Chest(new Point(x*MapView.CELL, y*MapView.CELL)));
 				case '-':
-					myTerrain.add(new Terrain(new Point(x*MapView.cell, y*MapView.cell)));
-					break;
+					;
 				default:
-					System.out.print(currentLine.charAt(x));//IMPLEMENTARE ERRORE
-					break;
+					;
 				}
+				myTerrains.add(new Terrain(new Point(x*MapView.CELL, y*MapView.CELL)));
 			}
 			y++;
 		}
 		mapScan.close();
-		setChanged();
-		notifyObservers();
 	}
 	
-	synchronized boolean canMove(Point nextPos, Object obj) {
-		Rectangle nextPosition = new Rectangle(nextPos, dimension);
-		for(Wall next : myWalls) {
-			Rectangle wall = new Rectangle(next.getPos(), dimension);
-			if(nextPosition.intersects(wall)) {
+	boolean canMove(Point nextPos, Entity obj) {
+		
+		return checkWalls(nextPos, obj) &&
+			   checkBombs(nextPos, obj)&&
+			   checkMobs(nextPos,obj)&&
+			   checkExplosions(nextPos, obj)&&
+			   checkBonus(nextPos, obj)&&
+			   checkChests(nextPos, obj)&&
+			   checkPlayer(nextPos, obj);
+	}
+		
+	private boolean checkWalls(Point nextPos, Entity obj) {
+		
+		Iterator<Wall> wallIter = myWalls.iterator();
+		while(wallIter.hasNext()) {
+			if(wallIter.next().getPos().equals(nextPos)) {
 				return false;
 			}
 		}
-		
-		if(obj instanceof Mob || obj instanceof Explosion) {
-			if(nextPosition.intersects(new Rectangle(myPlayer.getPos(), dimension))) {
-				myPlayer.harm();
-			}
-		}
-		
-		if(myBombs != null) {
-			for(Bomb next : myBombs) {
-				Rectangle bomb = new Rectangle(next.getPos(), dimension);
-				if(nextPosition.intersects(bomb)) {
-					if(obj instanceof Player) {
+		return true;
+	}
+	
+	private boolean checkBombs(Point nextPos, Entity obj) {
+		Bomb nextBomb = null;
+		Iterator<Bomb> bombIter = myBombs.iterator();
+		while(bombIter.hasNext()) {
+			nextBomb = bombIter.next();
+			if(nextBomb.getPos().equals(nextPos)) {
+				switch(obj.toString()) {
+					case "PLAYER":
 						if(Bomb.getCanMove()) {
-							next.move(MapView.cell, ((Player) obj).getDir());
+							nextBomb.move(MapView.CELL, ((Player) obj).getDir());
 						}
+						break;
+					case "EXPLOSION":
+						nextBomb.dominoEffect();
+						break;
+					default:
+						;
+				}
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean checkMobs(Point nextPos, Entity obj) {
+		Mob nextMob = null;
+		Iterator<Mob> mobIter = myMobs.iterator();
+		while (mobIter.hasNext()) {
+			nextMob = mobIter.next();
+			if(nextMob.getPos().equals(nextPos)) {
+				switch(obj.toString()) {
+					case "PLAYER":
+						myPlayer.harm();
+						break;
+					case "MOB":
+						;
+					case "BOMB":
 						return false;
-					}
-					else if(obj instanceof Mob) {
-						return false;
-					}
-					else if(obj instanceof Explosion){
-						next.dominoEffect();
-						return false;
-					}
-					else if(obj instanceof Bomb) {
-						return false;
-					}
+					case "EXPLOSION":
+						myPlayer.addScore(nextMob);
+						mobIter.remove();
+						nextMob.destroy();
+						break;
+					default:
+						;
 				}
 			}
 		}
-		
-		Chest chestToDestroy = null;
-		for(Chest next : myChests) {
-			Rectangle chest = new Rectangle(next.getPos(), dimension);
-			if(nextPosition.intersects(chest)) {
-				if(obj instanceof Player || obj instanceof Mob || obj instanceof Bomb) {
-					return false;
-				}
-				else {
-					chestToDestroy = next;
-				}
-			}
-		}
-		if(chestToDestroy != null) {
-			myPlayer.addScore(chestToDestroy);
-			dropBonus(chestToDestroy.destroy());
-			myChests.remove(chestToDestroy);
-			return true;
-		}
-		Bonus bonusToDestroy = null;
-		for(Bonus next : myBonus) {
-			Rectangle bonus = new Rectangle(next.getPos(), dimension);
-			if(nextPosition.intersects(bonus)) {
-				if(obj instanceof Mob || obj instanceof Bomb) {
-					return true;
-				}
-				else {
-					bonusToDestroy = next;
-				}
-			}
-		}
-		if(bonusToDestroy != null) {
-			if (obj instanceof Explosion) {
-				myBonus.remove(bonusToDestroy);
-				return true;
-			}
-			else if (obj instanceof Player) {
-				bonusToDestroy.getBonus();
-				myPlayer.addScore(bonusToDestroy);
-				myBonus.remove(bonusToDestroy);
-				return true;
-			}
-			
-		}
-		if(obj instanceof Player || obj instanceof Mob || obj instanceof Bomb) {
-			for(Explosion next : myExplosion) {
-				for(Point nextP : next.propagation) {
-					if(nextPosition.intersects(new Rectangle(nextP, dimension))) {
-						if(obj instanceof Player) {
+		return true;
+	}
+
+	private boolean checkExplosions(Point nextPos, Entity obj) {
+		Point nextExplPoint = null;
+		Iterator<Explosion> explIter = myExplosion.iterator();
+		Iterator<Point> propagationIter = null;
+		while (explIter.hasNext()) {
+			propagationIter = explIter.next().propagation.iterator();
+			while(propagationIter.hasNext()) {
+				nextExplPoint = propagationIter.next();
+				if(nextExplPoint.equals(nextPos)) {
+					switch(obj.toString()) {
+						case "PLAYER":
 							myPlayer.harm();
 							return true;
-						}
-						else if(obj instanceof Bomb) {
+						case "MOB":
+							myPlayer.addScore((Mob)obj);
+							myMobs.remove((Mob)obj);
+							((Mob)obj).destroy();
+							break;
+						case "BOMB":
 							((Bomb) obj).dominoEffect();
+						default:
 							return true;
-						}
-						else if(obj instanceof Mob){
-							Mob toDestroy = null;
-							for(Mob nextM : myMobs) {
-								if(nextM.nextPos.equals(nextPos)) {
-									toDestroy = nextM;
-								}
-							}
-							if(toDestroy != null) {
-								myPlayer.addScore(toDestroy);
-								toDestroy.destroy();
-								myMobs.remove(toDestroy);
-							}
-							
-						}
-						return false;
 					}
 				}
 			}
 		}
-		
-			Mob toDestroy = null;
-			Iterator<Mob> mobIter = myMobs.iterator();
-			while (mobIter.hasNext()) {
-				toDestroy = mobIter.next();
-				Rectangle mob = new Rectangle(toDestroy.getPos(), dimension);
-				if(nextPosition.intersects(mob)) {
-					if(obj instanceof Player) {
-						myPlayer.harm();
-						return false;
-					}
-					else if(obj instanceof Bomb) {
-						return false;
-					}
-					else if(obj instanceof Mob) {
-						return false;
-					}
-					else if(obj instanceof Explosion){
-						myPlayer.addScore(toDestroy);
-						toDestroy.destroy();
-						mobIter.remove();
-					}
-				}
-			}
-			/*for(Mob next : myMobs) {
-				Rectangle mob = new Rectangle(next.getPos(), dimension);
-				if(nextPosition.intersects(mob)) {
-					if(obj instanceof Player) {
-						myPlayer.harm();
-						return false;
-					}
-					else if(obj instanceof Bomb) {
-						return false;
-					}
-					else if(obj instanceof Mob) {
-						return false;
-					}
-					else if(obj instanceof Explosion){
-						toDestroy = next;
-					}
-				}
-			
-			if(toDestroy != null) {
-				myPlayer.addScore(toDestroy);
-				toDestroy.destroy();
-				myMobs.remove(toDestroy);
-				//return false;
-			}
-		}*/
-		
-		
 		return true;
-		
 	}
+
+	private boolean checkBonus(Point nextPos, Entity obj) {
+		Bonus nextBonus = null;
+		Iterator<Bonus> bonusIter = myBonus.iterator();
+		while (bonusIter.hasNext()) {
+			nextBonus = bonusIter.next();
+			if(nextBonus.getPos().equals(nextPos)) {
+				switch(obj.toString()) {
+					case "PLAYER":
+						nextBonus.getBonus();
+						myPlayer.addScore(nextBonus);
+					case "EXPLOSION":
+						bonusIter.remove();
+					case "MOB":
+						;
+					case "BOMB":
+						;
+					default:
+						return true;
+				}
+			}
+		}
+	
+		return true;
+	}
+	
+	private boolean checkChests(Point nextPos, Entity obj) {
+		Chest nextChest = null;
+		Iterator<Chest> chestIter = myChests.iterator();
+		while (chestIter.hasNext()) {
+			nextChest = chestIter.next();
+			if(nextChest.getPos().equals(nextPos)) {
+				switch(obj.toString()) {
+					case "EXPLOSION":
+						myPlayer.addScore(nextChest);
+						dropBonus(nextChest.getPos());
+						chestIter.remove();
+						return true;
+					default:
+						return false;	
+				}
+			}
+		}
+	
+		return true;
+	}
+	
+	private boolean checkPlayer(Point nextPos, Entity obj) {
+		if(nextPos.equals(myPlayer.getPos())) {
+			switch(obj.toString()) {
+				case "BOMB":
+					return false;
+				case "MOB":
+					;
+				case "EXPLOSION":
+					myPlayer.harm();
+				default:
+					return true;
+			}			
+		}
+		return true;
+	}
+		
 	private boolean canDropBomb(Point pos) {
 		if (Bomb.getDroppedBombs() >= Bomb.getNumberBomb()) {
 			return false;
@@ -262,8 +256,7 @@ class Map extends Observable implements Observer{
 			Bomb newBomb = new Bomb(myPlayer.getPos(),this);
 			myBombs.add(newBomb);
 			newBomb.addObserver(this);
-			setChanged();
-			notifyObservers();
+			checkExplosions(newBomb.getPos(), newBomb);
 		}
 	}
 
@@ -274,13 +267,46 @@ class Map extends Observable implements Observer{
 	}
 	@Override
 	public void update(Observable obj, Object arg) {
+		switch(obj.toString()) {
+			case "BOMB":
+				myBombs.remove((Bomb) obj);
+				Explosion newExplosion = new Explosion(((Bomb) obj).getPos(), this);
+				((Bomb) obj).destroy();
+				myExplosion.add(newExplosion);
+				newExplosion.addObserver(this);
+				break;
+			case "EXPLOSION":
+				myExplosion.remove((Explosion) obj);
+				((Explosion) obj).destroy();
+				break;
+			case "BONUS":
+				myBonus.remove((Bonus)obj);
+				((Bonus)obj).destroy();
+				break;
+			case "PLAYER":
+				setChanged();
+				notifyObservers(playerAlive);
+				break;
+			case "MOB":
+				if(myMobs.isEmpty()) {
+					System.out.println("SI3");
+					setChanged();
+					notifyObservers(playerAlive);
+				}
+					break;
+			default:
+		}
+		/*
 		if(obj instanceof Bomb) {
-			Explosion newExplosion = new Explosion(((Bomb) obj).destroy(), this);
+			System.out.println("SI1");
+			myBombs.remove((Bomb) obj);
+			Explosion newExplosion = new Explosion(((Bomb) obj).getPos(), this);
+			((Bomb) obj).destroy();
 			myExplosion.add(newExplosion);
 			newExplosion.addObserver(this);
-			myBombs.remove((Bomb) obj);
 		}
 		else if(obj instanceof Explosion){
+			System.out.println("SI2");
 			myExplosion.remove((Explosion) obj);
 			((Explosion) obj).destroy();
 		}
@@ -288,16 +314,30 @@ class Map extends Observable implements Observer{
 			myBonus.remove((Bonus)obj);
 			((Bonus)obj).destroy();
 		}
-		
+		else if(obj instanceof Player) {
+			setChanged();
+			notifyObservers(playerAlive);
+		}
+		else if(obj instanceof Mob) {
+			if(myMobs.isEmpty()) {
+				System.out.println("SI3");
+				setChanged();
+				notifyObservers(playerAlive);
+			}
+		}
+		*/
 	}
 
-	static boolean canDestroy(Point nextPos) {
-		for(Wall next : myWalls) {
-			if(next.getPos().equals(nextPos)) {
-				if(next.destroyable) {
-					myPlayer.addScore(next);
-					myWalls.remove(next);
-					myTerrain.add(new Terrain(next.destroy(), true));
+	boolean canDestroy(Point nextPos) {
+		Wall nextWall = null;
+		Iterator<Wall> wallIter = myWalls.iterator();
+		while(wallIter.hasNext()) {
+			nextWall = wallIter.next();
+			if(nextWall.getPos().equals(nextPos)) {
+				if(nextWall.destroyable) {
+					myPlayer.addScore(nextWall);
+					nextWall.destroy();
+					wallIter.remove();
 					return true;
 				}
 			}
@@ -305,11 +345,18 @@ class Map extends Observable implements Observer{
 		return false;
 	}
 
-	public void synchMobs() {
+	public void synchMobs(Timer t) {
 		for(Mob next : myMobs) {
-			Controller.t.addActionListener(next);
+			t.addActionListener(next);
 		}
 		
 	}
 
+	public boolean isPlayerAlive() {
+		return playerAlive;
+	}
+
+	public void setPlayerAlive(boolean playerAlive) {
+		this.playerAlive = playerAlive;
+	}
 }

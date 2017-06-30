@@ -9,16 +9,17 @@ import javax.swing.Timer;
 class Player extends Entity {
 	private Point position;
 	private Point nextPos;
-	private static Map mapRef = null;
+	private Map mapRef = null;
 	private int life;
 	private int score;
 	public final static int MAX_LIFE = 3;
-	private static final int DELAY = 3100;  //milliseconds
-	Timer t;
+	private static final int DELAY = 3100;  
+	private Timer t;
 	private boolean invulnerable = false;
 	private boolean leftFoot = true;
 	
 	private Direction direction = Direction.NONE;
+	
 	
 	public Player(Point firstPlayerPos, Map map) {
 		position = firstPlayerPos;
@@ -31,7 +32,6 @@ class Player extends Entity {
 
 	@Override
 	Point getPos() {
-		// TODO Auto-generated method stub
 		return position;
 	}
 
@@ -40,16 +40,18 @@ class Player extends Entity {
 		nextPos = new Point(position);
 		switch(dir) {
 		case RIGHT:
-			nextPos.x += movement;//*MapView.cell;
+			nextPos.x += movement;
 			break;
 		case DOWN:
-			nextPos.y += movement;//*MapView.cell;
+			nextPos.y += movement;
 			break;
 		case LEFT:
-			nextPos.x -= movement;//*MapView.cell;
+			nextPos.x -= movement;
 			break;
 		case UP:
-			nextPos.y -= movement;//*MapView.cell;
+			nextPos.y -= movement;
+			break;
+		default:
 			break;
 		}
 		if(this.direction != Direction.DEAD) {
@@ -63,12 +65,13 @@ class Player extends Entity {
 	
 	void harm() {
 		if(!this.invulnerable) {
+			
 			this.life--;
 			if (this.life == 0) {
 				this.direction = Direction.DEAD;
 				this.destroy();
 			}
-			else {
+			else if(this.life > 0){
 				setInvulnerable();
 				ActionListener taskPerformer = new ActionListener() {
 					@Override
@@ -86,12 +89,12 @@ class Player extends Entity {
 	}
 
 	@Override
-	Point destroy() {
-		Map.playerAlive = false;
+	void destroy() {
+		mapRef.setPlayerAlive(false);
+		this.direction = Direction.DEAD;
 		setChanged();
 		notifyObservers();
 		deleteObservers();
-		return null;
 	}
 
 	public void regen() {
@@ -126,12 +129,7 @@ class Player extends Entity {
 		return this.leftFoot;
 	}
 	private void setFoot() {
-		if(leftFoot) {
-			leftFoot = false;
-		}
-		else {
-			leftFoot = true;
-		}
+		leftFoot = !leftFoot;
 	}
 
 	public int getScore() {
@@ -151,6 +149,11 @@ class Player extends Entity {
 		else if(obj instanceof Chest) {
 			this.score += 50;
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "PLAYER";
 	}
 	
 }

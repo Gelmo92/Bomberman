@@ -10,9 +10,10 @@ import javax.swing.Timer;
 public class Explosion extends Entity {
 
 	ArrayList<Point> propagation;
-	private static final int DELAY = 3000;  //milliseconds
-	private static Map mapRef = null;
+	private static final int DELAY = 3000;  
+	private Map mapRef = null;
 	private static int explosionRate = 1;
+	Timer t;
 	
 	public Explosion(Point firstPosition, Map map) {
 		propagation = new ArrayList<Point>();
@@ -20,7 +21,6 @@ public class Explosion extends Entity {
 		if(mapRef == null) {
 			mapRef = map;
 		}
-		burn(firstPosition, explosionRate);
 		ActionListener taskPerformer = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -28,9 +28,11 @@ public class Explosion extends Entity {
 				notifyObservers();
 							}
 		  };
-		  Timer timer = new Timer(DELAY, taskPerformer);
-		  timer.setRepeats(false);
-		  timer.start();
+		  t = new Timer(DELAY, taskPerformer);
+		  t.setRepeats(false);
+		  mapRef.timers.add(t);
+		  t.start();
+		  burn(firstPosition, explosionRate);
 	}
 
 	private void burn(Point firstPosition, int explosionRate) {
@@ -44,7 +46,6 @@ public class Explosion extends Entity {
 
 	@Override
 	Point getPos() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -57,19 +58,22 @@ public class Explosion extends Entity {
 			case NONE:
 				break;
 			case RIGHT:
-				nextPos.x += MapView.cell;
+				nextPos.x += MapView.CELL;
 				break;
 			case DOWN:
-				nextPos.y += MapView.cell;
+				nextPos.y += MapView.CELL;
 				break;
 			case LEFT:
-				nextPos.x -= MapView.cell;
+				nextPos.x -= MapView.CELL;
 				break;
 			case UP:
-				nextPos.y -= MapView.cell;
+				nextPos.y -= MapView.CELL;
+				break;
+			default:
 				break;
 			}
-			for(Terrain next : mapRef.myTerrain) {
+			
+			for(Terrain next : mapRef.myTerrains) {
 				if(nextPos.equals(next.getPos())) {
 					next.setBurnt();
 					break;
@@ -80,7 +84,7 @@ public class Explosion extends Entity {
 				pos = nextPos;
 			}
 			else {
-				if(Map.canDestroy(nextPos)) {
+				if(mapRef.canDestroy(nextPos)) {
 					propagation.add(nextPos);
 				}
 				return;
@@ -90,13 +94,17 @@ public class Explosion extends Entity {
 	}
 
 	@Override
-	Point destroy() {
+	void destroy() {
+		mapRef.timers.remove(t);
 		deleteObservers();
-		return null;
 	}
 
 	public static void increaseRate() {
 		explosionRate++;
 	}
 
+	@Override
+	public String toString() {
+		return "EXPLOSION";
+	}
 }

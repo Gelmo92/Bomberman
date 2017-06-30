@@ -28,16 +28,19 @@ public class Chest extends Entity {
 
 	@Override
 	void move(int movement, Direction direction) {
-		// TODO Auto-generated method stub
 
 	}
 	
 	/**
-	 * @return le coordinate dello scrigno 
+	 * Non implementato
 	 */
 	@Override
-	Point destroy() {
-		return position;
+	void destroy() {
+		
 	}
-
+	
+	@Override
+	public String toString() {
+		return "CHEST";
+	}
 }

@@ -3,17 +3,19 @@ package game;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowListener;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class Menu implements ActionListener
 {
 	private JFrame menu;
+	@SuppressWarnings("unused")
 	private GameFrame gameFrame;
 	private Map myMap = null;
 	public static final int WIDTH = 640;
@@ -28,8 +30,6 @@ public class Menu implements ActionListener
 		menu.setLocationRelativeTo(null);
 		menu = setUpMenu(menu);
 		menu.setVisible(true);
-		
-		
 	}
 	
 	private JFrame setUpMenu(JFrame menu)
@@ -60,14 +60,27 @@ public class Menu implements ActionListener
 			try {
 				myMap = new Map();
 			} catch (FileNotFoundException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
+				JOptionPane.showMessageDialog(new JFrame(),
+					    "Errore nel caricamento della mappa:\n" + e2.getMessage(),
+					    "Fatal Error",
+					    JOptionPane.ERROR_MESSAGE);
+				return;
 			}
-			gameFrame = new GameFrame(myMap, this);
+			try {
+				gameFrame = new GameFrame(myMap, this);
+			} catch (IOException e1) {
+				JOptionPane.showMessageDialog(new JFrame(),
+					    "Errore nella creazione del gioco:\n" + e1.getMessage(),
+					    "Fatal Error",
+					    JOptionPane.ERROR_MESSAGE);
+				return;
+			}
 		}
 		
 	}
 	public void reset() {
 		this.menu.setVisible(true);
+		myMap = null;
+		gameFrame = null;
 	}
 }

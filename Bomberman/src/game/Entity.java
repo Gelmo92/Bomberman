@@ -3,8 +3,6 @@ package game;
 import java.awt.Point;
 import java.util.Observable;
 
-import game.Bonus.BonusType;
-
 abstract class Entity extends Observable{
 	
 	enum Direction {
@@ -21,5 +19,8 @@ abstract class Entity extends Observable{
 	
 	abstract Point getPos();
 	abstract void move(int movement, Direction dir);
-	abstract Point destroy();
+	abstract void destroy();
+	
+	@Override
+	public abstract String toString();
 }

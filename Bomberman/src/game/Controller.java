@@ -4,81 +4,114 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
 import game.Entity.Direction;
 
-class Controller implements KeyListener{
+class Controller extends Observable implements KeyListener, Observer{
 
-	private Map myMap;
-	private MapView myMapView;
+	private Map mapRef;
 	private final static int DELAY = 500;
-	public static Timer t;
-	static ActionListener taskPerformer;
-	//private static boolean move = true;
+	private Timer t;
+	private ActionListener taskPerformer;
+	private static boolean released = true;
 	
 	public Controller(Map myMap, MapView myMapView) {
-		this.myMap = myMap;
-		this.myMapView = myMapView;
+		this.mapRef = myMap;
+		mapRef.controllerRef = this;
+		mapRef.addObserver(this);
+		addObserver(myMapView);
 		 	taskPerformer = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				/*ArrayList<Mob> mobsList = new ArrayList<Mob>(Map.myMobs);
-				for(Mob next : mobsList) {
-					next.move(MapView.cell, Direction.NONE);
-				}*/
-				myMapView.update(myMap, e);
-				//Controller.move = true;
-				
-			}
-		  };
+		 		@Override
+		 		public void actionPerformed(ActionEvent e) {
+		 			setChanged();
+		 			notifyObservers();
+		 		}
+		 	};
 		  t = new Timer(DELAY, taskPerformer);
-		  myMap.synchMobs();
+		  myMap.synchMobs(t);
 		  t.start();
 	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if(/*!move ||*/ !Map.playerAlive) return;
+		if(!mapRef.isPlayerAlive() || !released) return;
+		released = false;
 		switch(e.getKeyCode()) {
 		case KeyEvent.VK_RIGHT: 
-			myMap.myPlayer.move(MapView.cell, Direction.RIGHT);
+			mapRef.myPlayer.move(MapView.CELL, Direction.RIGHT);
 			break;
 		case KeyEvent.VK_DOWN: 
-			myMap.myPlayer.move(MapView.cell, Direction.DOWN);
+			mapRef.myPlayer.move(MapView.CELL, Direction.DOWN);
 			break;
 		case KeyEvent.VK_LEFT: 
-			myMap.myPlayer.move(MapView.cell, Direction.LEFT);
+			mapRef.myPlayer.move(MapView.CELL, Direction.LEFT);
 			break;
 		case KeyEvent.VK_UP: 
-			myMap.myPlayer.move(MapView.cell, Direction.UP);
+			mapRef.myPlayer.move(MapView.CELL, Direction.UP);
 			break;
 		case KeyEvent.VK_SPACE:
-			myMap.dropBomb();
-			//myMap.myBombs.get(myMap.myBombs.size()-1).addObserver(myMapView);
+			mapRef.dropBomb();
 			break;
 		}
-		myMapView.update(myMap, e);
-		//move = false;
+		setChanged();
+		notifyObservers();
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
+		released = true;
 		
 	}
 
-	static void gameOver() {
-		//t.removeActionListener(taskPerformer);
+	@Override
+	public void update(Observable o, Object arg) {
+		for(Timer next : mapRef.timers) {
+			
+			next.stop();
+		}
 		t.stop();
+		t.setRepeats(false);
+		t.setInitialDelay(DELAY);
+		t.start();
+		setChanged();
+		notifyObservers(arg);
+		deleteObservers();
+		/*
+		if(!(boolean)arg) {
+			
+			JOptionPane.showMessageDialog(new JFrame(),
+				    "Sei morto",
+				    "GAME OVER",
+				    JOptionPane.INFORMATION_MESSAGE);
+		}
+		else {
+			JOptionPane.showMessageDialog(new JFrame(),
+				    "Complimenti hai vinto!",
+				    "GAME OVER",
+				    JOptionPane.INFORMATION_MESSAGE);
+		}
+		t.stop();
+		t.setRepeats(false);
+		t.setInitialDelay(DELAY);
+		t.start();*/
+		
+	}
+	void stopT() {
+		t.stop();
+	}
+	Timer getT() {
+		return t;
 	}
 
 }

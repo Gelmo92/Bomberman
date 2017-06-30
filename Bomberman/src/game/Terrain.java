@@ -41,14 +41,14 @@ public class Terrain {
 	}
 	/**
 	 * 
-	 * @return truee se il terreno è bruciato se no false
+	 * @return true se il terreno è bruciato
 	 */
 	boolean getBurnt() {
 		return burnt;
 	}
 	
 	/**
-	 * setta la variabile burnt a truee per indicare che quel terreno è bruciato
+	 * setta la variabile burnt a true per indicare che quel terreno è bruciato
 	 */
 	void setBurnt() {
 		this.burnt = true;

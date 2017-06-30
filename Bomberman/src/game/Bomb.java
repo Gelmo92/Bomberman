@@ -10,7 +10,7 @@ class Bomb extends Entity implements ActionListener{
 
 	private Point pos;
 	private Point nextPos;
-	private static Map mapRef;
+	private Map mapRef;
 	private static boolean bonusMoveBomb = false;
 	private boolean moving = false;
 	private Direction direction = Direction.NONE;
@@ -25,7 +25,7 @@ class Bomb extends Entity implements ActionListener{
 		if(mapRef == null) {
 			mapRef = map;
 		}
-		Controller.t.addActionListener(this);
+		mapRef.controllerRef.getT().addActionListener(this);
 		ActionListener taskPerformer = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -35,6 +35,7 @@ class Bomb extends Entity implements ActionListener{
 		  };
 		  t = new Timer(DELAY, taskPerformer);
 		  t.setRepeats(false);
+		  mapRef.timers.add(t);
 		  t.start();
 		  
 		
@@ -62,6 +63,8 @@ class Bomb extends Entity implements ActionListener{
 		case UP:
 			nextPos.y -= movement;//*MapView.cell;
 			break;
+		default:
+			break;
 		}
 		if(mapRef.canMove(nextPos, this)) {
 			pos = nextPos;
@@ -76,14 +79,13 @@ class Bomb extends Entity implements ActionListener{
 	}
 
 	@Override
-	Point destroy() {
+	void destroy() {
+		mapRef.timers.remove(t);
 		droppedBombs--;
 		this.direction = Direction.NONE;
 		this.moving = false;
-		Controller.t.removeActionListener(this);
-		deleteObservers();
-		return this.getPos();
-		
+		mapRef.controllerRef.getT().removeActionListener(this);
+		deleteObservers();		
 	}
 
 	public void dominoEffect() {
@@ -116,8 +118,13 @@ class Bomb extends Entity implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(bonusMoveBomb && moving) {
-			this.move(MapView.cell, this.direction);
+			this.move(MapView.CELL, this.direction);
 		}
 		
+	}
+	
+	@Override
+	public String toString() {
+		return "BOMB";
 	}
 }

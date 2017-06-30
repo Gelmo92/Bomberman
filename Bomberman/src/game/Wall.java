@@ -20,39 +20,41 @@ class Wall extends Entity {
 	 * 
 	 * @param firstPosition sono le coordinate del muro
 	 * @param destroyable definisce se il muro è distruttibile
-	 * @param perimetry definisce se il muro è distruttibile
+	 * @param perimetry definisce se il muro è perimetrale
 	 */
 	public Wall(Point firstPosition, boolean destroyable, boolean perimetry) {
 		position = firstPosition;
 		this.destroyable = destroyable;
 		this.perimetry = perimetry;
 	}
+	
 	/**
 	 * @return le coordinate del muro
 	 */
 	@Override
 	Point getPos() {
-		// TODO Auto-generated method stub
 		return position;
 	}
-
-	@Override
-	void move(int movement, Direction direction) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 	/**
-	 * Il metodo va a rimuovere il muro dagli oggetti osservati
-	 * 
-	 * @return le coordinate del muro
+	 * Non implementato
 	 */
 	@Override
-	Point destroy() {
-		deleteObservers();
-		return position;
+	void move(int movement, Direction direction) {
 		
 	}
 
+	/**
+	 * Non implementato
+	 */
+	@Override
+	void destroy() {
+		
+	}
 	
+	@Override
+	public String toString() {
+		return "WALL";
+	}
 
 }
