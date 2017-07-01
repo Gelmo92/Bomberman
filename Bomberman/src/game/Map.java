@@ -25,10 +25,11 @@ class Map extends Observable implements Observer{
 	static final Dimension dimension = new Dimension(MapView.CELL, MapView.CELL);
 	private boolean playerAlive;
 	Controller controllerRef;
-	ArrayList<Timer> timers;
+	
 	private static final String MAP_NAME = "map.txt";
 	
 	public Map() throws FileNotFoundException {
+		resetAllStaticRef();
 		Scanner mapScan = new Scanner(new File(MAP_NAME));
 		int y = 0;
 		myWalls = new ArrayList<Wall>();
@@ -38,7 +39,7 @@ class Map extends Observable implements Observer{
 		myChests = new ArrayList<Chest>();
 		myBonus = new ArrayList<Bonus>();
 		myTerrains = new ArrayList<Terrain>();
-		timers = new ArrayList<Timer>();
+		
 		while(mapScan.hasNextLine()) {
 			String currentLine = mapScan.nextLine();
 			for(int x = 0; x < currentLine.length(); x++) {
@@ -76,6 +77,14 @@ class Map extends Observable implements Observer{
 		mapScan.close();
 	}
 	
+	private void resetAllStaticRef() {
+		Bomb.resetStatic();
+		Mob.resetStatic();
+		Explosion.resetStatic();
+		Bonus.resetStatic();
+		
+	}
+
 	boolean canMove(Point nextPos, Entity obj) {
 		
 		return checkWalls(nextPos, obj) &&
@@ -151,7 +160,7 @@ class Map extends Observable implements Observer{
 
 	private boolean checkExplosions(Point nextPos, Entity obj) {
 		Point nextExplPoint = null;
-		Iterator<Explosion> explIter = myExplosion.iterator();
+		Iterator<Explosion> explIter = new ArrayList<Explosion>(myExplosion).iterator();
 		Iterator<Point> propagationIter = null;
 		while (explIter.hasNext()) {
 			propagationIter = explIter.next().propagation.iterator();
@@ -289,7 +298,6 @@ class Map extends Observable implements Observer{
 				break;
 			case "MOB":
 				if(myMobs.isEmpty()) {
-					System.out.println("SI3");
 					setChanged();
 					notifyObservers(playerAlive);
 				}

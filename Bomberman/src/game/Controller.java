@@ -30,7 +30,7 @@ class Controller extends Observable implements KeyListener, Observer{
 		 		@Override
 		 		public void actionPerformed(ActionEvent e) {
 		 			setChanged();
-		 			notifyObservers();
+		 			notifyObservers(e);
 		 		}
 		 	};
 		  t = new Timer(DELAY, taskPerformer);
@@ -65,7 +65,7 @@ class Controller extends Observable implements KeyListener, Observer{
 			break;
 		}
 		setChanged();
-		notifyObservers();
+		notifyObservers(e);
 	}
 
 	@Override
@@ -76,40 +76,14 @@ class Controller extends Observable implements KeyListener, Observer{
 
 	@Override
 	public void update(Observable o, Object arg) {
-		for(Timer next : mapRef.timers) {
-			
-			next.stop();
-		}
+		
 		t.stop();
-		t.setRepeats(false);
-		t.setInitialDelay(DELAY);
-		t.start();
+		
 		setChanged();
 		notifyObservers(arg);
-		deleteObservers();
-		/*
-		if(!(boolean)arg) {
-			
-			JOptionPane.showMessageDialog(new JFrame(),
-				    "Sei morto",
-				    "GAME OVER",
-				    JOptionPane.INFORMATION_MESSAGE);
-		}
-		else {
-			JOptionPane.showMessageDialog(new JFrame(),
-				    "Complimenti hai vinto!",
-				    "GAME OVER",
-				    JOptionPane.INFORMATION_MESSAGE);
-		}
-		t.stop();
-		t.setRepeats(false);
-		t.setInitialDelay(DELAY);
-		t.start();*/
-		
+		deleteObservers();		
 	}
-	void stopT() {
-		t.stop();
-	}
+	
 	Timer getT() {
 		return t;
 	}

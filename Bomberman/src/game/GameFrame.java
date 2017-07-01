@@ -2,6 +2,7 @@ package game;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Event;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -48,7 +49,7 @@ public class GameFrame extends JFrame implements Observer{
 
 	@Override
 	public void update(Observable o, Object arg) {
-		if(arg != null) {
+		if(arg instanceof Boolean) {
 			if(!(boolean)arg) {
 				JOptionPane.showMessageDialog(new JFrame(),
 					    "Sei morto",

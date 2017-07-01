@@ -10,7 +10,7 @@ class Bomb extends Entity implements ActionListener{
 
 	private Point pos;
 	private Point nextPos;
-	private Map mapRef;
+	private static Map mapRef;
 	private static boolean bonusMoveBomb = false;
 	private boolean moving = false;
 	private Direction direction = Direction.NONE;
@@ -35,7 +35,6 @@ class Bomb extends Entity implements ActionListener{
 		  };
 		  t = new Timer(DELAY, taskPerformer);
 		  t.setRepeats(false);
-		  mapRef.timers.add(t);
 		  t.start();
 		  
 		
@@ -80,7 +79,6 @@ class Bomb extends Entity implements ActionListener{
 
 	@Override
 	void destroy() {
-		mapRef.timers.remove(t);
 		droppedBombs--;
 		this.direction = Direction.NONE;
 		this.moving = false;
@@ -126,5 +124,12 @@ class Bomb extends Entity implements ActionListener{
 	@Override
 	public String toString() {
 		return "BOMB";
+	}
+
+	public static void resetStatic() {
+		mapRef = null;
+		bonusMoveBomb = false;
+		numberBomb = 1;
+		droppedBombs = 0;
 	}
 }

@@ -102,4 +102,9 @@ public class Bonus extends Entity {
 	public String toString() {
 		return "BONUS";
 	}
+
+	public static void resetStatic() {
+		mapRef = null;
+		
+	}
 }

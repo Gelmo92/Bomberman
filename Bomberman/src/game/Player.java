@@ -155,5 +155,6 @@ class Player extends Entity {
 	public String toString() {
 		return "PLAYER";
 	}
+
 	
 }

@@ -10,7 +10,7 @@ class Mob extends Entity implements ActionListener {
 	Point nextPos;
 	private Direction direction = Direction.NONE;
 	private boolean leftFoot = true;
-	private Map mapRef = null;
+	private static Map mapRef = null;
 	
 	public Mob(Point firstMobPos, Map map) {
 		position = firstMobPos;
@@ -80,5 +80,10 @@ class Mob extends Entity implements ActionListener {
 	@Override
 	public String toString() {
 		return "MOB";
+	}
+
+	public static void resetStatic() {
+		mapRef = null;
+		
 	}
 }

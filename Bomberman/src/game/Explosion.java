@@ -11,7 +11,7 @@ public class Explosion extends Entity {
 
 	ArrayList<Point> propagation;
 	private static final int DELAY = 3000;  
-	private Map mapRef = null;
+	private static Map mapRef = null;
 	private static int explosionRate = 1;
 	Timer t;
 	
@@ -30,7 +30,7 @@ public class Explosion extends Entity {
 		  };
 		  t = new Timer(DELAY, taskPerformer);
 		  t.setRepeats(false);
-		  mapRef.timers.add(t);
+		  
 		  t.start();
 		  burn(firstPosition, explosionRate);
 	}
@@ -95,7 +95,7 @@ public class Explosion extends Entity {
 
 	@Override
 	void destroy() {
-		mapRef.timers.remove(t);
+		
 		deleteObservers();
 	}
 
@@ -106,5 +106,11 @@ public class Explosion extends Entity {
 	@Override
 	public String toString() {
 		return "EXPLOSION";
+	}
+
+	public static void resetStatic() {
+		mapRef = null;
+		explosionRate = 1;
+		
 	}
 }
