@@ -16,16 +16,17 @@ class Bomb extends Entity implements ActionListener{
 	private Direction direction = Direction.NONE;
 	private static int numberBomb = 1;
 	private static int droppedBombs = 0;
-	private static final int DELAY = 3000;  //milliseconds
-	Timer t;
+	private static final int DELAY = 3000;  
+	private Timer t;
 	
 	public Bomb(Point newPos, Map map) {
 		pos = newPos;
 		droppedBombs++;
+		addObserver(map);
 		if(mapRef == null) {
 			mapRef = map;
 		}
-		mapRef.controllerRef.getT().addActionListener(this);
+		mapRef.getControllerRef().getT().addActionListener(this);
 		ActionListener taskPerformer = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -79,10 +80,11 @@ class Bomb extends Entity implements ActionListener{
 
 	@Override
 	void destroy() {
+		mapRef.removeFromArrayList(this);
 		droppedBombs--;
 		this.direction = Direction.NONE;
 		this.moving = false;
-		mapRef.controllerRef.getT().removeActionListener(this);
+		mapRef.getControllerRef().getT().removeActionListener(this);
 		deleteObservers();		
 	}
 

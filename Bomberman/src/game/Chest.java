@@ -11,12 +11,16 @@ import java.awt.Point;
 public class Chest extends Entity {
 	
 	private Point position;
+	private static Map mapRef;
 	/**
 	 * 
 	 * @param newPosition sono le coordinate dello scrigno
 	 */
-	public Chest(Point newPosition) {
+	public Chest(Point newPosition, Map map) {
 		this.position = newPosition;
+		if(mapRef == null) {
+			mapRef = map;
+		}
 	}
 	/**
 	 * @return le coordinate dello scrigno 
@@ -32,15 +36,19 @@ public class Chest extends Entity {
 	}
 	
 	/**
-	 * Non implementato
+	 * Non necessario in questa implementazione
 	 */
 	@Override
 	void destroy() {
-		
+		mapRef.dropBonus(position);
 	}
 	
 	@Override
 	public String toString() {
 		return "CHEST";
+	}
+	
+	public static void resetStatic() {
+		mapRef = null;
 	}
 }

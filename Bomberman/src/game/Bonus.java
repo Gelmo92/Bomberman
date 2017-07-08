@@ -11,7 +11,7 @@ public class Bonus extends Entity {
 	private Point position;
 	private static Map mapRef = null;
 	private static final int DELAY = 20000;
-	Timer t;
+	private Timer t;
 	
 	enum BonusType {
 		LIFE,
@@ -27,25 +27,26 @@ public class Bonus extends Entity {
 	
 	public Bonus(Point pos, Map map) {
 		this.position = pos;
+		addObserver(map);
 		if(mapRef == null) {
 			mapRef = map;
 		}
 		this.type = generateRandomBonus();
-		ActionListener taskPerformer = new ActionListener() {
+		ActionListener expiredPerformer = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				setChanged();
 				notifyObservers();
 							}
 		  };
-		  t = new Timer(DELAY, taskPerformer);
+		  t = new Timer(DELAY, expiredPerformer);
 		  t.setRepeats(false);
 		  t.start();
 	}
 	
 	private static BonusType generateRandomBonus() {
 		BonusType bonus = null;
-		if(mapRef.myPlayer.getLife() < Player.MAX_LIFE) {
+		if(mapRef.getMyPlayer().getLife() < Player.MAX_LIFE) {
 			bonus = BonusType.LIFE;
 		}
 		else {
@@ -72,6 +73,7 @@ public class Bonus extends Entity {
 	@Override
 	void destroy() {
 		t.stop();
+		mapRef.removeFromArrayList(this);
 		deleteObservers();
 	}
 
@@ -84,7 +86,7 @@ public class Bonus extends Entity {
 				Bomb.increaseNumberBomb();
 				break;
 			case LIFE:
-				mapRef.myPlayer.regen();
+				mapRef.getMyPlayer().regen();
 				break;
 			case MOVE_BOMB:
 				Bomb.setCanMove();

@@ -7,8 +7,6 @@ import java.awt.event.KeyListener;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
 import game.Entity.Direction;
@@ -18,22 +16,22 @@ class Controller extends Observable implements KeyListener, Observer{
 	private Map mapRef;
 	private final static int DELAY = 500;
 	private Timer t;
-	private ActionListener taskPerformer;
+	private ActionListener tickPerformer;
 	private static boolean released = true;
 	
 	public Controller(Map myMap, MapView myMapView) {
 		this.mapRef = myMap;
-		mapRef.controllerRef = this;
+		mapRef.setControllerRef(this);
 		mapRef.addObserver(this);
 		addObserver(myMapView);
-		 	taskPerformer = new ActionListener() {
+		 	tickPerformer = new ActionListener() {
 		 		@Override
 		 		public void actionPerformed(ActionEvent e) {
 		 			setChanged();
 		 			notifyObservers(e);
 		 		}
 		 	};
-		  t = new Timer(DELAY, taskPerformer);
+		  t = new Timer(DELAY, tickPerformer);
 		  myMap.synchMobs(t);
 		  t.start();
 	}
@@ -49,16 +47,16 @@ class Controller extends Observable implements KeyListener, Observer{
 		released = false;
 		switch(e.getKeyCode()) {
 		case KeyEvent.VK_RIGHT: 
-			mapRef.myPlayer.move(MapView.CELL, Direction.RIGHT);
+			mapRef.getMyPlayer().move(MapView.CELL, Direction.RIGHT);
 			break;
 		case KeyEvent.VK_DOWN: 
-			mapRef.myPlayer.move(MapView.CELL, Direction.DOWN);
+			mapRef.getMyPlayer().move(MapView.CELL, Direction.DOWN);
 			break;
 		case KeyEvent.VK_LEFT: 
-			mapRef.myPlayer.move(MapView.CELL, Direction.LEFT);
+			mapRef.getMyPlayer().move(MapView.CELL, Direction.LEFT);
 			break;
 		case KeyEvent.VK_UP: 
-			mapRef.myPlayer.move(MapView.CELL, Direction.UP);
+			mapRef.getMyPlayer().move(MapView.CELL, Direction.UP);
 			break;
 		case KeyEvent.VK_SPACE:
 			mapRef.dropBomb();
@@ -76,16 +74,18 @@ class Controller extends Observable implements KeyListener, Observer{
 
 	@Override
 	public void update(Observable o, Object arg) {
-		
-		t.stop();
-		
 		setChanged();
 		notifyObservers(arg);
-		deleteObservers();		
+				
 	}
 	
 	Timer getT() {
 		return t;
+	}
+	
+	void stopT() {
+		t.stop();
+		deleteObservers();
 	}
 
 }

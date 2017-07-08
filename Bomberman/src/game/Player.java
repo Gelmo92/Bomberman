@@ -12,7 +12,7 @@ class Player extends Entity {
 	private Map mapRef = null;
 	private int life;
 	private int score;
-	public final static int MAX_LIFE = 3;
+	public static final int MAX_LIFE = 3;
 	private static final int DELAY = 3100;  
 	private Timer t;
 	private boolean invulnerable = false;
@@ -23,6 +23,7 @@ class Player extends Entity {
 	
 	public Player(Point firstPlayerPos, Map map) {
 		position = firstPlayerPos;
+		addObserver(map);
 		this.life = MAX_LIFE;
 		this.score = 0;
 		if(mapRef == null) {
@@ -68,19 +69,18 @@ class Player extends Entity {
 			
 			this.life--;
 			if (this.life == 0) {
-				this.direction = Direction.DEAD;
 				this.destroy();
 			}
 			else if(this.life > 0){
 				setInvulnerable();
-				ActionListener taskPerformer = new ActionListener() {
+				ActionListener invulnerabilityPerformer = new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						setInvulnerable();
-						mapRef.canMove(position, mapRef.myPlayer);
+						mapRef.canMove(position, Player.this);//Controllo se alla fine dell'invulnerabilità devo rifare danno al player perchè potrebbe essere fermo su un esplosione ad esempio
 									}
 				  };
-				  t = new Timer(DELAY, taskPerformer);
+				  t = new Timer(DELAY, invulnerabilityPerformer);
 				  t.setRepeats(false);
 				  t.start();
 			}
@@ -92,6 +92,7 @@ class Player extends Entity {
 	void destroy() {
 		mapRef.setPlayerAlive(false);
 		this.direction = Direction.DEAD;
+		setInvulnerable();
 		setChanged();
 		notifyObservers();
 		deleteObservers();
@@ -113,12 +114,7 @@ class Player extends Entity {
 	}
 	
 	private void setInvulnerable() {
-		if(invulnerable) {
-			invulnerable = false;
-		}
-		else {
-			invulnerable = true;
-		}
+		invulnerable = !invulnerable;
 	}
 
 	public Direction getDir() {
@@ -137,17 +133,19 @@ class Player extends Entity {
 	}
 	
 	public void addScore(Entity obj) {
-		if(obj instanceof Wall) {
-			this.score += 50;
-		}
-		else if(obj instanceof Mob) {
-			this.score += 200;
-		}
-		else if(obj instanceof Bonus) {
-			this.score += 100;
-		}
-		else if(obj instanceof Chest) {
-			this.score += 50;
+		switch(obj.toString()) {
+			case "BONUS":
+				this.score += 100;
+				break;
+			case "CHEST":
+				this.score += 50;
+				break;
+			case "MOB":
+				this.score += 200;
+				break;
+			case "WALL":
+				this.score += 50;
+				break;
 		}
 	}
 

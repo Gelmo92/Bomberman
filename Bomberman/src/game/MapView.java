@@ -61,6 +61,7 @@ class MapView extends JPanel implements Observer{
 	private boolean invulnerableRender = true;
 	private boolean flame = true;
 	private boolean playerMovement = false;
+	private Player playerRender = null;
 	private JLabel lifeAndScoreLabel;
 	
 	public final static int CELL = 40;
@@ -70,8 +71,8 @@ class MapView extends JPanel implements Observer{
 		loadImages();
 		this.mapRef = myMap;
 		lifeAndScoreLabel = new JLabel();
-		this.add(lifeAndScoreLabel);
 		lifeAndScoreLabel.setFont(new Font("Verdana",1,25));
+		this.add(lifeAndScoreLabel);
 		this.setBackground(Color.black);
 		repaint();
 	}
@@ -125,7 +126,7 @@ class MapView extends JPanel implements Observer{
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		
-		for(Terrain next : mapRef.myTerrains) {
+		for(Terrain next : mapRef.getMyTerrains()) {
 			if(next.getBurnt()) {
 				g.drawImage(burntImg, next.getPos().x, next.getPos().y, CELL, CELL, null);
 			}
@@ -134,21 +135,21 @@ class MapView extends JPanel implements Observer{
 			}
 			
 		}
-		if(mapRef.myChests != null) {
+		if(!mapRef.getMyChests().isEmpty()) {
 			g.setColor(Color.gray);
-			for(Chest next : mapRef.myChests) {
+			for(Chest next : mapRef.getMyChests()) {
 				g.fillRect(next.getPos().x, next.getPos().y, CELL, CELL);
 			}
 		}
 		
-		if(mapRef.myBombs.size() != 0) {
-			for(Bomb next : mapRef.myBombs) {
+		if(!mapRef.getMyBombs().isEmpty()) {
+			for(Bomb next : mapRef.getMyBombs()) {
 				g.drawImage(bombImg, next.getPos().x, next.getPos().y, CELL, CELL, null);
 			}
 		}
 		
-		if(mapRef.myMobs.size() != 0) {
-			for(Mob next : mapRef.myMobs) {
+		if(!mapRef.getMyMobs().isEmpty()) {
+			for(Mob next : mapRef.getMyMobs()) {
 				BufferedImage mobImg = null;
 				Direction mobDir = next.getDir();
 				switch(mobDir) {
@@ -191,13 +192,11 @@ class MapView extends JPanel implements Observer{
 			}
 		}
 		
-		
-		
-		for(Wall next : mapRef.myWalls) {
-			if(next.destroyable) {
+		for(Wall next : mapRef.getMyWalls()) {
+			if(next.getDestroyable()) {
 				g.drawImage(destructibleWallImg, next.getPos().x, next.getPos().y, CELL, CELL, null);
 			}
-			else if(next.perimetry) {
+			else if(next.getPerimetral()) {
 				g.drawImage(perimetralWallImg, next.getPos().x, next.getPos().y, CELL, CELL, null);
 			}
 			else {
@@ -205,7 +204,7 @@ class MapView extends JPanel implements Observer{
 			}
 		}
 		
-		if(mapRef.myExplosion.size() != 0) {
+		if(!mapRef.getMyExplosion().isEmpty()) {
 			if(!playerMovement) {
 				if(flame) {
 					explosionToRender = explosionImg1;
@@ -215,21 +214,21 @@ class MapView extends JPanel implements Observer{
 				}
 				flame = !flame;
 			}
-			for(Explosion next : mapRef.myExplosion) {
-				for(Point nextPoint : next.propagation){
+			for(Explosion next : mapRef.getMyExplosion()) {
+				for(Point nextPoint : next.getPropagation()){
 					g.drawImage(explosionToRender, nextPoint.x, nextPoint.y, CELL, CELL, null);
 				}
 			}
 		}
 		
-		if(mapRef.myChests.size() != 0) {
-			for(Chest next : mapRef.myChests) {
+		if(!mapRef.getMyChests().isEmpty()) {
+			for(Chest next : mapRef.getMyChests()) {
 				g.drawImage(chestImg, next.getPos().x, next.getPos().y, CELL, CELL, null);
 			}
 		}
 		
-		if(mapRef.myBonus.size() != 0) {
-			for(Bonus next : mapRef.myBonus) {
+		if(!mapRef.getMyBonus().isEmpty()) {
+			for(Bonus next : mapRef.getMyBonus()) {
 				if(next.getType() == BonusType.LIFE) {
 					g.drawImage(bonusLifeImg, next.getPos().x, next.getPos().y, CELL, CELL, null);
 				}
@@ -245,13 +244,11 @@ class MapView extends JPanel implements Observer{
 			}
 		}
 		BufferedImage playerImg = null;
-		Direction playerDir = Direction.DEAD;
-		if(mapRef.myPlayer.getDir()!= Direction.DEAD) {
-			playerDir = mapRef.myPlayer.getDir();
-		}
+		playerRender = mapRef.getMyPlayer();
+		Direction playerDir = playerRender.getDir();
 		switch(playerDir) {
 			case RIGHT:
-				if(mapRef.myPlayer.getFoot()) {
+				if(playerRender.getFoot()) {
 					playerImg = playerRight2Img;
 				}
 				else {
@@ -259,7 +256,7 @@ class MapView extends JPanel implements Observer{
 				}
 				break;
 			case DOWN:
-				if(mapRef.myPlayer.getFoot()) {
+				if(playerRender.getFoot()) {
 					playerImg = playerFront2Img;
 				}
 				else {
@@ -267,7 +264,7 @@ class MapView extends JPanel implements Observer{
 				}
 				break;
 			case LEFT:
-				if(mapRef.myPlayer.getFoot()) {
+				if(playerRender.getFoot()) {
 					playerImg = playerLeft2Img;
 				}
 				else {
@@ -275,7 +272,7 @@ class MapView extends JPanel implements Observer{
 				}
 				break;
 			case UP:
-				if(mapRef.myPlayer.getFoot()) {
+				if(playerRender.getFoot()) {
 					playerImg = playerBack2Img;
 				}
 				else {
@@ -289,37 +286,21 @@ class MapView extends JPanel implements Observer{
 				playerImg = playerDeadImg;
 				break;
 		}
-		if(mapRef.myPlayer.getInvulnerable()) {
+		if(playerRender.getInvulnerable()) {
 			if(!invulnerableRender) {
 				invulnerableRender = true;
 			}
 			else {
-				g.drawImage(playerImg, mapRef.myPlayer.getPos().x, mapRef.myPlayer.getPos().y, CELL, CELL, null);
+				g.drawImage(playerImg, playerRender.getPos().x, playerRender.getPos().y, CELL, CELL, null);
 				invulnerableRender = false;
 			}
 		}
 		else {
-			g.drawImage(playerImg, mapRef.myPlayer.getPos().x, mapRef.myPlayer.getPos().y, CELL, CELL, null);
+			g.drawImage(playerImg, playerRender.getPos().x, playerRender.getPos().y, CELL, CELL, null);
 		}
-		lifeAndScoreLabel.setText("<html><font color='red'>LIFE: " + mapRef.myPlayer.getLife() + "</font><br><br><font color='white'>SCORE: " + mapRef.myPlayer.getScore() + "</font></html>");
+		lifeAndScoreLabel.setText("<html><font color='red'>LIFE: " + playerRender.getLife() + "</font><br><br><font color='white'>SCORE: " + playerRender.getScore() + "</font></html>");
 		lifeAndScoreLabel.setLocation(650, -300);
 		lifeAndScoreLabel.setVisible(true);
-		lifeAndScoreLabel.validate();
 	}
-	
-	/*@Override
-	public void paint(Graphics g) {
-		//disegna a schermo
-		g.setColor(Color.green);
-		if(Map.playerAlive) {
-			g.fillRect(myMap.myPlayer.getPos().x, myMap.myPlayer.getPos().y, cell, cell);
-		}
-		g.setColor(Color.magenta);
-		g.fillRect(myMap.myMobs.get(0).getPos().x, myMap.myMobs.get(0).getPos().y, cell, cell);
-		g.setColor(Color.black);
-		for(Wall next : myMap.myWalls) {
-			g.fillRect(next.getPos().x, next.getPos().y, cell, cell);
-		}
-	}*/
 
 }

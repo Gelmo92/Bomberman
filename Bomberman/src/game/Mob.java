@@ -7,13 +7,14 @@ import java.awt.event.ActionListener;
 class Mob extends Entity implements ActionListener {
 	
 	private Point position;
-	Point nextPos;
+	private Point nextPos;
 	private Direction direction = Direction.NONE;
 	private boolean leftFoot = true;
 	private static Map mapRef = null;
 	
 	public Mob(Point firstMobPos, Map map) {
 		position = firstMobPos;
+		addObserver(map);
 		if(mapRef == null) {
 			mapRef = map;
 		}
@@ -64,7 +65,8 @@ class Mob extends Entity implements ActionListener {
 	
 	@Override
 	void destroy() {
-		mapRef.controllerRef.getT().removeActionListener(this);
+		mapRef.removeFromArrayList(this);
+		mapRef.getControllerRef().getT().removeActionListener(this);
 		this.direction = Direction.DEAD;
 		setChanged();
 		notifyObservers();

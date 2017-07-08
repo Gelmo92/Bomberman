@@ -78,9 +78,9 @@ public class Menu implements ActionListener
 		}
 		
 	}
-	public void reset() {
-		this.menu.setVisible(true);
+	void reset() {
 		myMap = null;
 		gameFrame = null;
+		this.menu.setVisible(true);
 	}
 }

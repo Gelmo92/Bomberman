@@ -2,7 +2,6 @@ package game;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.Event;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -19,11 +18,12 @@ public class GameFrame extends JFrame implements Observer{
 	public static final int WIDTH = 1000;
 	public static final int HEIGHT = 800;
 	private Menu myMenu;
+	private Controller myController;
 
 	public GameFrame(Map myMap, Menu menu) throws IOException {
 		myMenu = menu;
 		MapView myMapView = new MapView(myMap);
-		Controller myController = new Controller(myMap, myMapView);
+		myController = new Controller(myMap, myMapView);
 		myController.addObserver(this);
 		addKeyListener(myController);
 		
@@ -41,7 +41,7 @@ public class GameFrame extends JFrame implements Observer{
 	            @Override
 	            public void windowClosing(WindowEvent e)
 	            {
-	                myController.update(null, null);
+	                myController.stopT();
 	            	myMenu.reset();
 	            }
 	        });
@@ -50,20 +50,29 @@ public class GameFrame extends JFrame implements Observer{
 	@Override
 	public void update(Observable o, Object arg) {
 		if(arg instanceof Boolean) {
-			if(!(boolean)arg) {
-				JOptionPane.showMessageDialog(new JFrame(),
-					    "Sei morto",
-					    "GAME OVER",
-					    JOptionPane.INFORMATION_MESSAGE);
-			}
-			else {
-				JOptionPane.showMessageDialog(new JFrame(),
-					    "Complimenti hai vinto!",
-					    "GAME OVER",
-					    JOptionPane.INFORMATION_MESSAGE);
-			}
-			myMenu.reset();
-			this.dispose();
+			Thread gameOver = new Thread(new Runnable(){
+		        public void run(){
+		        	if(!(boolean)arg) {
+						JOptionPane.showMessageDialog(new JFrame(),
+							    "Sei morto!",
+							    "GAME OVER",
+							    JOptionPane.INFORMATION_MESSAGE);
+					}
+					else {
+						JOptionPane.showMessageDialog(new JFrame(),
+							    "Complimenti hai vinto!",
+							    "GAME OVER",
+							    JOptionPane.INFORMATION_MESSAGE);
+						
+					}
+		        	myController.stopT();
+					myMenu.reset();
+					GameFrame.this.dispose();
+		        }
+		    });
+		  gameOver.start();
+			
+			
 		}
 		
 		

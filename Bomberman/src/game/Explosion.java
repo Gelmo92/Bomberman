@@ -9,15 +9,17 @@ import javax.swing.Timer;
 
 public class Explosion extends Entity {
 
-	ArrayList<Point> propagation;
+	private ArrayList<Point> propagation;
+	private final Point firstPosition;
 	private static final int DELAY = 3000;  
 	private static Map mapRef = null;
 	private static int explosionRate = 1;
-	Timer t;
+	private Timer t;
 	
 	public Explosion(Point firstPosition, Map map) {
 		propagation = new ArrayList<Point>();
-		propagation.add(firstPosition);
+		addObserver(map);
+		this.firstPosition = firstPosition;
 		if(mapRef == null) {
 			mapRef = map;
 		}
@@ -30,12 +32,11 @@ public class Explosion extends Entity {
 		  };
 		  t = new Timer(DELAY, taskPerformer);
 		  t.setRepeats(false);
-		  
 		  t.start();
-		  burn(firstPosition, explosionRate);
+		  burn(explosionRate);
 	}
 
-	private void burn(Point firstPosition, int explosionRate) {
+	private void burn(int explosionRate) {
 		move(explosionRate,Direction.NONE);
 		move(explosionRate,Direction.UP);
 		move(explosionRate,Direction.DOWN);
@@ -51,7 +52,7 @@ public class Explosion extends Entity {
 
 	@Override
 	void move(int movement, Direction direction) {
-		Point pos = new Point(propagation.get(0));
+		Point pos = new Point(this.firstPosition);
 		for(int i = 0; movement > i; i++) {
 			Point nextPos = new Point(pos);
 			switch(direction) {
@@ -73,7 +74,7 @@ public class Explosion extends Entity {
 				break;
 			}
 			
-			for(Terrain next : mapRef.myTerrains) {
+			for(Terrain next : mapRef.getMyTerrains()) {
 				if(nextPos.equals(next.getPos())) {
 					next.setBurnt();
 					break;
@@ -95,12 +96,16 @@ public class Explosion extends Entity {
 
 	@Override
 	void destroy() {
-		
+		mapRef.removeFromArrayList(this);
 		deleteObservers();
 	}
 
 	public static void increaseRate() {
 		explosionRate++;
+	}
+
+	ArrayList<Point> getPropagation() {
+		return propagation;
 	}
 
 	@Override

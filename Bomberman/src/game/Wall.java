@@ -13,19 +13,19 @@ import java.awt.Point;
 class Wall extends Entity {
 	
 	private Point position;
-	boolean destroyable;
-	public boolean perimetry;
+	private boolean destroyable;
+	private boolean perimetral;
 	
 	/**
 	 * 
 	 * @param firstPosition sono le coordinate del muro
 	 * @param destroyable definisce se il muro è distruttibile
-	 * @param perimetry definisce se il muro è perimetrale
+	 * @param perimetral definisce se il muro è perimetrale
 	 */
 	public Wall(Point firstPosition, boolean destroyable, boolean perimetry) {
 		position = firstPosition;
 		this.destroyable = destroyable;
-		this.perimetry = perimetry;
+		this.perimetral = perimetry;
 	}
 	
 	/**
@@ -50,6 +50,14 @@ class Wall extends Entity {
 	@Override
 	void destroy() {
 		
+	}
+	
+	boolean getDestroyable() {
+		return this.destroyable;
+	}
+	
+	boolean getPerimetral() {
+		return this.perimetral;
 	}
 	
 	@Override

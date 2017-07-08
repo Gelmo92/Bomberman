@@ -14,17 +14,17 @@ import javax.swing.Timer;
 
 class Map extends Observable implements Observer{
 	
-	ArrayList<Mob> myMobs;
-	ArrayList<Wall> myWalls;
-	ArrayList<Bomb> myBombs;
-	ArrayList<Chest> myChests;
-	ArrayList<Bonus> myBonus;
-	ArrayList<Terrain> myTerrains;
-	Player myPlayer;
-	ArrayList<Explosion> myExplosion;
+	private ArrayList<Mob> myMobs;
+	private ArrayList<Wall> myWalls;
+	private ArrayList<Bomb> myBombs;
+	private ArrayList<Chest> myChests;
+	private ArrayList<Bonus> myBonus;
+	private ArrayList<Terrain> myTerrains;
+	private Player myPlayer;
+	private ArrayList<Explosion> myExplosion;
 	static final Dimension dimension = new Dimension(MapView.CELL, MapView.CELL);
 	private boolean playerAlive;
-	Controller controllerRef;
+	private Controller controllerRef;
 	
 	private static final String MAP_NAME = "map.txt";
 	
@@ -39,20 +39,17 @@ class Map extends Observable implements Observer{
 		myChests = new ArrayList<Chest>();
 		myBonus = new ArrayList<Bonus>();
 		myTerrains = new ArrayList<Terrain>();
-		
+		myPlayer = null;
 		while(mapScan.hasNextLine()) {
 			String currentLine = mapScan.nextLine();
 			for(int x = 0; x < currentLine.length(); x++) {
 				switch (currentLine.charAt(x)) {
 				case 'P':
 					myPlayer = new Player(new Point(x*MapView.CELL, y*MapView.CELL), this);
-					myPlayer.addObserver(this);
 					playerAlive = true;
 					break;
 				case 'M':
-					Mob newMob = new Mob(new Point(x*MapView.CELL, y*MapView.CELL), this);
-					myMobs.add(newMob);
-					newMob.addObserver(this);
+					myMobs.add(new Mob(new Point(x*MapView.CELL, y*MapView.CELL), this));
 					break;
 				case 'W':
 					myWalls.add(new Wall(new Point(x*MapView.CELL, y*MapView.CELL), false, false));
@@ -64,7 +61,7 @@ class Map extends Observable implements Observer{
 					myWalls.add(new Wall(new Point(x*MapView.CELL, y*MapView.CELL), false, true));
 					break;
 				case 'C':
-					myChests.add(new Chest(new Point(x*MapView.CELL, y*MapView.CELL)));
+					myChests.add(new Chest(new Point(x*MapView.CELL, y*MapView.CELL), this));
 				case '-':
 					;
 				default:
@@ -82,6 +79,7 @@ class Map extends Observable implements Observer{
 		Mob.resetStatic();
 		Explosion.resetStatic();
 		Bonus.resetStatic();
+		Chest.resetStatic();
 		
 	}
 
@@ -118,14 +116,12 @@ class Map extends Observable implements Observer{
 						if(Bomb.getCanMove()) {
 							nextBomb.move(MapView.CELL, ((Player) obj).getDir());
 						}
-						break;
+						return false;
 					case "EXPLOSION":
 						nextBomb.dominoEffect();
-						break;
 					default:
-						;
+						return false;
 				}
-				return false;
 			}
 		}
 		return true;
@@ -140,18 +136,17 @@ class Map extends Observable implements Observer{
 				switch(obj.toString()) {
 					case "PLAYER":
 						myPlayer.harm();
-						break;
+						return true;
 					case "MOB":
 						;
 					case "BOMB":
 						return false;
 					case "EXPLOSION":
 						myPlayer.addScore(nextMob);
-						mobIter.remove();
+						mobIter.remove();//Dobbiamo rimuoverlo tramite l'iteratore per non causare una ConcurrentModificationException
 						nextMob.destroy();
-						break;
 					default:
-						;
+						return true;
 				}
 			}
 		}
@@ -163,7 +158,7 @@ class Map extends Observable implements Observer{
 		Iterator<Explosion> explIter = new ArrayList<Explosion>(myExplosion).iterator();
 		Iterator<Point> propagationIter = null;
 		while (explIter.hasNext()) {
-			propagationIter = explIter.next().propagation.iterator();
+			propagationIter = explIter.next().getPropagation().iterator();
 			while(propagationIter.hasNext()) {
 				nextExplPoint = propagationIter.next();
 				if(nextExplPoint.equals(nextPos)) {
@@ -173,9 +168,8 @@ class Map extends Observable implements Observer{
 							return true;
 						case "MOB":
 							myPlayer.addScore((Mob)obj);
-							myMobs.remove((Mob)obj);
 							((Mob)obj).destroy();
-							break;
+							return true;
 						case "BOMB":
 							((Bomb) obj).dominoEffect();
 						default:
@@ -199,6 +193,7 @@ class Map extends Observable implements Observer{
 						myPlayer.addScore(nextBonus);
 					case "EXPLOSION":
 						bonusIter.remove();
+						nextBonus.destroy();
 					case "MOB":
 						;
 					case "BOMB":
@@ -221,9 +216,8 @@ class Map extends Observable implements Observer{
 				switch(obj.toString()) {
 					case "EXPLOSION":
 						myPlayer.addScore(nextChest);
-						dropBonus(nextChest.getPos());
 						chestIter.remove();
-						return true;
+						nextChest.destroy();
 					default:
 						return false;	
 				}
@@ -264,32 +258,26 @@ class Map extends Observable implements Observer{
 		if(canDropBomb(myPlayer.getPos())) {
 			Bomb newBomb = new Bomb(myPlayer.getPos(),this);
 			myBombs.add(newBomb);
-			newBomb.addObserver(this);
 			checkExplosions(newBomb.getPos(), newBomb);
 		}
 	}
 
-	private void dropBonus(Point pos) {
+	void dropBonus(Point pos) {
 		Bonus newBonus = new Bonus(pos, this);
 		myBonus.add(newBonus);
-		newBonus.addObserver(this);
 	}
 	@Override
 	public void update(Observable obj, Object arg) {
 		switch(obj.toString()) {
 			case "BOMB":
-				myBombs.remove((Bomb) obj);
-				Explosion newExplosion = new Explosion(((Bomb) obj).getPos(), this);
 				((Bomb) obj).destroy();
+				Explosion newExplosion = new Explosion(((Bomb) obj).getPos(), this);
 				myExplosion.add(newExplosion);
-				newExplosion.addObserver(this);
 				break;
 			case "EXPLOSION":
-				myExplosion.remove((Explosion) obj);
 				((Explosion) obj).destroy();
 				break;
 			case "BONUS":
-				myBonus.remove((Bonus)obj);
 				((Bonus)obj).destroy();
 				break;
 			case "PLAYER":
@@ -301,39 +289,25 @@ class Map extends Observable implements Observer{
 					setChanged();
 					notifyObservers(playerAlive);
 				}
-					break;
-			default:
+				break;
 		}
-		/*
-		if(obj instanceof Bomb) {
-			System.out.println("SI1");
-			myBombs.remove((Bomb) obj);
-			Explosion newExplosion = new Explosion(((Bomb) obj).getPos(), this);
-			((Bomb) obj).destroy();
-			myExplosion.add(newExplosion);
-			newExplosion.addObserver(this);
+	}
+	
+	void removeFromArrayList(Entity obj) {
+		switch(obj.toString()) {
+			case "BOMB":
+				myBombs.remove((Bomb) obj);
+				break;
+			case "EXPLOSION":
+				myExplosion.remove((Explosion) obj);
+				break;
+			case "BONUS":
+				myBonus.remove((Bonus)obj);
+				break;
+			case "MOB":
+				myMobs.remove((Mob)obj);
+				break;
 		}
-		else if(obj instanceof Explosion){
-			System.out.println("SI2");
-			myExplosion.remove((Explosion) obj);
-			((Explosion) obj).destroy();
-		}
-		else if(obj instanceof Bonus) {
-			myBonus.remove((Bonus)obj);
-			((Bonus)obj).destroy();
-		}
-		else if(obj instanceof Player) {
-			setChanged();
-			notifyObservers(playerAlive);
-		}
-		else if(obj instanceof Mob) {
-			if(myMobs.isEmpty()) {
-				System.out.println("SI3");
-				setChanged();
-				notifyObservers(playerAlive);
-			}
-		}
-		*/
 	}
 
 	boolean canDestroy(Point nextPos) {
@@ -342,7 +316,7 @@ class Map extends Observable implements Observer{
 		while(wallIter.hasNext()) {
 			nextWall = wallIter.next();
 			if(nextWall.getPos().equals(nextPos)) {
-				if(nextWall.destroyable) {
+				if(nextWall.getDestroyable()) {
 					myPlayer.addScore(nextWall);
 					nextWall.destroy();
 					wallIter.remove();
@@ -364,7 +338,48 @@ class Map extends Observable implements Observer{
 		return playerAlive;
 	}
 
+	ArrayList<Mob> getMyMobs() {
+		return myMobs;
+	}
+
+	ArrayList<Wall> getMyWalls() {
+		return myWalls;
+	}
+
+	ArrayList<Bomb> getMyBombs() {
+		return myBombs;
+	}
+
+	ArrayList<Chest> getMyChests() {
+		return myChests;
+	}
+
+	ArrayList<Bonus> getMyBonus() {
+		return myBonus;
+	}
+
+	ArrayList<Terrain> getMyTerrains() {
+		return myTerrains;
+	}
+
+	Player getMyPlayer() {
+		return myPlayer;
+	}
+
+	ArrayList<Explosion> getMyExplosion() {
+		return myExplosion;
+	}
+
+	Controller getControllerRef() {
+		return controllerRef;
+	}
+	
 	public void setPlayerAlive(boolean playerAlive) {
 		this.playerAlive = playerAlive;
 	}
+	
+	void setControllerRef(Controller controllerRef) {
+		this.controllerRef = controllerRef;
+	}
+	
 }
