@@ -88,6 +88,9 @@ class Bomb extends Entity implements ActionListener{
 		deleteObservers();		
 	}
 
+	/**
+	 * 
+	 */
 	public void dominoEffect() {
 		t.stop();
 		t.setInitialDelay(10);

@@ -16,7 +16,7 @@ public class Menu implements ActionListener
 {
 	private JFrame menu;
 	@SuppressWarnings("unused")
-	private GameFrame gameFrame;
+	private GameFrame myGameFrame;
 	private Map myMap = null;
 	public static final int WIDTH = 640;
 	public static final int HEIGHT = 480;
@@ -39,13 +39,13 @@ public class Menu implements ActionListener
 		panel.setBounds(0, 0, WIDTH, HEIGHT);
 		JButton startGame = new JButton("START");
 		startGame.setFont(new Font("Tahoma", Font.BOLD, 16));
-		JLabel Author = new JLabel("Bomberman by Gelmotto-Pidello");
-		Author.setFont(new Font("Tahoma", Font.BOLD, 14));
+		JLabel authors = new JLabel("Bomberman by Gelmotto-Pidello");
+		authors.setFont(new Font("Tahoma", Font.BOLD, 14));
 		startGame.addActionListener(this);
 		panel.add(startGame);
 		startGame.setBounds(WIDTH/2 - 130/2 , HEIGHT/2 - 60/2 , 130, 60);
-		panel.add(Author);
-		Author.setBounds(WIDTH/2 - 500/5 ,HEIGHT - 60*2 , 500, 60);
+		panel.add(authors);
+		authors.setBounds(WIDTH/2 - 500/5 ,HEIGHT - 60*2 , 500, 60);
 		menu.add(panel);
 		return menu;
 	}
@@ -67,8 +67,8 @@ public class Menu implements ActionListener
 				return;
 			}
 			try {
-				gameFrame = new GameFrame(myMap, this);
-			} catch (IOException e1) {
+				myGameFrame = new GameFrame(myMap, this);
+			} catch (IOException e1) {//Principalmente per un errore nel caricamento di una skin
 				JOptionPane.showMessageDialog(new JFrame(),
 					    "Errore nella creazione del gioco:\n" + e1.getMessage(),
 					    "Fatal Error",
@@ -80,7 +80,7 @@ public class Menu implements ActionListener
 	}
 	void reset() {
 		myMap = null;
-		gameFrame = null;
+		myGameFrame = null;
 		this.menu.setVisible(true);
 	}
 }

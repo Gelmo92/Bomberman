@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import javax.swing.Timer;
 
-public class Explosion extends Entity {
+class Explosion extends Entity {
 
 	private ArrayList<Point> propagation;
 	private final Point firstPosition;
@@ -85,7 +85,7 @@ public class Explosion extends Entity {
 				pos = nextPos;
 			}
 			else {
-				if(mapRef.canDestroy(nextPos)) {
+				if(mapRef.canDestroyWall(nextPos)) {
 					propagation.add(nextPos);
 				}
 				return;

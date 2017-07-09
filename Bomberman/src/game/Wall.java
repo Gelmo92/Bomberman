@@ -1,10 +1,11 @@
 package game;
 
 import java.awt.Point;
+
 /**
- * La classe Wall rappresenta il muro nella mappa.
- * Gli oggetti Wall possono essere o muri di perimetro che delimitano l'area di gioco
- * o possono essere muri interni se sono interni possono essere o distruttibili o non 
+ * La classe Wall rappresenta un muro nella mappa.
+ * Gli oggetti Wall possono essere muri perimetrali che delimitano l'area di gioco
+ * o muri interni.I muri interni possono essere distruttibili o non 
  * distruttibili.
  * 
  * @author Yuri Gelmotto
@@ -18,14 +19,14 @@ class Wall extends Entity {
 	
 	/**
 	 * 
-	 * @param firstPosition sono le coordinate del muro
+	 * @param pos sono le coordinate del muro
 	 * @param destroyable definisce se il muro è distruttibile
 	 * @param perimetral definisce se il muro è perimetrale
 	 */
-	public Wall(Point firstPosition, boolean destroyable, boolean perimetry) {
-		position = firstPosition;
+	public Wall(Point pos, boolean destroyable, boolean perimetral) {
+		position = pos;
 		this.destroyable = destroyable;
-		this.perimetral = perimetry;
+		this.perimetral = perimetral;
 	}
 	
 	/**
@@ -37,7 +38,7 @@ class Wall extends Entity {
 	}
 	
 	/**
-	 * Non implementato
+	 * Non necessario dato che i muri non si possono muovere
 	 */
 	@Override
 	void move(int movement, Direction direction) {
@@ -52,14 +53,23 @@ class Wall extends Entity {
 		
 	}
 	
+	/**
+	 * @return true se il muro e' distruttibile
+	 */
 	boolean getDestroyable() {
 		return this.destroyable;
 	}
 	
+	/**
+	 * @return true se il muro e' perimetrale
+	 */
 	boolean getPerimetral() {
 		return this.perimetral;
 	}
 	
+	/**
+	 * @return una String mnemonica della classe di questo oggetto
+	 */
 	@Override
 	public String toString() {
 		return "WALL";

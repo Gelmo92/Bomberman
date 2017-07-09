@@ -19,20 +19,20 @@ class Controller extends Observable implements KeyListener, Observer{
 	private ActionListener tickPerformer;
 	private static boolean released = true;
 	
-	public Controller(Map myMap, MapView myMapView) {
-		this.mapRef = myMap;
-		mapRef.setControllerRef(this);
-		mapRef.addObserver(this);
-		addObserver(myMapView);
+	public Controller(Map map, MapView mapView) {
+		this.mapRef = map;
+		map.setControllerRef(this);
+		map.addObserver(this);
+		addObserver(mapView);
 		 	tickPerformer = new ActionListener() {
 		 		@Override
-		 		public void actionPerformed(ActionEvent e) {
+		 		public void actionPerformed(ActionEvent e) {//Causa il tick per il repaint di mapView e il movimento delle entita'
 		 			setChanged();
 		 			notifyObservers(e);
 		 		}
 		 	};
 		  t = new Timer(DELAY, tickPerformer);
-		  myMap.synchMobs(t);
+		  map.synchMobs(t);//Permette ai mob di muoversi al tick del timer t
 		  t.start();
 	}
 
@@ -43,7 +43,7 @@ class Controller extends Observable implements KeyListener, Observer{
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if(!mapRef.isPlayerAlive() || !released) return;
+		if(!mapRef.getPlayerAlive() || !released) return;//Non permette all'utente di compiere ulteriori azioni in gioco finche' non rilascia il tasto premuto o se il giocatore e' morto
 		released = false;
 		switch(e.getKeyCode()) {
 		case KeyEvent.VK_RIGHT: 
@@ -63,7 +63,7 @@ class Controller extends Observable implements KeyListener, Observer{
 			break;
 		}
 		setChanged();
-		notifyObservers(e);
+		notifyObservers(e);//Permette al giocatore di muoversi senza tener conto del tick del timer t
 	}
 
 	@Override
@@ -75,7 +75,7 @@ class Controller extends Observable implements KeyListener, Observer{
 	@Override
 	public void update(Observable o, Object arg) {
 		setChanged();
-		notifyObservers(arg);
+		notifyObservers(arg);//Causa in GameFrame la fine della partita, in quanto questo metodo "update" viene chiamato solo in caso di notifica da Map di vincita o perdita della partita
 				
 	}
 	
@@ -85,7 +85,6 @@ class Controller extends Observable implements KeyListener, Observer{
 	
 	void stopT() {
 		t.stop();
-		deleteObservers();
 	}
 
 }

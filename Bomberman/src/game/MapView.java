@@ -299,7 +299,7 @@ class MapView extends JPanel implements Observer{
 			g.drawImage(playerImg, playerRender.getPos().x, playerRender.getPos().y, CELL, CELL, null);
 		}
 		lifeAndScoreLabel.setText("<html><font color='red'>LIFE: " + playerRender.getLife() + "</font><br><br><font color='white'>SCORE: " + playerRender.getScore() + "</font></html>");
-		lifeAndScoreLabel.setLocation(650, -300);
+		lifeAndScoreLabel.setLocation(675, -275);
 		lifeAndScoreLabel.setVisible(true);
 	}
 

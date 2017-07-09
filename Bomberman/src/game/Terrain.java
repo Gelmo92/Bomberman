@@ -2,15 +2,15 @@ package game;
 
 import java.awt.Point;
 /**
- * La classe terrain rappresenta il terreno su cui si possono muovere i mostri,
- * le bombe e il personaggio. Inoltre il terreno camvia aspeto grafico
+ * La classe Terrain rappresenta una cella di terreno su cui si possono muovere le entita',
+ * Inoltre il terreno camvia aspeto grafico
  * se viene colpito da una esplosione
  * 
  * @author Yuri Gelmotto
  * @author Riccardo Pidello
  *
  */
-public class Terrain {
+class Terrain {
 
 	private Point position;
 	private boolean burnt;
@@ -22,15 +22,6 @@ public class Terrain {
 		this.position = pos;
 		burnt = false;
 	}
-	/**
-	 * 
-	 * @param pos sono le coordinate del terreno
-	 * @param burnt se vero allora il terreno è bruciato
-	 */
-	public Terrain(Point pos, boolean burnt) {
-		this.position = pos;
-		this.burnt = burnt;
-	}
 	
 	/**
 	 * 
@@ -41,14 +32,14 @@ public class Terrain {
 	}
 	/**
 	 * 
-	 * @return true se il terreno è bruciato
+	 * @return true se il terreno e' bruciato
 	 */
 	boolean getBurnt() {
 		return burnt;
 	}
 	
 	/**
-	 * setta la variabile burnt a true per indicare che quel terreno è bruciato
+	 * Setta la variabile burnt a true per indicare che quel terreno e' bruciato
 	 */
 	void setBurnt() {
 		this.burnt = true;
