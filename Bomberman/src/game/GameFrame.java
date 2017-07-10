@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
@@ -18,12 +19,14 @@ public class GameFrame extends JFrame implements Observer{
 	public static final int WIDTH = 1000;
 	public static final int HEIGHT = 720;
 	private Menu menuRef;
+	private Map myMap;
 	private Controller myController;
 
-	public GameFrame(Map map, Menu menu) throws IOException {
+	public GameFrame(Menu menu) throws FileNotFoundException, IOException{
 		menuRef = menu;
-		MapView myMapView = new MapView(map);
-		myController = new Controller(map, myMapView);
+		myMap = new Map();
+		MapView myMapView = new MapView(myMap);
+		myController = new Controller(myMap, myMapView);
 		myController.addObserver(this);
 		addKeyListener(myController);//myController gestirà la pressione dei tasti della tastiera
 		

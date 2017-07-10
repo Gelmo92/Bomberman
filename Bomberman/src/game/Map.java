@@ -35,7 +35,8 @@ class Map extends Observable implements Observer{
 	private static final String MAP_NAME = "map.txt";
 	
 	/**
-	 * Genera oggetti partendo da un file .txt specificato in MAP_NAME.
+	 * Genera oggetti partendo da un file .txt specificato in MAP_NAME e ne salva i riferimenti
+	 * in ArrayList privati;
 	 * 
 	 * @throws FileNotFoundException se non trova il file con nome ed estensione specificati in MAP_NAME
 	 */

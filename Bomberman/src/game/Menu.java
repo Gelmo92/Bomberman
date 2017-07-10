@@ -17,7 +17,6 @@ public class Menu implements ActionListener
 	private JFrame menu;
 	@SuppressWarnings("unused")
 	private GameFrame myGameFrame;
-	private Map myMap = null;
 	public static final int WIDTH = 640;
 	public static final int HEIGHT = 480;
 	
@@ -57,29 +56,29 @@ public class Menu implements ActionListener
 		{
 		    menu.setVisible(false);
 		    
+			
 			try {
-				myMap = new Map();
-			} catch (FileNotFoundException e2) {
+				myGameFrame = new GameFrame(this);
+			} 
+			catch (FileNotFoundException e2) {
 				JOptionPane.showMessageDialog(new JFrame(),
 					    "Errore nel caricamento della mappa:\n" + e2.getMessage(),
 					    "Fatal Error",
 					    JOptionPane.ERROR_MESSAGE);
 				return;
 			}
-			try {
-				myGameFrame = new GameFrame(myMap, this);
-			} catch (IOException e1) {//Principalmente per un errore nel caricamento di una skin
+			catch (IOException e1) {//Principalmente per un errore nel caricamento di una skin
 				JOptionPane.showMessageDialog(new JFrame(),
-					    "Errore nella creazione del gioco:\n" + e1.getMessage(),
+					    "Errore nel caricamento delle skin:\n" + e1.getMessage(),
 					    "Fatal Error",
 					    JOptionPane.ERROR_MESSAGE);
 				return;
 			}
+			
 		}
 		
 	}
 	void reset() {
-		myMap = null;
 		myGameFrame = null;
 		this.menu.setVisible(true);
 	}
