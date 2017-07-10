@@ -31,7 +31,6 @@ class Map extends Observable implements Observer{
 	private ArrayList<Explosion> myExplosion;
 	private boolean playerAlive;
 	private Controller controllerRef;
-	
 	private static final String MAP_NAME = "map.txt";
 	
 	/**
@@ -40,7 +39,7 @@ class Map extends Observable implements Observer{
 	 * 
 	 * @throws FileNotFoundException se non trova il file con nome ed estensione specificati in MAP_NAME
 	 */
-	public Map() throws FileNotFoundException {
+	Map() throws FileNotFoundException {
 		resetAllStaticRef();//Ci assicuriamo che i bonus ottenuti in una partita precedente non condizionino una partita successiva
 		Scanner mapScan = new Scanner(new File(MAP_NAME));
 		int y = 0;
@@ -488,7 +487,7 @@ class Map extends Observable implements Observer{
 	 * 
 	 * @param t indica il timer del Controller
 	 */
-	public void synchMobs(Timer t) {
+	void synchMobs(Timer t) {
 		for(Mob next : myMobs) {
 			t.addActionListener(next);
 		}
@@ -499,7 +498,7 @@ class Map extends Observable implements Observer{
 	 * 
 	 * @return true se il Player e' ancora vivo, false altrimenti
 	 */
-	public boolean getPlayerAlive() {
+	boolean getPlayerAlive() {
 		return playerAlive;
 	}
 
@@ -580,7 +579,7 @@ class Map extends Observable implements Observer{
 	 * @param playerAlive indica il valore da assegnare alla variabile privata
 	 * omonima di questo oggetto
 	 */
-	public void setPlayerAlive(boolean playerAlive) {
+	void setPlayerAlive(boolean playerAlive) {
 		this.playerAlive = playerAlive;
 	}
 	

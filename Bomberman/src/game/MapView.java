@@ -20,11 +20,17 @@ import javax.swing.JPanel;
 import game.Bonus.BonusType;
 import game.Entity.Direction;
 
-
-@SuppressWarnings("serial")
-
+/**
+ * La classe MapView si occupa della rappresentazione grafica della partita in corso.
+ * Per ogni partita viene creato un solo oggetto MapView.
+ * 
+ * @author Yuri Gelmotto
+ * @author Riccardo Pidello
+ *
+ */
 class MapView extends JPanel implements Observer{
 
+	private static final long serialVersionUID = -3861927029592271534L;
 	private Map mapRef = null;
 	private BufferedImage playerFrontNoneImg = null;
 	private BufferedImage playerFront1Img = null;
@@ -36,6 +42,7 @@ class MapView extends JPanel implements Observer{
 	private BufferedImage playerLeft2Img = null;
 	private BufferedImage playerRight1Img = null;
 	private BufferedImage playerRight2Img = null;
+	private BufferedImage playerToRenderImg = null;
 	private BufferedImage mobFront1Img = null;
 	private BufferedImage mobFront2Img = null;
 	private BufferedImage mobBack1Img = null;
@@ -61,15 +68,24 @@ class MapView extends JPanel implements Observer{
 	private boolean invulnerableRender = true;
 	private boolean flame = true;
 	private boolean playerMovement = false;
-	private Player playerRender = null;
+	private Player playerToRender = null;
 	private JLabel lifeAndScoreLabel;
-	
 	public final static int CELL = 40;
 	
-	public MapView(Map myMap) throws IOException {
+	/**
+	 * Genera le immagini da mostrare a schermo partendo da diversi file immagine.
+	 * Mostra inoltre vita del giocatore e punteggio della partita in corso.
+	 * Ridisegna tutti gli elementi ad ogni tick del timer del Controller.
+	 * 
+	 * @param myMap indica l'oggetto di tipo Map che contiene i riferimenti agli oggetti
+	 * da disegnare
+	 * @throws IOException nel caso in cui il nome di una skin da generare sia errato
+	 */
+	MapView(Map map) throws IOException {
 		super(new BorderLayout());
 		loadImages();
-		this.mapRef = myMap;
+		this.mapRef = map;
+		playerToRender = mapRef.getMyPlayer();//Evitiamo di riscrivere troppe volte mapRef.getMyPlayer()
 		lifeAndScoreLabel = new JLabel();
 		lifeAndScoreLabel.setFont(new Font("Verdana",1,25));
 		this.add(lifeAndScoreLabel);
@@ -77,6 +93,11 @@ class MapView extends JPanel implements Observer{
 		repaint();
 	}
 	
+	/**
+	 * Carica le immagini delle skin in memoria partendo da diversi file immagine.
+	 * 
+	 * @throws IOException nel caso in cui il nome di una skin da generare sia errato
+	 */
 	private void loadImages() throws IOException {
 		playerFrontNoneImg = ImageIO.read(new File("pg_front_start.png"));
 		playerFront1Img = ImageIO.read(new File("pg_front_1.png"));
@@ -111,17 +132,26 @@ class MapView extends JPanel implements Observer{
 		burntImg = ImageIO.read(new File("burnt_3.png"));
 	}
 
+	/**
+	 * Gestisce la chiamata di notifyObservers() causata dal Controller,
+	 * unico oggetto che osserva, distinguendo tra tick del timer del Controller
+	 * e movimento del giocatore.
+	 */
 	@Override
-	public void update(Observable arg0, Object arg1) {
-		if(arg1 instanceof ActionEvent) {
+	public void update(Observable arg0, Object arg) {
+		if(arg instanceof ActionEvent || arg instanceof Boolean) {
 			playerMovement = false;
 		}
-		else if (arg1 instanceof KeyEvent) {
+		else if (arg instanceof KeyEvent) {
 			playerMovement = true;
 		}
 		repaint();
 	}
 	
+	/**
+	 * Ridisegna sul JPanel che implementa tutti gli elementi di Map
+	 * che fanno attualmente parte della partita.
+	 */
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -150,7 +180,7 @@ class MapView extends JPanel implements Observer{
 		
 		if(!mapRef.getMyMobs().isEmpty()) {
 			for(Mob next : mapRef.getMyMobs()) {
-				BufferedImage mobImg = null;
+				BufferedImage mobImg = null;//Una immagine diversa per ogni Mob
 				Direction mobDir = next.getDir();
 				switch(mobDir) {
 					case RIGHT:
@@ -192,29 +222,29 @@ class MapView extends JPanel implements Observer{
 			}
 		}
 		
-		for(Wall next : mapRef.getMyWalls()) {
-			if(next.getDestroyable()) {
+		for(Wall next : mapRef.getMyWalls()) {//Non puo' essere vuoto, a causa dei muri non distruttibili
+			if(next.getDestroyable()) {//Muro distruttibile
 				g.drawImage(destructibleWallImg, next.getPos().x, next.getPos().y, CELL, CELL, null);
 			}
-			else if(next.getPerimetral()) {
+			else if(next.getPerimetral()) {//Muro perimetrale
 				g.drawImage(perimetralWallImg, next.getPos().x, next.getPos().y, CELL, CELL, null);
 			}
-			else {
+			else {//Muro non perimetrale e non distruttibile
 				g.drawImage(indestructibleWallImg, next.getPos().x, next.getPos().y, CELL, CELL, null);
 			}
 		}
 		
 		if(!mapRef.getMyExplosion().isEmpty()) {
-			if(!playerMovement) {
-				if(flame) {
+			if(!playerMovement) {//Non causiamo il cambiamento dell'immagine con il movimento del giocatore
+				if(flame) {//Causiamo il cambiamento dell'immagine da un tick all'altro
 					explosionToRender = explosionImg1;
 				}
 				else {
 					explosionToRender = explosionImg2;
 				}
-				flame = !flame;
+				flame = !flame;//Permette di alternare le immagini da scegliere
 			}
-			for(Explosion next : mapRef.getMyExplosion()) {
+			for(Explosion next : mapRef.getMyExplosion()) {//Stessa immagine per tutte le esplosioni
 				for(Point nextPoint : next.getPropagation()){
 					g.drawImage(explosionToRender, nextPoint.x, nextPoint.y, CELL, CELL, null);
 				}
@@ -243,62 +273,61 @@ class MapView extends JPanel implements Observer{
 				}
 			}
 		}
-		BufferedImage playerImg = null;
-		playerRender = mapRef.getMyPlayer();
-		Direction playerDir = playerRender.getDir();
+		
+		Direction playerDir = playerToRender.getDir();
 		switch(playerDir) {
 			case RIGHT:
-				if(playerRender.getFoot()) {
-					playerImg = playerRight2Img;
+				if(playerToRender.getFoot()) {
+					playerToRenderImg = playerRight2Img;
 				}
 				else {
-					playerImg = playerRight1Img;
+					playerToRenderImg = playerRight1Img;
 				}
 				break;
 			case DOWN:
-				if(playerRender.getFoot()) {
-					playerImg = playerFront2Img;
+				if(playerToRender.getFoot()) {
+					playerToRenderImg = playerFront2Img;
 				}
 				else {
-					playerImg = playerFront1Img;
+					playerToRenderImg = playerFront1Img;
 				}
 				break;
 			case LEFT:
-				if(playerRender.getFoot()) {
-					playerImg = playerLeft2Img;
+				if(playerToRender.getFoot()) {
+					playerToRenderImg = playerLeft2Img;
 				}
 				else {
-					playerImg = playerLeft1Img;
+					playerToRenderImg = playerLeft1Img;
 				}
 				break;
 			case UP:
-				if(playerRender.getFoot()) {
-					playerImg = playerBack2Img;
+				if(playerToRender.getFoot()) {
+					playerToRenderImg = playerBack2Img;
 				}
 				else {
-					playerImg = playerBack1Img;
+					playerToRenderImg = playerBack1Img;
 				}
 				break;
 			case NONE:
-				playerImg = playerFrontNoneImg;
+				playerToRenderImg = playerFrontNoneImg;
 				break;
 			case DEAD:
-				playerImg = playerDeadImg;
+				playerToRenderImg = playerDeadImg;
 				break;
 		}
-		if(playerRender.getInvulnerable()) {
+		if(playerToRender.getInvulnerable()) {//Causa l'effetto visivo per accorgersi di aver preso un danno
 			if(!invulnerableRender) {
 				invulnerableRender = true;
 			}
 			else {
-				g.drawImage(playerImg, playerRender.getPos().x, playerRender.getPos().y, CELL, CELL, null);
+				g.drawImage(playerToRenderImg, playerToRender.getPos().x, playerToRender.getPos().y, CELL, CELL, null);
 				invulnerableRender = false;
 			}
 		}
 		else {
-			g.drawImage(playerImg, playerRender.getPos().x, playerRender.getPos().y, CELL, CELL, null);
+			g.drawImage(playerToRenderImg, playerToRender.getPos().x, playerToRender.getPos().y, CELL, CELL, null);
 		}
-		lifeAndScoreLabel.setText("<html><font color='red'>LIFE: " + playerRender.getLife() + "</font><br><br><font color='white'>SCORE: " + playerRender.getScore() + "</font></html>");
+		lifeAndScoreLabel.setText("<html><font color='red'>LIFE: " + playerToRender.getLife() + "</font><br><br><font color='white'>SCORE: " + playerToRender.getScore() + "</font></html>");
 		lifeAndScoreLabel.setLocation(675, -275);
 		lifeAndScoreLabel.setVisible(true);
 	}
