@@ -5,8 +5,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -75,7 +73,7 @@ class MapView extends JPanel implements Observer{
 	/**
 	 * Genera le immagini da mostrare a schermo partendo da diversi file immagine.
 	 * Mostra inoltre vita del giocatore e punteggio della partita in corso.
-	 * Ridisegna tutti gli elementi ad ogni tick del timer del Controller.
+	 * Ridisegna tutti gli elementi ad ogni cambiamento notificato da Map.
 	 * 
 	 * @param myMap indica l'oggetto di tipo Map che contiene i riferimenti agli oggetti
 	 * da disegnare
@@ -85,6 +83,7 @@ class MapView extends JPanel implements Observer{
 		super(new BorderLayout());
 		loadImages();
 		this.mapRef = map;
+		mapRef.addObserver(this);
 		playerToRender = mapRef.getMyPlayer();//Evitiamo di riscrivere troppe volte mapRef.getMyPlayer()
 		lifeAndScoreLabel = new JLabel();
 		lifeAndScoreLabel.setFont(new Font("Verdana",1,25));
@@ -133,16 +132,13 @@ class MapView extends JPanel implements Observer{
 	}
 
 	/**
-	 * Gestisce la chiamata di notifyObservers() causata dal Controller,
-	 * unico oggetto che osserva, distinguendo tra tick del timer del Controller
-	 * e movimento del giocatore.
+	 * Gestisce la chiamata di notifyObservers() causata da Map,
+	 * unico oggetto che osserva, distinguendo tra movimento del giocatore e
+	 * quello delle altre entita'
 	 */
 	@Override
 	public void update(Observable arg0, Object arg) {
-		if(arg instanceof ActionEvent || arg instanceof Boolean) {
-			playerMovement = false;
-		}
-		else if (arg instanceof KeyEvent) {
+		if(arg != null) {
 			playerMovement = true;
 		}
 		repaint();
@@ -156,7 +152,7 @@ class MapView extends JPanel implements Observer{
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		
-		for(Terrain next : mapRef.getMyTerrains()) {
+		for(Terrain next : mapRef.getMyTerrains()) {//Non puo' essere vuoto
 			if(next.getBurnt()) {
 				g.drawImage(burntImg, next.getPos().x, next.getPos().y, CELL, CELL, null);
 			}
@@ -164,12 +160,6 @@ class MapView extends JPanel implements Observer{
 				g.drawImage(grassImg, next.getPos().x, next.getPos().y, CELL, CELL, null);
 			}
 			
-		}
-		if(!mapRef.getMyChests().isEmpty()) {
-			g.setColor(Color.gray);
-			for(Chest next : mapRef.getMyChests()) {
-				g.fillRect(next.getPos().x, next.getPos().y, CELL, CELL);
-			}
 		}
 		
 		if(!mapRef.getMyBombs().isEmpty()) {
@@ -244,6 +234,9 @@ class MapView extends JPanel implements Observer{
 				}
 				flame = !flame;//Permette di alternare le immagini da scegliere
 			}
+			else {
+				playerMovement = false;
+			}
 			for(Explosion next : mapRef.getMyExplosion()) {//Stessa immagine per tutte le esplosioni
 				for(Point nextPoint : next.getPropagation()){
 					g.drawImage(explosionToRender, nextPoint.x, nextPoint.y, CELL, CELL, null);
@@ -315,7 +308,7 @@ class MapView extends JPanel implements Observer{
 				playerToRenderImg = playerDeadImg;
 				break;
 		}
-		if(playerToRender.getInvulnerable()) {//Causa l'effetto visivo per accorgersi di aver preso un danno
+		if(playerToRender.getInvulnerable()) {//Causa un effetto visivo per accorgersi di aver preso un danno
 			if(!invulnerableRender) {
 				invulnerableRender = true;
 			}

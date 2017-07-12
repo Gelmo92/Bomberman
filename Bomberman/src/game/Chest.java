@@ -35,12 +35,10 @@ public class Chest extends Entity {
 
 	}
 	
-	/**
-	 * Non necessario in questa implementazione
-	 */
 	@Override
 	void destroy() {
 		mapRef.dropBonus(position);
+		mapRef.removeFromArrayList(this);
 	}
 	
 	@Override

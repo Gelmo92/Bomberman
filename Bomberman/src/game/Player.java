@@ -113,7 +113,7 @@ class Player extends Entity {
 		return invulnerable;
 	}
 	
-	private void setInvulnerable() {
+	void setInvulnerable() {
 		invulnerable = !invulnerable;
 	}
 

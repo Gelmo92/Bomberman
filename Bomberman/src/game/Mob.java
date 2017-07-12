@@ -1,10 +1,8 @@
 package game;
 
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-class Mob extends Entity implements ActionListener {
+class Mob extends Entity{
 	
 	private Point position;
 	private Point nextPos;
@@ -66,17 +64,10 @@ class Mob extends Entity implements ActionListener {
 	@Override
 	void destroy() {
 		mapRef.removeFromArrayList(this);
-		mapRef.getControllerRef().getT().removeActionListener(this);
 		this.direction = Direction.DEAD;
 		setChanged();
 		notifyObservers();
 		deleteObservers();
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		this.move(MapView.CELL, this.direction);
-		
 	}
 	
 	@Override

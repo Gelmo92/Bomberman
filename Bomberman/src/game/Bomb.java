@@ -6,7 +6,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.Timer;
 
-class Bomb extends Entity implements ActionListener{
+class Bomb extends Entity{
 
 	private Point pos;
 	private Point nextPos;
@@ -26,7 +26,6 @@ class Bomb extends Entity implements ActionListener{
 		if(mapRef == null) {
 			mapRef = map;
 		}
-		mapRef.getControllerRef().getT().addActionListener(this);
 		ActionListener taskPerformer = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -48,20 +47,24 @@ class Bomb extends Entity implements ActionListener{
 
 	@Override
 	void move(int movement, Direction dir) {
+		if(!moving) {
+			moving = !moving;
+			this.direction = dir;
+			return;
+		}
 		nextPos = new Point(pos);
-		this.direction = dir;
 		switch(this.direction) {
 		case RIGHT:
-			nextPos.x += movement;//*MapView.cell;
+			nextPos.x += movement;
 			break;
 		case DOWN:
-			nextPos.y += movement;//*MapView.cell;
+			nextPos.y += movement;
 			break;
 		case LEFT:
-			nextPos.x -= movement;//*MapView.cell;
+			nextPos.x -= movement;
 			break;
 		case UP:
-			nextPos.y -= movement;//*MapView.cell;
+			nextPos.y -= movement;
 			break;
 		default:
 			break;
@@ -84,7 +87,6 @@ class Bomb extends Entity implements ActionListener{
 		droppedBombs--;
 		this.direction = Direction.NONE;
 		this.moving = false;
-		mapRef.getControllerRef().getT().removeActionListener(this);
 		deleteObservers();		
 	}
 
@@ -98,31 +100,27 @@ class Bomb extends Entity implements ActionListener{
 		
 	}
 
-	public static void increaseNumberBomb() {
+	static void increaseNumberBomb() {
 		numberBomb++;
 	}
-	public static int getDroppedBombs() {
+	static int getDroppedBombs() {
 		return droppedBombs;
 	}
 
-	public static int getNumberBomb() {
+	static int getNumberBomb() {
 		return numberBomb;
 	}
 	
-	public static boolean getCanMove() {
+	static boolean getCanMove() {
 		return bonusMoveBomb;
 	}
 	
-	public static void setCanMove() {
-		bonusMoveBomb = true;
-		
+	Direction getDirection() {
+		return direction;
 	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		if(bonusMoveBomb && moving) {
-			this.move(MapView.CELL, this.direction);
-		}
+	
+	static void setCanMove() {
+		bonusMoveBomb = true;
 		
 	}
 	
@@ -136,5 +134,9 @@ class Bomb extends Entity implements ActionListener{
 		bonusMoveBomb = false;
 		numberBomb = 1;
 		droppedBombs = 0;
+	}
+
+	public boolean isMoving() {
+		return moving;
 	}
 }

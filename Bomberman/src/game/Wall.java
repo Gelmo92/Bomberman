@@ -46,7 +46,7 @@ class Wall extends Entity {
 	}
 
 	/**
-	 * Non implementato
+	 * Non necessario, se ne occupa Map
 	 */
 	@Override
 	void destroy() {

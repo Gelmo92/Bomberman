@@ -8,7 +8,8 @@ import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Scanner;
-import javax.swing.Timer;
+
+import game.Entity.Direction;
 
 /**
  * La classe Map contiene i riferimenti a tutte le entita' del gioco.
@@ -32,6 +33,7 @@ class Map extends Observable implements Observer{
 	private boolean playerAlive;
 	private Controller controllerRef;
 	private static final String MAP_NAME = "map.txt";
+	private boolean gameOver;
 	
 	/**
 	 * Genera oggetti partendo da un file .txt specificato in MAP_NAME e ne salva i riferimenti
@@ -43,14 +45,15 @@ class Map extends Observable implements Observer{
 		resetAllStaticRef();//Ci assicuriamo che i bonus ottenuti in una partita precedente non condizionino una partita successiva
 		Scanner mapScan = new Scanner(new File(MAP_NAME));
 		int y = 0;
-		myWalls = new ArrayList<Wall>();
-		myMobs = new ArrayList<Mob>();
-		myExplosion = new ArrayList<Explosion>();
+		gameOver = false;
 		myBombs = new ArrayList<Bomb>();
-		myChests = new ArrayList<Chest>();
 		myBonus = new ArrayList<Bonus>();
-		myTerrains = new ArrayList<Terrain>();
+		myChests = new ArrayList<Chest>();
+		myExplosion = new ArrayList<Explosion>();
+		myMobs = new ArrayList<Mob>();
 		myPlayer = null;
+		myTerrains = new ArrayList<Terrain>();
+		myWalls = new ArrayList<Wall>();
 		while(mapScan.hasNextLine()) {
 			String currentLine = mapScan.nextLine();
 			for(int x = 0; x < currentLine.length(); x++) {
@@ -98,7 +101,42 @@ class Map extends Observable implements Observer{
 		Chest.resetStatic();
 		
 	}
+	
+	/**
+	 * Permette un singolo movimento a tutte le entita' diverse da Player che 
+	 * possono e/o devono tentarlo.
+	 */
+	void moveEntities() {
+		Iterator<Entity> iter = new ArrayList<Entity>(myMobs).iterator();
+		while(iter.hasNext()) {
+			iter.next().move(MapView.CELL, Direction.NONE);
+		}
+		if(Bomb.getCanMove()) {
+			iter = new ArrayList<Entity>(myBombs).iterator();
+			Bomb nextBomb;
+			while(iter.hasNext()) {
+				nextBomb = (Bomb) iter.next();
+				if(nextBomb.isMoving()) {
+					nextBomb.move(MapView.CELL, nextBomb.getDirection());
+				}
+			}
+		}
+		setChanged();
+		notifyObservers();
+	}
 
+	/**
+	 * Permette all'oggetto di tipo Player di tentare un singolo movimento in
+	 * direzione dir.
+	 * 
+	 * @param dir indica la direzione in cui Player deve cercare di muoversi
+	 */
+	void movePlayer(Direction dir) {
+		myPlayer.move(MapView.CELL, dir);
+		setChanged();
+		notifyObservers(true);// Semplice implementazione per distinguere il movimento di Player in MapView
+	}
+	
 	/**
 	 * Verifica la possibilita' di un oggetto di tipo Entity di muoversi
 	 * in una certa posizione.
@@ -181,7 +219,6 @@ class Map extends Observable implements Observer{
 						nextBonus.getBonus();
 						myPlayer.addScore(nextBonus);
 					case "EXPLOSION":
-						bonusIter.remove();//Dobbiamo rimuoverlo tramite l'iteratore per non causare una ConcurrentModificationException
 						nextBonus.destroy();
 					case "MOB":
 						;
@@ -214,7 +251,6 @@ class Map extends Observable implements Observer{
 				switch(obj.toString()) {
 					case "EXPLOSION":
 						myPlayer.addScore(nextChest);
-						chestIter.remove();//Dobbiamo rimuoverlo tramite l'iteratore per non causare una ConcurrentModificationException
 						nextChest.destroy();
 					case "PLAYER":
 						;
@@ -283,7 +319,7 @@ class Map extends Observable implements Observer{
 	 */
 	private boolean checkMobs(Point nextPos, Entity obj) {
 		Mob nextMob = null;
-		Iterator<Mob> mobIter = myMobs.iterator();
+		Iterator<Mob> mobIter = new ArrayList<Mob>(myMobs).iterator();
 		while (mobIter.hasNext()) {
 			nextMob = mobIter.next();
 			if(nextMob.getPos().equals(nextPos)) {
@@ -297,7 +333,6 @@ class Map extends Observable implements Observer{
 						return false;
 					case "EXPLOSION":
 						myPlayer.addScore(nextMob);
-						mobIter.remove();//Dobbiamo rimuoverlo tramite l'iteratore per non causare una ConcurrentModificationException
 						nextMob.destroy();
 					default:
 						return true;
@@ -351,6 +386,34 @@ class Map extends Observable implements Observer{
 			}
 		}
 		return true;
+	}
+	/**
+	 * Verifica se nella posizione indicata sia presente 
+	 * un oggetto di tipo Wall.
+	 * Se presente e distruttibile, lo distrugge.
+	 * 
+	 * @param pos indica la posizione da controllare
+	 * @return true se risulta un oggetto di tipo Wall in quella posizione ed e'
+	 * distruttibile, false altrimenti
+	 */
+	boolean canDestroyWall(Point pos) {
+		Wall nextWall = null;
+		Iterator<Wall> wallIter = myWalls.iterator();
+		while(wallIter.hasNext()) {
+			nextWall = wallIter.next();
+			if(nextWall.getPos().equals(pos)) {
+				if(nextWall.getDestroyable()) {
+					myPlayer.addScore(nextWall);
+					wallIter.remove();//Dobbiamo rimuoverlo tramite l'iteratore per non causare una ConcurrentModificationException
+					nextWall.destroy();
+					return true;
+				}
+				else {
+					return false;
+				}
+			}
+		}
+		return false;
 	}
 	
 	/**
@@ -415,13 +478,19 @@ class Map extends Observable implements Observer{
 				((Bonus)obj).destroy();
 				break;
 			case "PLAYER":
-				setChanged();
-				notifyObservers(playerAlive);
+				if(!gameOver) {//Evitiamo la notifica vittoria e poi notifica morte player
+					gameOver = !gameOver;
+					setChanged();
+					notifyObservers();
+					controllerRef.gameOver(playerAlive);//Sconfitta
+				}
 				break;
 			case "MOB":
-				if(myMobs.isEmpty()) {
+				if(myMobs.isEmpty() && !gameOver) {//Evitiamo la notifica morte player e poi notifica morte dell'ultimo mob
+					gameOver = !gameOver;
 					setChanged();
-					notifyObservers(playerAlive);
+					notifyObservers();
+					controllerRef.gameOver(playerAlive);//Vittoria
 				}
 				break;
 			default:
@@ -440,11 +509,14 @@ class Map extends Observable implements Observer{
 			case "BOMB":
 				myBombs.remove((Bomb) obj);
 				break;
-			case "EXPLOSION":
-				myExplosion.remove((Explosion) obj);
-				break;
 			case "BONUS":
 				myBonus.remove((Bonus)obj);
+				break;
+			case "CHEST":
+				myChests.remove((Chest)obj);
+				break;
+			case "EXPLOSION":
+				myExplosion.remove((Explosion) obj);
 				break;
 			case "MOB":
 				myMobs.remove((Mob)obj);
@@ -453,47 +525,69 @@ class Map extends Observable implements Observer{
 	}
 
 	/**
-	 * Verifica se nella posizione indicata sia presente 
-	 * un oggetto di tipo Wall.
-	 * Se presente e distruttibile, lo distrugge.
 	 * 
-	 * @param pos indica la posizione da controllare
-	 * @return true se risulta un oggetto di tipo Wall in quella posizione ed e'
-	 * distruttibile, false altrimenti
+	 * @return l'ArrayList degli oggetti di tipo Mob
 	 */
-	boolean canDestroyWall(Point pos) {
-		Wall nextWall = null;
-		Iterator<Wall> wallIter = myWalls.iterator();
-		while(wallIter.hasNext()) {
-			nextWall = wallIter.next();
-			if(nextWall.getPos().equals(pos)) {
-				if(nextWall.getDestroyable()) {
-					myPlayer.addScore(nextWall);
-					wallIter.remove();//Dobbiamo rimuoverlo tramite l'iteratore per non causare una ConcurrentModificationException
-					nextWall.destroy();
-					return true;
-				}
-				else {
-					return false;
-				}
-			}
-		}
-		return false;
+	ArrayList<Bomb> getMyBombs() {
+		return myBombs;
 	}
-
+	
 	/**
-	 * Aggiunge tutti gli oggetti di tipo Mob generati come ActionListener del timer
-	 * del Controller
 	 * 
-	 * @param t indica il timer del Controller
+	 * @return l'ArrayList degli oggetti di tipo Bonus
 	 */
-	void synchMobs(Timer t) {
-		for(Mob next : myMobs) {
-			t.addActionListener(next);
-		}
-		
+	ArrayList<Bonus> getMyBonus() {
+		return myBonus;
 	}
-
+	
+	/**
+	 * 
+	 * @return l'ArrayList degli oggetti di tipo Chest
+	 */
+	ArrayList<Chest> getMyChests() {
+		return myChests;
+	}
+	
+	/**
+	 * 
+	 * @return l'ArrayList degli oggetti di tipo Explosion
+	 */
+	ArrayList<Explosion> getMyExplosion() {
+		return myExplosion;
+	}
+	
+	/**
+	 * 
+	 * @return l'ArrayList degli oggetti di tipo Mob
+	 */
+	ArrayList<Mob> getMyMobs() {
+		return myMobs;
+	}
+	
+	/**
+	 * 
+	 * @return l'oggetto di tipo Player
+	 */
+	Player getMyPlayer() {
+		return myPlayer;
+	}
+	
+	/**
+	 * 
+	 * @return l'ArrayList degli oggetti di tipo Terrain
+	 */
+	ArrayList<Terrain> getMyTerrains() {
+		return myTerrains;
+	}
+	
+	/**
+	 * 
+	 * @return l'ArrayList degli oggetti di tipo Wall
+	 */
+	ArrayList<Wall> getMyWalls() {
+		return myWalls;
+	}
+	
 	/**
 	 * 
 	 * @return true se il Player e' ancora vivo, false altrimenti
@@ -504,92 +598,19 @@ class Map extends Observable implements Observer{
 
 	/**
 	 * 
-	 * @return l'ArrayList degli oggetti di tipo Mob
-	 */
-	ArrayList<Mob> getMyMobs() {
-		return myMobs;
-	}
-
-	/**
-	 * 
-	 * @return l'ArrayList degli oggetti di tipo Wall
-	 */
-	ArrayList<Wall> getMyWalls() {
-		return myWalls;
-	}
-
-	/**
-	 * 
-	 * @return l'ArrayList degli oggetti di tipo Mob
-	 */
-	ArrayList<Bomb> getMyBombs() {
-		return myBombs;
-	}
-
-	/**
-	 * 
-	 * @return l'ArrayList degli oggetti di tipo Chest
-	 */
-	ArrayList<Chest> getMyChests() {
-		return myChests;
-	}
-
-	/**
-	 * 
-	 * @return l'ArrayList degli oggetti di tipo Bonus
-	 */
-	ArrayList<Bonus> getMyBonus() {
-		return myBonus;
-	}
-
-	/**
-	 * 
-	 * @return l'ArrayList degli oggetti di tipo Terrain
-	 */
-	ArrayList<Terrain> getMyTerrains() {
-		return myTerrains;
-	}
-
-	/**
-	 * 
-	 * @return l'oggetto di tipo Player
-	 */
-	Player getMyPlayer() {
-		return myPlayer;
-	}
-
-	/**
-	 * 
-	 * @return l'ArrayList degli oggetti di tipo Explosion
-	 */
-	ArrayList<Explosion> getMyExplosion() {
-		return myExplosion;
-	}
-
-	/**
-	 * 
-	 * @return il riferimento di questo oggetto al Controller
-	 */
-	Controller getControllerRef() {
-		return controllerRef;
-	}
-	
-	/**
-	 * 
 	 * @param playerAlive indica il valore da assegnare alla variabile privata
 	 * omonima di questo oggetto
 	 */
 	void setPlayerAlive(boolean playerAlive) {
 		this.playerAlive = playerAlive;
 	}
-	
+
 	/**
 	 * 
-	 * @param controllerRef indica l'oggetto di tipo Controller da assegnare
-	 * alla variabile privata omonima di questo oggetto
+	 * @param controller il controller associato a questa mappa
 	 */
-	void setControllerRef(Controller controllerRef) {
-		this.controllerRef = controllerRef;
+	void setControllerRef(Controller controller) {
+		controllerRef = controller;
 	}
-	
+
 }

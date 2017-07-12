@@ -12,14 +12,23 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-public class Menu implements ActionListener
-{
+/**
+ * La classe Menu si occupa di creare un menu grafico iniziale e gestirne
+ * le interazioni da parte dell'utente.
+ * 
+ * @author Yuri Gelmotto
+ * @author Riccardo Pidello
+ */
+public class Menu implements ActionListener {
 	private JFrame menu;
 	@SuppressWarnings("unused")
 	private GameFrame myGameFrame;
 	public static final int WIDTH = 640;
 	public static final int HEIGHT = 480;
 	
+	/**
+	 * Crea e imposta un JFrame per la visualizzazione grafica del menu.
+	 */
 	public Menu() 
 	{
 		menu = new JFrame("Bomberman Menu");
@@ -31,6 +40,13 @@ public class Menu implements ActionListener
 		menu.setVisible(true);
 	}
 	
+	/**
+	 * Imposta e aggiunge varie componenti grafiche ad un JFrame che gli viene
+	 * passato come unico argomento.
+	 * 
+	 * @param menu il JFrame in cui aggiungere le componenti grafiche
+	 * @return lo stesso JFrame passato come argomento dopo essere stato modificato
+	 */
 	private JFrame setUpMenu(JFrame menu)
 	{
 		JPanel panel = new JPanel();
@@ -49,6 +65,9 @@ public class Menu implements ActionListener
 		return menu;
 	}
 
+	/**
+	 * Gestisce la pressione del bottone "START" e cattura eventuali exception.
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		JButton pressedButton = (JButton) e.getSource();
@@ -78,6 +97,10 @@ public class Menu implements ActionListener
 		}
 		
 	}
+	
+	/**
+	 * Rende nuovamente visibile il JFrame del menu.
+	 */
 	void reset() {
 		myGameFrame = null;
 		this.menu.setVisible(true);
