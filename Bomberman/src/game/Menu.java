@@ -79,16 +79,23 @@ public class Menu implements ActionListener {
 			try {
 				myGameFrame = new GameFrame(this);
 			} 
-			catch (FileNotFoundException e2) {
+			catch (FileNotFoundException e1) {
 				JOptionPane.showMessageDialog(new JFrame(),
-					    "Errore nel caricamento della mappa:\n" + e2.getMessage(),
+					    "Errore nel caricamento della mappa:\n" + e1.getMessage(),
 					    "Fatal Error",
 					    JOptionPane.ERROR_MESSAGE);
 				return;
 			}
-			catch (IOException e1) {//Principalmente per un errore nel caricamento di una skin
+			catch (IOException e2) {//Principalmente per un errore nel caricamento di una skin
 				JOptionPane.showMessageDialog(new JFrame(),
-					    "Errore nel caricamento delle skin:\n" + e1.getMessage(),
+					    "Errore nel caricamento delle skin:\n" + e2.getMessage(),
+					    "Fatal Error",
+					    JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			catch (IllegalStateException e3) {
+				JOptionPane.showMessageDialog(new JFrame(),
+					    "Errore nel caricamento della mappa:\n" + e3.getMessage(),
 					    "Fatal Error",
 					    JOptionPane.ERROR_MESSAGE);
 				return;

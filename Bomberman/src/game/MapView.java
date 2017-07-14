@@ -28,7 +28,7 @@ import game.Entity.Direction;
  */
 class MapView extends JPanel implements Observer{
 
-	private static final long serialVersionUID = -3861927029592271534L;
+	private static final long serialVersionUID = -3861927029592271534L;//Richiesto per distinguere versioni diverse
 	private Map mapRef = null;
 	private BufferedImage playerFrontNoneImg = null;
 	private BufferedImage playerFront1Img = null;
@@ -74,6 +74,7 @@ class MapView extends JPanel implements Observer{
 	 * Genera le immagini da mostrare a schermo partendo da diversi file immagine.
 	 * Mostra inoltre vita del giocatore e punteggio della partita in corso.
 	 * Ridisegna tutti gli elementi ad ogni cambiamento notificato da Map.
+	 * Per ogni partita viene creato un solo oggetto di tipo MapView.
 	 * 
 	 * @param myMap indica l'oggetto di tipo Map che contiene i riferimenti agli oggetti
 	 * da disegnare
@@ -84,10 +85,10 @@ class MapView extends JPanel implements Observer{
 		loadImages();
 		this.mapRef = map;
 		mapRef.addObserver(this);
-		playerToRender = mapRef.getMyPlayer();//Evitiamo di riscrivere troppe volte mapRef.getMyPlayer()
+		playerToRender = mapRef.getMyPlayer();//Evitiamo di invocare piu' volte mapRef.getMyPlayer()
 		lifeAndScoreLabel = new JLabel();
 		lifeAndScoreLabel.setFont(new Font("Verdana",1,25));
-		this.add(lifeAndScoreLabel);
+		this.add(lifeAndScoreLabel);//Aggiungiamo la label a questo panel
 		this.setBackground(Color.black);
 		repaint();
 	}
@@ -138,7 +139,7 @@ class MapView extends JPanel implements Observer{
 	 */
 	@Override
 	public void update(Observable arg0, Object arg) {
-		if(arg != null) {
+		if(arg != null) {//Nella nostra implementazione e' vero da movePlayer() di map
 			playerMovement = true;
 		}
 		repaint();
@@ -152,14 +153,16 @@ class MapView extends JPanel implements Observer{
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		
-		for(Terrain next : mapRef.getMyTerrains()) {//Non puo' essere vuoto
-			if(next.getBurnt()) {
-				g.drawImage(burntImg, next.getPos().x, next.getPos().y, CELL, CELL, null);
+		if(!mapRef.getMyTerrains().isEmpty()) {
+			for(Terrain next : mapRef.getMyTerrains()) {//Non puo' essere vuoto
+				if(next.getBurnt()) {
+					g.drawImage(burntImg, next.getPos().x, next.getPos().y, CELL, CELL, null);
+				}
+				else {
+					g.drawImage(grassImg, next.getPos().x, next.getPos().y, CELL, CELL, null);
+				}
+				
 			}
-			else {
-				g.drawImage(grassImg, next.getPos().x, next.getPos().y, CELL, CELL, null);
-			}
-			
 		}
 		
 		if(!mapRef.getMyBombs().isEmpty()) {
@@ -170,7 +173,7 @@ class MapView extends JPanel implements Observer{
 		
 		if(!mapRef.getMyMobs().isEmpty()) {
 			for(Mob next : mapRef.getMyMobs()) {
-				BufferedImage mobImg = null;//Una immagine diversa per ogni Mob
+				BufferedImage mobImg = null;//Una immagine diversa per ogni Mob poiche' si muovono autonomamente e in direzioni diverse
 				Direction mobDir = next.getDir();
 				switch(mobDir) {
 					case RIGHT:
@@ -212,15 +215,17 @@ class MapView extends JPanel implements Observer{
 			}
 		}
 		
-		for(Wall next : mapRef.getMyWalls()) {//Non puo' essere vuoto, a causa dei muri non distruttibili
-			if(next.getDestroyable()) {//Muro distruttibile
-				g.drawImage(destructibleWallImg, next.getPos().x, next.getPos().y, CELL, CELL, null);
-			}
-			else if(next.getPerimetral()) {//Muro perimetrale
-				g.drawImage(perimetralWallImg, next.getPos().x, next.getPos().y, CELL, CELL, null);
-			}
-			else {//Muro non perimetrale e non distruttibile
-				g.drawImage(indestructibleWallImg, next.getPos().x, next.getPos().y, CELL, CELL, null);
+		if(!mapRef.getMyWalls().isEmpty()) {
+			for(Wall next : mapRef.getMyWalls()) {
+				if(next.getDestroyable()) {//Muro distruttibile
+					g.drawImage(destructibleWallImg, next.getPos().x, next.getPos().y, CELL, CELL, null);
+				}
+				else if(next.getPerimetral()) {//Muro perimetrale
+					g.drawImage(perimetralWallImg, next.getPos().x, next.getPos().y, CELL, CELL, null);
+				}
+				else {//Muro non perimetrale e non distruttibile
+					g.drawImage(indestructibleWallImg, next.getPos().x, next.getPos().y, CELL, CELL, null);
+				}
 			}
 		}
 		
@@ -235,7 +240,7 @@ class MapView extends JPanel implements Observer{
 				flame = !flame;//Permette di alternare le immagini da scegliere
 			}
 			else {
-				playerMovement = false;
+				playerMovement = false;//Cambiamo qui il valore dato che solo le esplosioni potrebbero risentire graficamente del movimento del Player
 			}
 			for(Explosion next : mapRef.getMyExplosion()) {//Stessa immagine per tutte le esplosioni
 				for(Point nextPoint : next.getPropagation()){
@@ -308,7 +313,7 @@ class MapView extends JPanel implements Observer{
 				playerToRenderImg = playerDeadImg;
 				break;
 		}
-		if(playerToRender.getInvulnerable()) {//Causa un effetto visivo per accorgersi di aver preso un danno
+		if(playerToRender.getInvulnerable()) {//Causa un effetto visivo per accorgersi di aver preso un danno e dura per tutto il periodo dell'invulnerabilita'
 			if(!invulnerableRender) {
 				invulnerableRender = true;
 			}

@@ -19,7 +19,7 @@ public class Bonus extends Entity {
 		NUMBER_BOMB,
 		RATE;
 		public static BonusType getRandom() {
-	        return values()[(int)(Math.random() * (values().length -1)+1)];
+	        return values()[(int)(Math.random() * (values().length -1)+1)];//Scelta randomica tra tutti i valori meno LIFE
 	    }
 	}
 	

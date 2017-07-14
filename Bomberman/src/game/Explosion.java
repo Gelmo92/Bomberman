@@ -26,8 +26,10 @@ class Explosion extends Entity {
 		ActionListener taskPerformer = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setChanged();
-				notifyObservers();
+				if(mapRef !=null) {//Controlliamo di non essere gia usciti dalla partita
+					setChanged();
+					notifyObservers();
+				}
 							}
 		  };
 		  t = new Timer(DELAY, taskPerformer);
@@ -100,10 +102,13 @@ class Explosion extends Entity {
 		deleteObservers();
 	}
 
-	public static void increaseRate() {
+	static void increaseRate() {
 		explosionRate++;
 	}
 
+	static int getExplosionRate() {
+		return explosionRate;
+	}
 	ArrayList<Point> getPropagation() {
 		return propagation;
 	}

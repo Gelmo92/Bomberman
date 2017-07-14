@@ -13,7 +13,7 @@ abstract class Entity extends Observable{
 		NONE,
 		DEAD;
 		public static Direction getRandom() {
-	        return values()[(int) (Math.random() * (values().length -2))];
+	        return values()[(int) (Math.random() * (values().length -2))];//Scelta randomica tra tutti i valori meno NONE e DEAD
 	    }
 	}
 	

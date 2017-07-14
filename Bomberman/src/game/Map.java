@@ -40,10 +40,11 @@ class Map extends Observable implements Observer{
 	 * in ArrayList privati;
 	 * 
 	 * @throws FileNotFoundException se non trova il file con nome ed estensione specificati in MAP_NAME
+	 * @throws IllegalStateException se il file per generare la mappa fosse vuoto o se non fosse stata specificata una posizione per il Player
 	 */
-	Map() throws FileNotFoundException {
+	Map() throws FileNotFoundException, IllegalStateException {
 		resetAllStaticRef();//Ci assicuriamo che i bonus ottenuti in una partita precedente non condizionino una partita successiva
-		Scanner mapScan = new Scanner(new File(MAP_NAME));
+		Scanner mapScan = new Scanner(new File(MAP_NAME));//Qui avviene la throw in caso di errore
 		int y = 0;
 		gameOver = false;
 		myBombs = new ArrayList<Bomb>();
@@ -55,8 +56,8 @@ class Map extends Observable implements Observer{
 		myTerrains = new ArrayList<Terrain>();
 		myWalls = new ArrayList<Wall>();
 		while(mapScan.hasNextLine()) {
-			String currentLine = mapScan.nextLine();
-			for(int x = 0; x < currentLine.length(); x++) {
+			String currentLine = mapScan.nextLine();//Legge una riga del file della mappa
+			for(int x = 0; x < currentLine.length(); x++) {//Scansioniamo ogni carattere della riga
 				switch (currentLine.charAt(x)) {
 				case 'P':
 					myPlayer = new Player(new Point(x*MapView.CELL, y*MapView.CELL), this);
@@ -87,6 +88,13 @@ class Map extends Observable implements Observer{
 			y++;
 		}
 		mapScan.close();
+		if(myTerrains.isEmpty()) {
+			throw new IllegalStateException("La mappa e' vuota!");
+		}
+		
+		else if(myPlayer == null) {
+			throw new IllegalStateException("Non esiste la posizione del Player in questa mappa!");
+		}
 	}
 	
 	/**
@@ -116,7 +124,7 @@ class Map extends Observable implements Observer{
 			Bomb nextBomb;
 			while(iter.hasNext()) {
 				nextBomb = (Bomb) iter.next();
-				if(nextBomb.isMoving()) {
+				if(nextBomb.isMoving()) {//Il movimento iniziale della bomba e' causato da Player
 					nextBomb.move(MapView.CELL, nextBomb.getDirection());
 				}
 			}
@@ -187,6 +195,7 @@ class Map extends Observable implements Observer{
 						return false;
 					case "EXPLOSION":
 						nextBomb.dominoEffect();
+						return false;
 					case "MOB":
 						;
 					case "BOMB":
@@ -219,7 +228,8 @@ class Map extends Observable implements Observer{
 						nextBonus.getBonus();
 						myPlayer.addScore(nextBonus);
 					case "EXPLOSION":
-						nextBonus.destroy();
+						nextBonus.destroy();//Deve essere distrutto sia in caso di contatto con Player che con Explosion
+						return true;
 					case "MOB":
 						;
 					case "BOMB":
@@ -252,6 +262,7 @@ class Map extends Observable implements Observer{
 					case "EXPLOSION":
 						myPlayer.addScore(nextChest);
 						nextChest.destroy();
+						return false;
 					case "PLAYER":
 						;
 					case "MOB":
@@ -295,6 +306,7 @@ class Map extends Observable implements Observer{
 							return true;
 						case "BOMB":
 							((Bomb) obj).dominoEffect();
+							return true;
 						case "EXPLOSION":
 							;
 						default:
@@ -334,6 +346,7 @@ class Map extends Observable implements Observer{
 					case "EXPLOSION":
 						myPlayer.addScore(nextMob);
 						nextMob.destroy();
+						return true;
 					default:
 						return true;
 				}
@@ -362,6 +375,7 @@ class Map extends Observable implements Observer{
 					;
 				case "EXPLOSION":
 					myPlayer.harm();
+					return true;
 				default:
 					return true;
 			}			
@@ -446,7 +460,7 @@ class Map extends Observable implements Observer{
 		if(canDropBomb(myPlayer.getPos())) {
 			Bomb newBomb = new Bomb(myPlayer.getPos(),this);
 			myBombs.add(newBomb);
-			checkExplosions(newBomb.getPos(), newBomb);
+			checkExplosions(newBomb.getPos(), newBomb);//Controlliamo se stiamo posizionando una bomba sopra ad un'esplosione
 		}
 	}
 
@@ -478,11 +492,11 @@ class Map extends Observable implements Observer{
 				((Bonus)obj).destroy();
 				break;
 			case "PLAYER":
-				if(!gameOver) {//Evitiamo la notifica vittoria e poi notifica morte player
+				if(!gameOver) {//Evitiamo la notifica di vittoria e poi la notifica di morte di player
 					gameOver = !gameOver;
 					setChanged();
 					notifyObservers();
-					controllerRef.gameOver(playerAlive);//Sconfitta
+					controllerRef.gameOver(playerAlive, myPlayer.getScore());//Sconfitta
 				}
 				break;
 			case "MOB":
@@ -490,7 +504,7 @@ class Map extends Observable implements Observer{
 					gameOver = !gameOver;
 					setChanged();
 					notifyObservers();
-					controllerRef.gameOver(playerAlive);//Vittoria
+					controllerRef.gameOver(playerAlive, myPlayer.getScore());//Vittoria
 				}
 				break;
 			default:
@@ -520,6 +534,8 @@ class Map extends Observable implements Observer{
 				break;
 			case "MOB":
 				myMobs.remove((Mob)obj);
+				break;
+			default:
 				break;
 		}
 	}

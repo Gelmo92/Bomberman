@@ -14,7 +14,7 @@ class Bomb extends Entity{
 	private static boolean bonusMoveBomb = false;
 	private boolean moving = false;
 	private Direction direction = Direction.NONE;
-	private static int numberBomb = 1;
+	private static int numberBomb = 1; //Massimo numero di bombe posizionabili
 	private static int droppedBombs = 0;
 	private static final int DELAY = 3000;  
 	private Timer t;
@@ -29,15 +29,15 @@ class Bomb extends Entity{
 		ActionListener taskPerformer = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setChanged();
-				notifyObservers();
+				if(mapRef != null) {//Controlliamo di non essere gia usciti dalla partita
+					setChanged();
+					notifyObservers();
+				}
 			}
 		  };
 		  t = new Timer(DELAY, taskPerformer);
 		  t.setRepeats(false);
 		  t.start();
-		  
-		
 	}
 
 	@Override
@@ -47,6 +47,9 @@ class Bomb extends Entity{
 
 	@Override
 	void move(int movement, Direction dir) {
+		if(!bonusMoveBomb) {
+			return;
+		}
 		if(!moving) {
 			moving = !moving;
 			this.direction = dir;
@@ -71,8 +74,6 @@ class Bomb extends Entity{
 		}
 		if(mapRef.canMove(nextPos, this)) {
 			pos = nextPos;
-			
-			this.moving = true;
 		}
 		else {
 			this.direction = Direction.NONE;
@@ -100,9 +101,6 @@ class Bomb extends Entity{
 		
 	}
 
-	static void increaseNumberBomb() {
-		numberBomb++;
-	}
 	static int getDroppedBombs() {
 		return droppedBombs;
 	}
@@ -129,14 +127,18 @@ class Bomb extends Entity{
 		return "BOMB";
 	}
 
-	public static void resetStatic() {
+	static void resetStatic() {
 		mapRef = null;
 		bonusMoveBomb = false;
 		numberBomb = 1;
 		droppedBombs = 0;
 	}
 
-	public boolean isMoving() {
+	boolean isMoving() {
 		return moving;
+	}
+
+	static void increaseNumberBomb() {
+		numberBomb++;		
 	}
 }

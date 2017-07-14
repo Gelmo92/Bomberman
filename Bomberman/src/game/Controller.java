@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.Observable;
 
 import javax.swing.Timer;
 
@@ -19,7 +18,7 @@ import game.Entity.Direction;
  * @author Yuri Gelmotto
  * @author Riccardo Pidello
  */
-class Controller extends Observable implements KeyListener{
+class Controller implements KeyListener{
 
 	private Map mapRef;
 	private GameFrame gameFrame;
@@ -33,18 +32,17 @@ class Controller extends Observable implements KeyListener{
 	 * Crea un ActionListener del suddetto timer, che richiama map.moveEntities().
 	 * 
 	 * @param map indica l'oggetto di tipo Map generato per questa partita
-	 * @param mapView indica l'oggetto di tipo MapView generato per questa partita
 	 * @param gameFrame indica l'oggetto di tipo GameFrame generato per questa partita,
 	 * nel quale questo oggetto di tipo Controller sara' KeyListener
 	 */
-	Controller(Map map, MapView mapView, GameFrame gameFrame) {
+	Controller(Map map, GameFrame gameFrame) {
 		this.mapRef = map;
 		this.gameFrame = gameFrame;
 		mapRef.setControllerRef(this);
 		gameFrame.addKeyListener(this);//myController gestirà la pressione dei tasti della tastiera
 		 	tickPerformer = new ActionListener() {
 		 		@Override
-		 		public void actionPerformed(ActionEvent e) {//Causa il tick per il repaint di mapView
+		 		public void actionPerformed(ActionEvent e) {//Causa il tick per il movimento delle entita'
 		 			mapRef.moveEntities();
 		 		}
 		 	};
@@ -106,9 +104,10 @@ class Controller extends Observable implements KeyListener{
 	 * chiama la funzione omonima di GameFrame per fermare la partita.
 	 * 
 	 * @param playerAlive true se il giocatore e' vivo, false altrimenti
+	 * @param score indica il punteggio finale
 	 */
-	public void gameOver(boolean playerAlive) {	
-		gameFrame.gameOver(playerAlive);
+	public void gameOver(boolean playerAlive, int score) {	
+		gameFrame.gameOver(playerAlive, score);
 	}
 
 	/**

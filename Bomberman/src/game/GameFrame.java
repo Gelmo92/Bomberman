@@ -24,6 +24,7 @@ class GameFrame extends JFrame{
 	public static final int WIDTH = 1000;
 	public static final int HEIGHT = 720;
 	private Menu menuRef;
+	private Map myMap;
 	private Controller myController;
 
 	/**
@@ -35,12 +36,13 @@ class GameFrame extends JFrame{
 	 * @throws FileNotFoundException se non esiste il file per creare Map
 	 * @throws IOException se non esiste una immagine che dovrebbe essere
 	 * caricata da MapView
+	 * @throws IllegalStateException se il file per generare la mappa fosse vuoto o se non fosse stata specificata una posizione per il Player
 	 */
-	GameFrame(Menu menu) throws FileNotFoundException, IOException{
+	GameFrame(Menu menu) throws FileNotFoundException, IOException, IllegalStateException{
 		menuRef = menu;
-		Map myMap = new Map();
+		myMap = new Map();
 		MapView myMapView = new MapView(myMap);
-		myController = new Controller(myMap, myMapView, this);
+		myController = new Controller(myMap, this);
 		Container cp = getContentPane();
 		cp.setLayout(new BorderLayout());	
 		cp.add(myMapView, BorderLayout.CENTER);	
@@ -56,7 +58,6 @@ class GameFrame extends JFrame{
 	            public void windowClosing(WindowEvent e)
 	            {
 	                myController.stopT();
-	                myController.deleteObservers();
 	            	menu.reset();
 	            }
 	        });
@@ -67,27 +68,27 @@ class GameFrame extends JFrame{
 	 * Ferma il timer del Controller e reimposta il menu.
 	 * 
 	 * @param playerAlive true se l'utente ha vinto, false altrimenti
+	 * @param score indica il punteggio finale
 	 */
-	void gameOver(boolean playerAlive) {
+	void gameOver(boolean playerAlive, int score) {
 		Thread gameOver = new Thread(new Runnable(){//Creiamo il frame di game over in un nuovo thread per non bloccare l'esecuzione del gioco, fino alla chiusura del suddetto frame
 	        public void run(){
 	        	if(!(boolean)playerAlive) {
 					JOptionPane.showMessageDialog(new JFrame(),
-						    "Sei morto!",
+						    "Sei morto!\nSCORE: " + score,
 						    "GAME OVER",
 						    JOptionPane.INFORMATION_MESSAGE);//Questo metodo crea un frame di dialogo "bloccante"
 				}
 				else {
 					JOptionPane.showMessageDialog(new JFrame(),
-						    "Complimenti hai vinto!",
+						    "Complimenti hai vinto!\nSCORE: " + score,
 						    "GAME OVER",
 						    JOptionPane.INFORMATION_MESSAGE);//Questo metodo crea un frame di dialogo "bloccante"
 					
 				}
 	        	myController.stopT();
-	        	myController.deleteObservers();
 				menuRef.reset();
-				GameFrame.this.dispose();
+				GameFrame.this.dispose();//Rilascia le risorse dello schermo che occupava
 	        }
 	    });
 	  gameOver.start();
