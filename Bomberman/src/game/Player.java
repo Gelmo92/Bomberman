@@ -6,6 +6,12 @@ import java.awt.event.ActionListener;
 
 import javax.swing.Timer;
 
+/**
+ * La classe Player gestisce il giocatore nella mappa di gioco
+ * 
+ * @author Yuri Gelmotto
+ * @author Riccardo Pidello
+ */
 class Player extends Entity {
 	private Point position;
 	private Point nextPos;
@@ -20,7 +26,12 @@ class Player extends Entity {
 	
 	private Direction direction = Direction.NONE;
 	
-	
+	/**
+	 * Il costruttore crea un oggetto di tipo Player e lo posiziona sullo mappa inoltre rende l'oggetto osservabile
+	 * 
+	 * @param firstPlayerPos e' la posizione iniziale del giocatore
+	 * @param map e' il riferimento alal mappa di gioco
+	 */
 	public Player(Point firstPlayerPos, Map map) {
 		position = firstPlayerPos;
 		addObserver(map);
@@ -31,11 +42,17 @@ class Player extends Entity {
 		}
 	}
 
+	/**
+	 * @return le coordinate del giocatore
+	 */
 	@Override
 	Point getPos() {
 		return position;
 	}
 
+	/**
+	 * Il metodo gestice il movimento del giocatore
+	 */
 	@Override
 	void move(int movement, Direction dir) {
 		nextPos = new Point(position);
@@ -64,6 +81,11 @@ class Player extends Entity {
 		}
 	}
 	
+	/**
+	 * il metodo gestisce le ferite del giocatore
+	 * Se il giocatore e' invulnerabile allora non subisce ferite se no perde una vita e attiva l'invulnerabilita'
+	 * Se il giocatore perde l'ultima vita allora il metodo invoca la distruzione del giocatore
+	 */
 	void harm() {
 		if(!this.invulnerable) {
 			
@@ -88,6 +110,10 @@ class Player extends Entity {
 		
 	}
 
+	/**
+	 * il metodo rimuove il giocatore dall mappa di gioco, dagli oggetti osservabili e ripristina
+	 * i valori delle variabili alle condizioni originali
+	 */
 	@Override
 	void destroy() {
 		mapRef.setPlayerAlive(false);
@@ -98,6 +124,9 @@ class Player extends Entity {
 		deleteObservers();
 	}
 
+	/**
+	 * il metodo cura una vita al giocatore aumentando di 1 il valore di life
+	 */
 	public void regen() {
 		if(this.life < MAX_LIFE) {
 			life++;
@@ -105,33 +134,67 @@ class Player extends Entity {
 		
 	}
 
+	/**
+	 * 
+	 * @return il numero di vite del giocatore
+	 */
 	public int getLife() {
 		return this.life;
 	}
 	
+	/**
+	 * 
+	 * @return il valore che rappresenta l'invulnerabilita o no del giocatore
+	 */
 	public boolean getInvulnerable() {
 		return invulnerable;
 	}
 	
+	/**
+	 * il metodo alterna il valore di invulnerable 
+	 */
 	void setInvulnerable() {
 		invulnerable = !invulnerable;
 	}
 
+	/**
+	 * 
+	 * @return la direzione del giocatore
+	 */
 	public Direction getDir() {
 		return this.direction;
 	}
 	
+	/**
+	 * 
+	 * @return il valore che rappresenta il passo sinistro o quello destro
+	 */
 	public boolean getFoot() {
 		return this.leftFoot;
 	}
+	
+	/**
+	 * il metodo alterna il passo sinistro a quello destro
+	 */
 	private void setFoot() {
 		leftFoot = !leftFoot;
 	}
 
+	/**
+	 * 
+	 * @return il valore del punteggio del giocatore
+	 */
 	public int getScore() {
 		return this.score;
 	}
 	
+	/**
+	 * Il metodo mantiene aggiornato il punteggio del giocatore
+	 * Ogni volta che il giocatore raccoglie un bonus o distrugge un muro o  una cassa o un mostro
+	 * il punteggio viene incrementato 
+	 * 
+	 * @param obj e' l'oggetto che causa l'incremento del punteggio
+	 */
 	public void addScore(Entity obj) {
 		switch(obj.toString()) {
 			case "BONUS":
@@ -149,6 +212,9 @@ class Player extends Entity {
 		}
 	}
 
+	/**
+	 * @return una String mnemonica della classe di questo oggetto
+	 */
 	@Override
 	public String toString() {
 		return "PLAYER";

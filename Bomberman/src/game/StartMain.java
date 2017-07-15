@@ -1,5 +1,7 @@
 package game;
 
+import javax.swing.SingleSelectionModel;
+
 /**
  * La classe StartMain contiene solo il metodo main.
  * 
@@ -19,4 +21,5 @@ public class StartMain {
 		Menu menu = new Menu();
 		
 	}
+	
 }

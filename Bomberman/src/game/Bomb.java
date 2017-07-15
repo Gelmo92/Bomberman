@@ -5,7 +5,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.Timer;
-
+/**
+ * La classe Bomb rappresenta le bombe che possono essere posizionate dal giocatore sul terreno di gioco.
+ * Alla loro creazione si attiva un timer e allo scadere del timer la bomba esplodera' producendo un oggetto
+ * di tipo Explosion.
+ * 
+ * @author Yuri Gelmotto
+ * @author Riccardo Pidello
+ */
 class Bomb extends Entity{
 
 	private Point pos;
@@ -18,6 +25,12 @@ class Bomb extends Entity{
 	private static int droppedBombs = 0;
 	private static final int DELAY = 3000;  
 	private Timer t;
+	
+	/**
+	 * 
+	 * @param newPos sono le coordinate del punto in cui verra' posizionata la bomba
+	 * @param map e' il riferimento alla mappa di gioco
+	 */
 	
 	public Bomb(Point newPos, Map map) {
 		pos = newPos;
@@ -39,12 +52,24 @@ class Bomb extends Entity{
 		  t.setRepeats(false);
 		  t.start();
 	}
-
+/**
+ * 
+ * @return le corrdinate della bomba
+ */
 	@Override
 	Point getPos() {
 		return pos;
 	}
-
+/**
+ * Gestisce il movimento della bomba se la bomba si puo' muovere
+ * Se bonusMoveBomb è falso allora la bomba non si puo' muovere e termina la procedura
+ * Se invece la bomba si puo' muovere ma non si e' ancora mossa allora imposta la variabile moving a vero 
+ * ma si muovera' solo al successivo tick del timer della mappa (per evitare un doppio movimento)
+ * Se si puo' muovere ed e' in movimento allora gestisce il movimento della bomba nella direzione indicata (se non incontra ostacoli).
+ * 
+ * @param movement indica di quanto si deve spostare la bomba 
+ * @param dirindica la direzione in cui si deve spostare la bomba
+ */
 	@Override
 	void move(int movement, Direction dir) {
 		if(!bonusMoveBomb) {
@@ -81,7 +106,12 @@ class Bomb extends Entity{
 		}
 		
 	}
-
+/**
+ * Gestisce la rimozione della bomba dalla lista delle bombe nella mappa,
+ * decrementa il valore di droppedBombs per poter posizionare una nuova bomba,
+ * Rimuove la bomba dagli osservti
+ * 
+ */
 	@Override
 	void destroy() {
 		mapRef.removeFromArrayList(this);
@@ -100,33 +130,58 @@ class Bomb extends Entity{
 		t.start();
 		
 	}
-
+	/**
+	 * 
+	 * @return il numero di bombe posizionate
+	 */
 	static int getDroppedBombs() {
 		return droppedBombs;
 	}
-
+	
+	/**
+	 * 
+	 * @return il massimo numero di bombe posizionabili
+	 */
 	static int getNumberBomb() {
 		return numberBomb;
 	}
 	
+	/**
+	 * 
+	 * @return indica se e' stato abilitato il movimento alle bombe
+	 */
 	static boolean getCanMove() {
 		return bonusMoveBomb;
 	}
 	
+	/**
+	 * 
+	 * @return la direzione in cui si sta' muovendo la bomba
+	 */
 	Direction getDirection() {
 		return direction;
 	}
 	
+	/**
+	 * Abilita il movimento alle bombe
+	 */
 	static void setCanMove() {
 		bonusMoveBomb = true;
 		
 	}
 	
+	/**
+	 * @return una String mnemonica della classe di questo oggetto
+	 */
 	@Override
 	public String toString() {
 		return "BOMB";
 	}
 
+	/**
+	 * Il metodo e'utilizzato per ripristinare le variabili alla condizione iniziale cancellando ogni modifica fatta
+	 * 
+	 */
 	static void resetStatic() {
 		mapRef = null;
 		bonusMoveBomb = false;
@@ -134,10 +189,17 @@ class Bomb extends Entity{
 		droppedBombs = 0;
 	}
 
+	/**
+	 * 
+	 * @return se la bomba e' in movimento o no
+	 */
 	boolean isMoving() {
 		return moving;
 	}
 
+	/**
+	 * Aumenta il massimo numero di bombe posizionabili di 1
+	 */
 	static void increaseNumberBomb() {
 		numberBomb++;		
 	}

@@ -6,7 +6,12 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.Timer;
-
+/**
+ * La classe Explosion gestisce le esplosioni degli oggetti di tipo Bomb
+ * 
+ * @author Yuri Gelmotto
+ * @author Riccardo Pidello
+ */
 class Explosion extends Entity {
 
 	private ArrayList<Point> propagation;
@@ -16,6 +21,12 @@ class Explosion extends Entity {
 	private static int explosionRate = 1;
 	private Timer t;
 	
+	/**
+	 * Il costruttore invoca la propagazione della esplosione nelle 4 direzioni tramite il metodo burn
+	 * 
+	 * @param firstPosition e' il punto in cui si trovava l'oggetto di tipo Bomb che e' esploso
+	 * @param map e' il riferimento alla mappa di gioco
+	 */
 	public Explosion(Point firstPosition, Map map) {
 		propagation = new ArrayList<Point>();
 		addObserver(map);
@@ -38,6 +49,11 @@ class Explosion extends Entity {
 		  burn(explosionRate);
 	}
 
+	/**
+	 * Il metodo gestisce la propagazione nelle 4 direzioni invocando il metodo move
+	 * 
+	 * @param explosionRate e' il valore di quanto si puo' espandere l'esplosione per ogni direzione
+	 */
 	private void burn(int explosionRate) {
 		move(explosionRate,Direction.NONE);
 		move(explosionRate,Direction.UP);
@@ -51,7 +67,13 @@ class Explosion extends Entity {
 	Point getPos() {
 		return null;
 	}
-
+	
+	/**
+	 * Il metodo gestisce il moviemnto (la propagazione) in una delle direzioni 
+	 * 
+	 * @param movement e' il valore massimo di quanto si dovrebbe muovere l'esplosione (se non incontra ostacoli)
+	 * @param direction e' la direzione in cui si muove l'esplosione
+	 */
 	@Override
 	void move(int movement, Direction direction) {
 		Point pos = new Point(this.firstPosition);
@@ -96,28 +118,52 @@ class Explosion extends Entity {
 
 	}
 
+	/**
+	 * Il metodo rimuove l'oggeto dalla lista di esplosioni dalla mappa,
+	 * rimuove l'oggetto dagli oggetti osservati
+	 */
 	@Override
 	void destroy() {
 		mapRef.removeFromArrayList(this);
 		deleteObservers();
 	}
 
+	/**
+	 * Il metodo incrementa la propagazione massima delle esplosioni successive
+	 */
 	static void increaseRate() {
 		explosionRate++;
 	}
 
+	/**
+	 * 
+	 * @return il massimo valore per cui si puo' espandere una esplosione
+	 */
 	static int getExplosionRate() {
 		return explosionRate;
 	}
+	
+	/**
+	 * 
+	 * @return l'insieme dei punti che sono interessati da questa esplosione
+	 */
 	ArrayList<Point> getPropagation() {
 		return propagation;
 	}
 
+	/**
+	 * 
+	 * @return una stringa per identificare gli oggetti di tipo Explosion
+	 */
 	@Override
 	public String toString() {
 		return "EXPLOSION";
 	}
 
+	/**
+	 * Il metodo e' utilizzato per ripristinare le variabili alla condizione iniziale cancellando ogni modifica fatta
+	 * 
+	 */
 	public static void resetStatic() {
 		mapRef = null;
 		explosionRate = 1;

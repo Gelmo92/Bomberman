@@ -1,7 +1,13 @@
 package game;
 
 import java.awt.Point;
-
+/**
+ * La classe Mob rappresenta i mostri posizionati sulla mappa di gioco
+ * I mostri possono muoversi e devono essere sconfitti dal giocatore
+ * 
+ * @author Yuri Gelmotto
+ * @author Riccardo Pidello
+ */
 class Mob extends Entity{
 	
 	private Point position;
@@ -10,6 +16,12 @@ class Mob extends Entity{
 	private boolean leftFoot = true;
 	private static Map mapRef = null;
 	
+	/**
+	 * Il metodo costruttore crea gli oggetti mob alla posizione iniziale e li rende osservabili
+	 * 
+	 * @param firstMobPos e' la posizione iniziale del mob
+	 * @param map e' il riferimento alla mappa di gioco
+	 */
 	public Mob(Point firstMobPos, Map map) {
 		position = firstMobPos;
 		addObserver(map);
@@ -18,11 +30,17 @@ class Mob extends Entity{
 		}
 	}
 
+	/**
+	 * @return le coordinate del mob
+	 */
 	@Override
 	Point getPos() {
 		return position;
 	}
 
+	/**
+	 * Il metodo gestisce il movimento in modo randomico e invoca il metodo per alternare il passo sinistro da quello destro
+	 */
 	@Override
 	void move(int movement, Direction direction) {
 		nextPos = new Point(position);
@@ -50,13 +68,25 @@ class Mob extends Entity{
 		}
 	}
 	
+	/**
+	 * 
+	 * @return la direzione del mob
+	 */
 	public Direction getDir() {
 		return this.direction;
 	}
 	
+	/**
+	 * 
+	 * @return il valore per indicare se il mob ha fatto un passo sinistro o destro
+	 */
 	public boolean getFoot() {
 		return this.leftFoot;
 	}
+	
+	/**
+	 * Il metodo alterna il valore di leftFoot
+	 */
 	private void setFoot() {
 		leftFoot = !leftFoot;
 	}
@@ -70,11 +100,18 @@ class Mob extends Entity{
 		deleteObservers();
 	}
 	
+	/**
+	 * @return una String mnemonica della classe di questo oggetto
+	 */
 	@Override
 	public String toString() {
 		return "MOB";
 	}
 
+	/**
+	 * Il metodo e'utilizzato per ripristinare le variabili alla condizione iniziale cancellando ogni modifica fatta
+	 * 
+	 */
 	public static void resetStatic() {
 		mapRef = null;
 		
