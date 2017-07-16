@@ -85,6 +85,8 @@ class Player extends Entity {
 	 * il metodo gestisce le ferite del giocatore
 	 * Se il giocatore e' invulnerabile allora non subisce ferite se no perde una vita e attiva l'invulnerabilita'
 	 * Se il giocatore perde l'ultima vita allora il metodo invoca la distruzione del giocatore
+	 * 
+	 * @see Player#invulnerable()
 	 */
 	void harm() {
 		if(!this.invulnerable) {

@@ -26,6 +26,7 @@ class Explosion extends Entity {
 	 * 
 	 * @param firstPosition e' il punto in cui si trovava l'oggetto di tipo Bomb che e' esploso
 	 * @param map e' il riferimento alla mappa di gioco
+	 * @see Explosion#burn(int)
 	 */
 	public Explosion(Point firstPosition, Map map) {
 		propagation = new ArrayList<Point>();
@@ -53,6 +54,7 @@ class Explosion extends Entity {
 	 * Il metodo gestisce la propagazione nelle 4 direzioni invocando il metodo move
 	 * 
 	 * @param explosionRate e' il valore di quanto si puo' espandere l'esplosione per ogni direzione
+	 * @see Explosion#move(int, Direction)
 	 */
 	private void burn(int explosionRate) {
 		move(explosionRate,Direction.NONE);
@@ -161,7 +163,7 @@ class Explosion extends Entity {
 	}
 
 	/**
-	 * Il metodo e' utilizzato per ripristinare le variabili alla condizione iniziale cancellando ogni modifica fatta
+	 * Il metodo e'utilizzato per ripristinare le variabili statiche alle condizioni iniziali cancellando ogni modifica fatta
 	 * 
 	 */
 	public static void resetStatic() {

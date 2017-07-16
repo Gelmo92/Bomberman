@@ -109,7 +109,7 @@ class Mob extends Entity{
 	}
 
 	/**
-	 * Il metodo e'utilizzato per ripristinare le variabili alla condizione iniziale cancellando ogni modifica fatta
+	 * Il metodo e'utilizzato per ripristinare le variabili statiche alle condizioni iniziali cancellando ogni modifica fatta
 	 * 
 	 */
 	public static void resetStatic() {

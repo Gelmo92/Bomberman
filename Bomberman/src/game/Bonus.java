@@ -63,9 +63,10 @@ public class Bonus extends Entity {
 	/**
 	 * Il metodo genera randomicamente un tipo di bonus.
 	 * Se il giocatore non ha il massimo  della vita allora si creara' un bonus di tipo LIFE
-	 * Se Il tipo di bonus MOVE_BOMB e' gia' stato preso allora non verra' pi' creato
+	 * Se Il tipo di bonus MOVE_BOMB e' gia' stato preso allora non verra' piu' creato
 	 * 
 	 * @return un BonusType randomico fra quelli che si possono ancora creare
+	 * @see BonusType#getRandom()
 	 */
 	private static BonusType generateRandomBonus() {
 		BonusType bonus = null;
@@ -111,6 +112,9 @@ public class Bonus extends Entity {
 		deleteObservers();
 	}
 
+	/**
+	 * Il metodo va a gestire correttamente il bonus in base al type del bonus 
+	 */
 	public void getBonus() {
 		switch (type) {
 			case RATE:
@@ -147,7 +151,7 @@ public class Bonus extends Entity {
 	}
 
 	/**
-	 * Il metodo e'utilizzato per ripristinare le variabili alla condizione iniziale cancellando ogni modifica fatta
+	 * Il metodo e'utilizzato per ripristinare le variabili statiche alle condizioni iniziali cancellando ogni modifica fatta
 	 * 
 	 */
 	public static void resetStatic() {

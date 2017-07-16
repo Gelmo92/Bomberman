@@ -30,22 +30,37 @@ public class Chest extends Entity {
 		return position;
 	}
 
+	/**
+	 * Non necessario
+	 */
 	@Override
 	void move(int movement, Direction direction) {
 
 	}
 	
+	/**
+	 * Il metodo rimuove la cassa dalla lista delle casse di map e invoca il metodo dropBonus di map
+	 * 
+	 * @see Map#dropBonus(Point)
+	 */
 	@Override
 	void destroy() {
 		mapRef.dropBonus(position);
 		mapRef.removeFromArrayList(this);
 	}
 	
+	/**
+	 * 
+	 * @return una stringa per identificare gli oggetti di tipo Chest
+	 */
 	@Override
 	public String toString() {
 		return "CHEST";
 	}
 	
+	/**
+	 * Il metodo e'utilizzato per ripristinare le variabili statiche alle condizioni iniziali cancellando ogni modifica fatta
+	 */
 	public static void resetStatic() {
 		mapRef = null;
 	}
