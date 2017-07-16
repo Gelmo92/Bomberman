@@ -23,7 +23,7 @@ class Wall extends Entity {
 	 * @param destroyable definisce se il muro è distruttibile
 	 * @param perimetral definisce se il muro è perimetrale
 	 */
-	public Wall(Point pos, boolean destroyable, boolean perimetral) {
+	Wall(Point pos, boolean destroyable, boolean perimetral) {
 		position = pos;
 		this.destroyable = destroyable;
 		this.perimetral = perimetral;

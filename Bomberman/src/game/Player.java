@@ -33,7 +33,7 @@ class Player extends Entity {
 	 * @param firstPlayerPos e' la posizione iniziale del giocatore
 	 * @param map e' il riferimento alla mappa di gioco
 	 */
-	public Player(Point firstPlayerPos, Map map) {
+	Player(Point firstPlayerPos, Map map) {
 		position = firstPlayerPos;
 		addObserver(map);
 		this.life = MAX_LIFE;
@@ -131,7 +131,7 @@ class Player extends Entity {
 	/**
 	 * il metodo cura una vita al giocatore aumentando di 1 il valore di life
 	 */
-	public void regen() {
+	void regen() {
 		if(this.life < MAX_LIFE) {
 			life++;
 		}
@@ -142,7 +142,7 @@ class Player extends Entity {
 	 * 
 	 * @return il numero di vite del giocatore
 	 */
-	public int getLife() {
+	int getLife() {
 		return this.life;
 	}
 	
@@ -150,7 +150,7 @@ class Player extends Entity {
 	 * 
 	 * @return il valore che rappresenta l'invulnerabilita o no del giocatore
 	 */
-	public boolean getInvulnerable() {
+	boolean getInvulnerable() {
 		return invulnerable;
 	}
 	
@@ -165,7 +165,7 @@ class Player extends Entity {
 	 * 
 	 * @return la direzione del giocatore
 	 */
-	public Direction getDir() {
+	Direction getDir() {
 		return this.direction;
 	}
 	
@@ -173,7 +173,7 @@ class Player extends Entity {
 	 * 
 	 * @return il valore che rappresenta il passo sinistro o quello destro
 	 */
-	public boolean getFoot() {
+	boolean getFoot() {
 		return this.leftFoot;
 	}
 	
@@ -188,7 +188,7 @@ class Player extends Entity {
 	 * 
 	 * @return il valore del punteggio del giocatore
 	 */
-	public int getScore() {
+	int getScore() {
 		return this.score;
 	}
 	
@@ -199,7 +199,7 @@ class Player extends Entity {
 	 * 
 	 * @param obj e' l'oggetto che causa l'incremento del punteggio
 	 */
-	public void addScore(Entity obj) {
+	void addScore(Entity obj) {
 		switch(obj.toString()) {
 			case "BONUS":
 				this.score += 100;

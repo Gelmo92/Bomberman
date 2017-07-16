@@ -496,7 +496,9 @@ class Map extends Observable implements Observer{
 					gameOver = !gameOver;
 					setChanged();
 					notifyObservers();
-					controllerRef.gameOver(playerAlive, myPlayer.getScore());//Sconfitta
+					if(controllerRef != null) {
+						controllerRef.gameOver(playerAlive, myPlayer.getScore());//Sconfitta
+					}
 				}
 				break;
 			case "MOB":
@@ -504,7 +506,9 @@ class Map extends Observable implements Observer{
 					gameOver = !gameOver;
 					setChanged();
 					notifyObservers();
-					controllerRef.gameOver(playerAlive, myPlayer.getScore());//Vittoria
+					if(controllerRef != null) {
+						controllerRef.gameOver(playerAlive, myPlayer.getScore());//Vittoria
+					}
 				}
 				break;
 			default:
@@ -627,6 +631,19 @@ class Map extends Observable implements Observer{
 	 */
 	void setControllerRef(Controller controller) {
 		controllerRef = controller;
+	}
+
+	/**
+	 * Svuota tutti i suoi ArrayList.
+	 */
+	void clearArrays() {
+		myBombs.clear();
+		myBonus.clear();
+		myChests.clear();
+		myExplosion.clear();
+		myMobs.clear();
+		myTerrains.clear();
+		myWalls.clear();
 	}
 
 }

@@ -23,7 +23,7 @@ abstract class Entity extends Observable{
 		 * 
 		 * @return un valore randomico tra i valori di Direction escludendo il valore NONE e il valore DEAD
 		 */
-		public static Direction getRandom() {
+		static Direction getRandom() {
 	        return values()[(int) (Math.random() * (values().length -2))];//Scelta randomica tra tutti i valori meno NONE e DEAD
 	    }
 	}

@@ -1,6 +1,5 @@
 package game;
 
-import javax.swing.SingleSelectionModel;
 
 /**
  * La classe StartMain contiene solo il metodo main.

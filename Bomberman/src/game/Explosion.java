@@ -28,7 +28,7 @@ class Explosion extends Entity {
 	 * @param map e' il riferimento alla mappa di gioco
 	 * @see Explosion#burn(int)
 	 */
-	public Explosion(Point firstPosition, Map map) {
+	Explosion(Point firstPosition, Map map) {
 		propagation = new ArrayList<Point>();
 		addObserver(map);
 		this.firstPosition = firstPosition;
@@ -169,7 +169,7 @@ class Explosion extends Entity {
 	 * Il metodo e'utilizzato per ripristinare le variabili statiche alle condizioni iniziali cancellando ogni modifica fatta
 	 * 
 	 */
-	public static void resetStatic() {
+	static void resetStatic() {
 		mapRef = null;
 		explosionRate = 1;
 		

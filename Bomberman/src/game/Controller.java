@@ -106,15 +106,17 @@ class Controller implements KeyListener{
 	 * @param playerAlive true se il giocatore e' vivo, false altrimenti
 	 * @param score indica il punteggio finale
 	 */
-	public void gameOver(boolean playerAlive, int score) {	
+	void gameOver(boolean playerAlive, int score) {	
 		gameFrame.gameOver(playerAlive, score);
 	}
 
 	/**
 	 * Ferma il timer creato da questo oggetto.
+	 * Svuota tutti gli ArrayList di map.
 	 */
-	void stopT() {
+	void clearMap() {
 		t.stop();
+		mapRef.clearArrays();
 	}
 
 }

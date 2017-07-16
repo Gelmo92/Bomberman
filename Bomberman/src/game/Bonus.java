@@ -12,7 +12,7 @@ import javax.swing.Timer;
  * @author Yuri Gelmotto
  * @author Riccardo Pidello
  */
-public class Bonus extends Entity {
+class Bonus extends Entity {
 
 	private Point position;
 	private static Map mapRef = null;
@@ -29,7 +29,7 @@ public class Bonus extends Entity {
 		 * 
 		 * @return un valore randomico (privato del valore LIFE) tra i tipi di bonus che si possono creare 
 		 */
-		public static BonusType getRandom() {
+		static BonusType getRandom() {
 	        return values()[(int)(Math.random() * (values().length -1)+1)];//Scelta randomica tra tutti i valori meno LIFE
 	    }
 	}
@@ -41,7 +41,7 @@ public class Bonus extends Entity {
 	 * @param pos sono le coordinate dove viene posizionato il bonus
 	 * @param map e' il riferimento alla mappa di gioco
 	 */
-	public Bonus(Point pos, Map map) {
+	Bonus(Point pos, Map map) {
 		this.position = pos;
 		addObserver(map);
 		if(mapRef == null) {
@@ -51,9 +51,11 @@ public class Bonus extends Entity {
 		ActionListener expiredPerformer = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setChanged();
-				notifyObservers();
-							}
+				if(mapRef !=null) {//Controlliamo di non essere gia usciti dalla partita
+					setChanged();
+					notifyObservers();
+				}
+			}
 		  };
 		  t = new Timer(DELAY, expiredPerformer);
 		  t.setRepeats(false);
@@ -116,7 +118,7 @@ public class Bonus extends Entity {
 	/**
 	 * Il metodo va a gestire correttamente il bonus in base al type dello stesso. 
 	 */
-	public void getBonus() {
+	void getBonus() {
 		switch (type) {
 			case RATE:
 				Explosion.increaseRate();
@@ -139,7 +141,7 @@ public class Bonus extends Entity {
 	 * 
 	 * @return il tipo del bonus
 	 */
-	public BonusType getType() {
+	BonusType getType() {
 		return type;
 	}
 
@@ -155,7 +157,7 @@ public class Bonus extends Entity {
 	 * Il metodo e'utilizzato per ripristinare le variabili statiche alle condizioni iniziali cancellando ogni modifica fatta
 	 * 
 	 */
-	public static void resetStatic() {
+	static void resetStatic() {
 		mapRef = null;
 		
 	}

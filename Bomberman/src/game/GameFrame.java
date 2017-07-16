@@ -57,7 +57,7 @@ class GameFrame extends JFrame{
 	            @Override
 	            public void windowClosing(WindowEvent e)
 	            {
-	                myController.stopT();
+	                myController.clearMap();
 	            	menu.reset();
 	            }
 	        });
@@ -86,7 +86,7 @@ class GameFrame extends JFrame{
 						    JOptionPane.INFORMATION_MESSAGE);//Questo metodo crea un frame di dialogo "bloccante"
 					
 				}
-	        	myController.stopT();
+	        	myController.clearMap();
 				menuRef.reset();
 				GameFrame.this.dispose();//Rilascia le risorse dello schermo che occupava
 	        }

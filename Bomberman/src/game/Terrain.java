@@ -18,7 +18,7 @@ class Terrain {
 	 * 
 	 * @param pos sono le coordinate del terreno
 	 */
-	public Terrain(Point pos) {
+	Terrain(Point pos) {
 		this.position = pos;
 		burnt = false;
 	}

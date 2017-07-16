@@ -32,7 +32,7 @@ class Bomb extends Entity{
 	 * @param map e' il riferimento alla mappa di gioco
 	 */
 	
-	public Bomb(Point newPos, Map map) {
+	Bomb(Point newPos, Map map) {
 		pos = newPos;
 		droppedBombs++;
 		addObserver(map);
@@ -126,7 +126,7 @@ class Bomb extends Entity{
 	 * a causa di un fattore scatenante (nel nostro caso l'esplosione di una bomba se raggiunge
 	 * un'altra bomba causa l'esplosione di quest'ultima).
 	 */
-	public void dominoEffect() {
+	void dominoEffect() {
 		t.stop();
 		t.setInitialDelay(10);//Ritardiamo minimamente il segnale per permettere di completare il metodo che ha richiamato questo metodo
 		t.start();
@@ -181,17 +181,6 @@ class Bomb extends Entity{
 	}
 
 	/**
-	 * Il metodo e'utilizzato per ripristinare le variabili alla condizione iniziale cancellando ogni modifica fatta
-	 * 
-	 */
-	static void resetStatic() {
-		mapRef = null;
-		bonusMoveBomb = false;
-		numberBomb = 1;
-		droppedBombs = 0;
-	}
-
-	/**
 	 * 
 	 * @return se la bomba e' in movimento o no
 	 */
@@ -204,5 +193,16 @@ class Bomb extends Entity{
 	 */
 	static void increaseNumberBomb() {
 		numberBomb++;		
+	}
+	
+	/**
+	 * Il metodo e'utilizzato per ripristinare le variabili alla condizione iniziale cancellando ogni modifica fatta
+	 * 
+	 */
+	static void resetStatic() {
+		mapRef = null;
+		bonusMoveBomb = false;
+		numberBomb = 1;
+		droppedBombs = 0;
 	}
 }

@@ -8,7 +8,7 @@ import java.awt.Point;
  * @author Riccardo Pidello
  *
  */
-public class Chest extends Entity {
+class Chest extends Entity {
 	
 	private Point position;
 	private static Map mapRef;
@@ -16,7 +16,7 @@ public class Chest extends Entity {
 	 * 
 	 * @param newPosition sono le coordinate dello scrigno
 	 */
-	public Chest(Point newPosition, Map map) {
+	Chest(Point newPosition, Map map) {
 		this.position = newPosition;
 		if(mapRef == null) {
 			mapRef = map;
@@ -61,7 +61,7 @@ public class Chest extends Entity {
 	/**
 	 * Il metodo e'utilizzato per ripristinare le variabili statiche alle condizioni iniziali cancellando ogni modifica fatta
 	 */
-	public static void resetStatic() {
+	static void resetStatic() {
 		mapRef = null;
 	}
 }

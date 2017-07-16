@@ -23,7 +23,7 @@ class Mob extends Entity{
 	 * @param firstMobPos e' la posizione iniziale del mob
 	 * @param map e' il riferimento alla mappa di gioco
 	 */
-	public Mob(Point firstMobPos, Map map) {
+	Mob(Point firstMobPos, Map map) {
 		position = firstMobPos;
 		addObserver(map);
 		if(mapRef == null) {
@@ -45,8 +45,17 @@ class Mob extends Entity{
 	 */
 	@Override
 	void move(int movement, Direction direction) {
+		if(direction == Direction.DEAD) {
+			return;
+		}
 		nextPos = new Point(position);
-		Direction newDirection = Direction.getRandom();
+		Direction newDirection;
+		if(direction == Direction.NONE) {
+			newDirection = Direction.getRandom();
+		}
+		else {
+			newDirection = direction;
+		}
 		switch(newDirection) {
 		case RIGHT:
 			nextPos.x += movement;
@@ -74,7 +83,7 @@ class Mob extends Entity{
 	 * 
 	 * @return la direzione del mob
 	 */
-	public Direction getDir() {
+	Direction getDir() {
 		return this.direction;
 	}
 	
@@ -82,7 +91,7 @@ class Mob extends Entity{
 	 * 
 	 * @return il valore per indicare se il mob ha fatto un passo sinistro o destro
 	 */
-	public boolean getFoot() {
+	boolean getFoot() {
 		return this.leftFoot;
 	}
 	
@@ -119,7 +128,7 @@ class Mob extends Entity{
 	 * Il metodo e'utilizzato per ripristinare le variabili statiche alle condizioni iniziali cancellando ogni modifica fatta
 	 * 
 	 */
-	public static void resetStatic() {
+	static void resetStatic() {
 		mapRef = null;
 		
 	}
