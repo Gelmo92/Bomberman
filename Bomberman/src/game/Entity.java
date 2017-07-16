@@ -3,7 +3,7 @@ package game;
 import java.awt.Point;
 import java.util.Observable;
 /**
- * la classe Entity e' una classe astratta per tutti gli oggetti che saranno utilizzati per il modello (escluso Map)
+ * la classe Entity e' una classe astratta per tutti gli oggetti che saranno utilizzati per il modello (esclusi Map e Terrain)
  * 
  * @author Yuri Gelmotto
  * @author Riccardo Pidello
@@ -28,8 +28,22 @@ abstract class Entity extends Observable{
 	    }
 	}
 	
+	/**
+	 * 
+	 * @return la posizione di questa entita'.
+	 */
 	abstract Point getPos();
+	
+	/**
+	 * 
+	 * @param movement la distanza a cui muoversi
+	 * @param dir la direzione in cui muoversi
+	 */
 	abstract void move(int movement, Direction dir);
+	
+	/**
+	 * Distrugge l'entita'.
+	 */
 	abstract void destroy();
 	
 	@Override

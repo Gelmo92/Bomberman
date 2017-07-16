@@ -7,8 +7,8 @@ import java.awt.event.ActionListener;
 import javax.swing.Timer;
 /**
  * La classe Bomb rappresenta le bombe che possono essere posizionate dal giocatore sul terreno di gioco.
- * Alla loro creazione si attiva un timer e allo scadere del timer la bomba esplodera' producendo un oggetto
- * di tipo Explosion.
+ * Alla loro creazione si attiva un timer e allo scadere del timer la bomba notifica ai suoi
+ * Observer la propria esplosione.
  * 
  * @author Yuri Gelmotto
  * @author Riccardo Pidello
@@ -61,10 +61,10 @@ class Bomb extends Entity{
 		return pos;
 	}
 /**
- * Gestisce il movimento della bomba se la bomba si puo' muovere
- * Se bonusMoveBomb è falso allora la bomba non si puo' muovere e termina la procedura
- * Se invece la bomba si puo' muovere ma non si e' ancora mossa allora imposta la variabile moving a vero 
- * ma si muovera' solo al successivo tick del timer della mappa (per evitare un doppio movimento)
+ * Gestisce il movimento della bomba se la bomba si puo' muovere.
+ * Se bonusMoveBomb è false allora la bomba non si puo' muovere e termina la procedura.
+ * Se invece la bomba si puo' muovere ma non si e' ancora mossa allora imposta la variabile moving a true 
+ * ma si muovera' solo alla successiva chiamata di questo metodo (per evitare un doppio movimento)
  * Se si puo' muovere ed e' in movimento allora gestisce il movimento della bomba nella direzione indicata (se non incontra ostacoli).
  * 
  * @param movement indica di quanto si deve spostare la bomba 
@@ -109,7 +109,7 @@ class Bomb extends Entity{
 /**
  * Gestisce la rimozione della bomba dalla lista delle bombe nella mappa,
  * decrementa il valore di droppedBombs per poter posizionare una nuova bomba,
- * Rimuove la bomba dagli osservti
+ * Rimuove gli Observer di questa bomba
  * 
  */
 	@Override
@@ -122,11 +122,13 @@ class Bomb extends Entity{
 	}
 
 	/**
-	 * 
+	 * Questo metodo permette la concatenazione delle esplosioni di piu' bombe,
+	 * a causa di un fattore scatenante (nel nostro caso l'esplosione di una bomba se raggiunge
+	 * un'altra bomba causa l'esplosione di quest'ultima).
 	 */
 	public void dominoEffect() {
 		t.stop();
-		t.setInitialDelay(10);
+		t.setInitialDelay(10);//Ritardiamo minimamente il segnale per permettere di completare il metodo che ha richiamato questo metodo
 		t.start();
 		
 	}
@@ -163,7 +165,7 @@ class Bomb extends Entity{
 	}
 	
 	/**
-	 * Abilita il movimento alle bombe
+	 * Abilita il movimento delle bombe
 	 */
 	static void setCanMove() {
 		bonusMoveBomb = true;

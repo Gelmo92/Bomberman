@@ -38,7 +38,7 @@ public class Bonus extends Entity {
 	
 	/**
 	 * 
-	 * @param pos sono le coordinate di dove viene posizionato il bonus
+	 * @param pos sono le coordinate dove viene posizionato il bonus
 	 * @param map e' il riferimento alla mappa di gioco
 	 */
 	public Bonus(Point pos, Map map) {
@@ -62,8 +62,8 @@ public class Bonus extends Entity {
 	
 	/**
 	 * Il metodo genera randomicamente un tipo di bonus.
-	 * Se il giocatore non ha il massimo  della vita allora si creara' un bonus di tipo LIFE
-	 * Se Il tipo di bonus MOVE_BOMB e' gia' stato preso allora non verra' piu' creato
+	 * Se il giocatore non ha il massimo  della vita allora si creera' un bonus di tipo LIFE.
+	 * Se Il tipo di bonus MOVE_BOMB e' gia' stato preso allora non verra' piu' creato.
 	 * 
 	 * @return un BonusType randomico fra quelli che si possono ancora creare
 	 * @see BonusType#getRandom()
@@ -94,7 +94,7 @@ public class Bonus extends Entity {
 	}
 
 	/**
-	 * Non necessario, se ne occupa Map
+	 * Non necessario.
 	 */
 	@Override
 	void move(int movement, Direction direction) {
@@ -102,8 +102,9 @@ public class Bonus extends Entity {
 	}
 
 	/**
-	 * Il metodo rimuove il buns dalla lista dei bonus della mappa di gioco,
-	 * viene eliminato il bonus dagli oggetti osservati
+	 * Il metodo rimuove il bonus dalla lista dei bonus della mappa di gioco,
+	 * Vengono rimossi gli Observer di questo oggetto.
+	 * Viene inoltre fermato il timer creato da questo bonus.
 	 */
 	@Override
 	void destroy() {
@@ -113,7 +114,7 @@ public class Bonus extends Entity {
 	}
 
 	/**
-	 * Il metodo va a gestire correttamente il bonus in base al type del bonus 
+	 * Il metodo va a gestire correttamente il bonus in base al type dello stesso. 
 	 */
 	public void getBonus() {
 		switch (type) {

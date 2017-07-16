@@ -17,7 +17,8 @@ class Mob extends Entity{
 	private static Map mapRef = null;
 	
 	/**
-	 * Il metodo costruttore crea gli oggetti mob alla posizione iniziale e li rende osservabili
+	 * Il metodo costruttore crea un oggetto mob alla posizione iniziale e pone map come
+	 * suo Observer.
 	 * 
 	 * @param firstMobPos e' la posizione iniziale del mob
 	 * @param map e' il riferimento alla mappa di gioco
@@ -39,7 +40,8 @@ class Mob extends Entity{
 	}
 
 	/**
-	 * Il metodo gestisce il movimento in modo randomico e invoca il metodo per alternare il passo sinistro da quello destro
+	 * Il metodo gestisce il movimento in modo randomico e invoca il metodo
+	 * setFoot() per alternare il passo sinistro da quello destro
 	 */
 	@Override
 	void move(int movement, Direction direction) {
@@ -91,6 +93,11 @@ class Mob extends Entity{
 		leftFoot = !leftFoot;
 	}
 	
+	/**
+	 * Rimuove questo oggetto dall'ArrayList che lo contiene in Map.
+	 * Imposta la direzione di questo mob a DEAD, notifica i suoi Observer, dopodiche'
+	 * li rimuove.
+	 */
 	@Override
 	void destroy() {
 		mapRef.removeFromArrayList(this);

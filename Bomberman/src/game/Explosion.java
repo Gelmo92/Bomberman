@@ -22,7 +22,7 @@ class Explosion extends Entity {
 	private Timer t;
 	
 	/**
-	 * Il costruttore invoca la propagazione della esplosione nelle 4 direzioni tramite il metodo burn
+	 * Il costruttore invoca la propagazione della esplosione in tutte le direzioni tramite il metodo burn
 	 * 
 	 * @param firstPosition e' il punto in cui si trovava l'oggetto di tipo Bomb che e' esploso
 	 * @param map e' il riferimento alla mappa di gioco
@@ -51,7 +51,7 @@ class Explosion extends Entity {
 	}
 
 	/**
-	 * Il metodo gestisce la propagazione nelle 4 direzioni invocando il metodo move
+	 * Il metodo gestisce la propagazione in tutte le direzioni invocando il metodo move
 	 * 
 	 * @param explosionRate e' il valore di quanto si puo' espandere l'esplosione per ogni direzione
 	 * @see Explosion#move(int, Direction)
@@ -65,6 +65,9 @@ class Explosion extends Entity {
 		
 	}
 
+	/**
+	 * Non utilizzato.
+	 */
 	@Override
 	Point getPos() {
 		return null;
@@ -102,17 +105,17 @@ class Explosion extends Entity {
 			
 			for(Terrain next : mapRef.getMyTerrains()) {
 				if(nextPos.equals(next.getPos())) {
-					next.setBurnt();
+					next.setBurnt();//Bruciamo il terreno
 					break;
 				}
 			}
 			if(mapRef.canMove(nextPos, this)) {
-				propagation.add(nextPos);
+				propagation.add(nextPos);//Avanziamo con la propagazione
 				pos = nextPos;
 			}
 			else {
 				if(mapRef.canDestroyWall(nextPos)) {
-					propagation.add(nextPos);
+					propagation.add(nextPos);//Aggiungiamo la posizione del muro distrutto
 				}
 				return;
 			}
@@ -122,7 +125,7 @@ class Explosion extends Entity {
 
 	/**
 	 * Il metodo rimuove l'oggeto dalla lista di esplosioni dalla mappa,
-	 * rimuove l'oggetto dagli oggetti osservati
+	 * rimuove gli Observer di questo oggetto.
 	 */
 	@Override
 	void destroy() {
@@ -155,7 +158,7 @@ class Explosion extends Entity {
 
 	/**
 	 * 
-	 * @return una stringa per identificare gli oggetti di tipo Explosion
+	 * @return una String mnemonica della classe di questo oggetto
 	 */
 	@Override
 	public String toString() {

@@ -27,10 +27,11 @@ class Player extends Entity {
 	private Direction direction = Direction.NONE;
 	
 	/**
-	 * Il costruttore crea un oggetto di tipo Player e lo posiziona sullo mappa inoltre rende l'oggetto osservabile
+	 * Il costruttore crea un oggetto di tipo Player.
+	 * Inoltre aggiunge map come suo Observer.
 	 * 
 	 * @param firstPlayerPos e' la posizione iniziale del giocatore
-	 * @param map e' il riferimento alal mappa di gioco
+	 * @param map e' il riferimento alla mappa di gioco
 	 */
 	public Player(Point firstPlayerPos, Map map) {
 		position = firstPlayerPos;
@@ -83,7 +84,7 @@ class Player extends Entity {
 	
 	/**
 	 * il metodo gestisce le ferite del giocatore
-	 * Se il giocatore e' invulnerabile allora non subisce ferite se no perde una vita e attiva l'invulnerabilita'
+	 * Se il giocatore e' invulnerabile allora non subisce ferite, altrimenti perde una vita e attiva l'invulnerabilita'
 	 * Se il giocatore perde l'ultima vita allora il metodo invoca la distruzione del giocatore
 	 * 
 	 * @see Player#invulnerable()
@@ -113,8 +114,9 @@ class Player extends Entity {
 	}
 
 	/**
-	 * il metodo rimuove il giocatore dall mappa di gioco, dagli oggetti osservabili e ripristina
-	 * i valori delle variabili alle condizioni originali
+	 * Imposta la direzione del giocatore a DEAD, lo rende invulnerabile per evitare
+	 * che la sua vita possa diventare negativa, notifica agli Observer la propria morte.
+	 * Infine cancella i propri Observer.
 	 */
 	@Override
 	void destroy() {
